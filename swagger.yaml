@@ -1,0 +1,639 @@
+swagger: '2.0'
+info:
+  description: "API для игры Ship Collision - кастомный морской бой."
+  version: "1.0.0"
+  title: "Ship Collision Game API"
+host: "api.shipcollison.herokuapp.com"
+basePath: "/v1"
+
+tags:
+  - name: "Sessions API"
+    description: "API аутентификации и авторизации"
+  - name: "Users API"
+    description: "API пользователей"
+  - name: "Games API"
+    description: "API игр"
+  - name: "Me API"
+    description: "API текущего пользователя"
+
+schemes:
+  - "http"
+
+paths:
+  "/signin/":
+    post:
+      summary: "Вход в приложение"
+      tags:
+        - "Sessions API"
+      description: "Осуществляет аутентификацию пользователя. Устанавливает ID сессии в Cookie"
+      parameters: 
+        - in: "body"
+          name: "requestBody"
+          required: true
+          schema:
+            type: "object"
+            properties:
+              email:
+                type: "string"
+                description: "Электронная почта пользователя"
+              password:
+                type: "string"
+                description: "Пароль"
+            example:
+              email: "test@test.com"
+              password: "test_is_the_b3st"
+      produces: 
+        - application/json
+      responses:
+        "200":
+          description: "Вход осуществлен успешно"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          headers:
+            Set-Cookie:
+              type: "string"
+              description: "Записывает в Cookie ID текущей сессии"
+          examples:
+            "":
+              message: "User is authenticated"
+        "400":
+          description: "Переданы неверные параметры входа"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "Invalid user login or password"
+              code: "invalid_credentials"
+  "/signout/":
+    delete:
+      summary: "Выход из приложения"
+      tags:
+        - "Sessions API"
+      description: "Осуществляет выход из приложения."
+      produces: 
+        - application/json
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: "Выход из приложения осуществлен залогиненым пользователем"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          examples:
+            "": 
+              message: "User has signed out"
+        "401":
+          description: "Незалогиненый пользователь пытается выйти из приложения"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+      
+  "/users/leaderboard/":
+    get:
+      summary: "Список лидеров"
+      tags:
+        - "Users API"
+      description: "Возвращает список пользователей, отсортированный по их рейтингу, с учетом пагинации"
+      parameters:
+        - name: "offset"
+          in: "query"
+          required: false
+          description: "Номер страницы"
+          type: "integer"
+        - name: "limit"
+          in: "query"
+          required: false
+          description: "Количество элементов на странице"
+          type: "integer"
+      produces: 
+        - application/json
+      responses:
+        "200":
+          description: ""
+          schema:
+            "$ref": "#/definitions/UsersCollection"
+          examples:
+            "":
+              users:
+                - nickname: "nick1"
+                  email: "email1"
+                  rank: 10
+                - nickname: "nick2"
+                  email: "email2"
+                  rank: 4
+                - nickname: "nick100"
+                  email: "email91"
+                  rank: 1
+              prevPage: "http://example.com/users/leaderboard/?page=1"
+              nextPage: "http://example.com/users/leaderboard/?page=3"
+  "/users/":
+    post:
+      summary: "Создание пользователя"
+      tags:
+        - "Users API"
+      description: "Позволяет создать нового пользователя (зарегистрировать)"
+      parameters: 
+        - in: "body"
+          name: "requestBody"
+          required: true
+          schema:
+            "$ref": "#/definitions/UserRequest"
+      produces: 
+        - "application/json"
+      responses:
+        "201":
+          description: "Пользователь создан успешно"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          examples:
+            "":
+              message: "User is created successfully"
+        "400":
+          description: "Заданы неверные параметры"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "Invalid user params"
+              code: "invalid_user_params"
+  "/users/{id}/":
+    get:
+      summary: "Получение информации о пользователе"
+      tags:
+        - "Users API"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID пользователя"
+          type: "integer"
+      produces: 
+        - "application/json"
+      responses:
+        "200":
+          description: ""
+          schema:
+            "$ref": "#/definitions/User"
+          examples:
+            "":
+              nickname: "nick1"
+              email: "email"
+              rank: 12
+              avatarLink: "http://example.com/static/avatar.jpg"
+
+  "/games/":
+    get:
+      summary: "Список всех игр"
+      tags:
+        - "Games API"
+      description: ""
+      parameters:
+        - name: "offset"
+          in: "query"
+          required: false
+          description: "Номер страницы"
+          type: "integer"
+        - name: "limit"
+          in: "query"
+          required: false
+          description: "Количество элементов на странице"
+          type: "integer"
+        - name: "active"
+          in: "query"
+          required: false
+          description: "Флаг, наличие которого показывает, что надо искать только активные на момент запроса игры"
+          type: "boolean"
+        - name: "types[]"
+          in: "query"
+          required: false
+          description: "Массив типов игр для поиска, например `type[]=Multi1&type[]=Multi3`"
+          type: "boolean"
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            "$ref": "#/definitions/GamesCollection"
+          examples:
+            "":
+              users:
+                - type: "Multi2"
+                  active: true
+                  userLinks: []
+                - type: "Multi2"
+                  active: true
+                  userLinks:
+                    - "http://example.com/users/12"
+                    - "http://example.com/users/49"
+              prevPage: "http://example.com/games/?page=1"
+              nextPage: "http://example.com/games/?page=3"
+    post:
+      summary: "Создание новой игры"
+      tags:
+        - "Games API"
+      description: "Создает новую игру и присоединяет пользователя к ней"
+      parameters: 
+        - in: "body"
+          name: "requestBody"
+          required: true
+          schema:
+            "$ref": "#/definitions/GameRequest"
+      produces:
+        - "apllication/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "201":
+          description: "Игра создана успешно"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          examples:
+            "":
+              message: "Game is created successfully"
+        "400":
+          description: "Заданы неверные параметры"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "Invalid game params"
+              code: "invalid_game_params"
+  "/games/{id}/":
+    get:
+      summary: "Получение информации об игре"
+      tags:
+        - "Games API"
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          description: "ID игры"
+          type: "integer"
+      produces:
+        - "application/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            "$ref": "#/definitions/Game"
+          examples:
+            "":
+              type: "Single3"
+              active: false
+              userLinks:
+                    - "http://example.com/users/12"
+                    - "http://example.com/users/49"
+                    
+  "/me/":
+    get:
+      summary: "Получение информации о текущем пользователе"
+      tags:
+        - "Me API"
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: "Пользователь авторизован"
+          schema:
+            "$ref": "#/definitions/User"
+          examples:
+            "":
+              nickname: "nick1"
+              email: "email"
+              rank: 12
+              avatarLink: "http://example.com/static/avatar.jpg"
+        "401":
+          description: "Пользователь не авторизован"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+    put:
+      summary: "Полное изменение информации о текущем пользователе (то, что не передано, стирается)"
+      tags:
+        - "Me API"
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      parameters: 
+        - in: "body"
+          name: "requestBody"
+          required: true
+          schema:
+            "$ref": "#/definitions/UserRequest"
+      responses:
+        "200":
+          description: "Профиль текущего пользователя обновлен успешно"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          examples:
+            "":
+              message: "Your profile is updated successfully"
+        "400":
+          description: "Заданы неверные параметры"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "Invalid user params"
+              code: "invalid_user_params"
+        "401":
+          description: "Пользователь не авторизован"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+    patch:
+      summary: "Частичое изменение информации о текущем пользователе (то, что не передано, остается)"
+      tags:
+        - "Me API"
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      parameters: 
+        - in: "body"
+          name: "requestBody"
+          required: true
+          schema:
+            "$ref": "#/definitions/UserRequest"
+      responses:
+        "200":
+          description: "Профиль текущего пользователя обновлен успешно"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          examples:
+            "":
+              message: "Your profile is updated successfully"
+        "400":
+          description: "Заданы неверные параметры"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "Invalid user params"
+              code: "invalid_user_params"
+        "401":
+          description: "Пользователь не авторизован"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+    delete:
+      summary: "Удаление своего аккаунта"
+      tags:
+        - "Me API"
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: "Профиль текущего пользователя удален успешно"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          examples:
+            "":
+              message: "Your profile is updated successfully"
+        "401":
+          description: "Пользователь не авторизован"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+  "/me/avatar/":
+    post:
+      summary: "Загрузка аватара"
+      tags:
+        - "Me API"
+      consumes:
+        - "multipart/form-data"
+      parameters:
+        - name: "file"
+          in: "formData"
+          description: "Аватар для загрузки"
+          required: true
+          type: "file"
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: "Аватар успешно загружен"
+          schema:
+            "$ref": "#/definitions/SuccessMessage"
+          examples:
+            "":
+              message: "Your avatar is uploaded successfully"
+        "400":
+          description: "Ошибка при загрузке файла"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "Error during file upload"
+              code: "error_file_upload"
+        "401":
+          description: "Пользователь не авторизован"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+    get:
+      summary: "Получение ссылки на аватар"
+      tags:
+        - "Me API"
+      description: ""
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            properties:
+              avatarLink:
+                type: string
+                description: "Сыылка на аватар"
+          examples:
+            "":
+              avatarLink: "http://example.com/static/avatar.jpg"
+        "401":
+          description: "Пользователь не авторизован"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+  "/me/games/":
+    get:
+      summary: "Все игры пользователя"
+      tags:
+        - "Me API"
+      parameters:
+        - name: "offset"
+          in: "query"
+          required: false
+          description: "Номер страницы"
+          type: "integer"
+        - name: "limit"
+          in: "query"
+          required: false
+          description: "Количество элементов на странице"
+          type: "integer"
+        - name: "active"
+          in: "query"
+          required: false
+          description: "Флаг, наличие которого показывает, что надо искать только активные на момент запроса игры"
+          type: "boolean"
+      produces: 
+        - "application/json"
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: ""
+          schema:
+            "$ref": "#/definitions/GamesCollection"
+          examples:
+            "":
+              users:
+                - type: "Multi2"
+                  active: true
+                  userLinks: []
+                - type: "Multi2"
+                  active: true
+                  userLinks:
+                    - "http://example.com/users/12"
+                    - "http://example.com/users/49"
+              prevPage: "http://example.com/games/?page=1"
+              nextPage: "http://example.com/games/?page=3"
+        "401":
+          description: "Пользователь не авторизован"
+          schema:
+            "$ref": "#/definitions/ErrorMessage"
+          examples:
+            "":
+              message: "You are not logged in"
+              code: "unauthorized"
+
+securityDefinitions:
+  cookieAuth:
+    type: "apiKey"
+    name: "SESSIONID"
+    in: "header"
+
+definitions:
+  SuccessMessage:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "Сообщение об успешном окончании какой-либо операции"
+  ErrorMessage:
+    type: "object"
+    properties:
+      message:
+        type: "string"
+        description: "Сообщение об успешном окончании какой-либо операции"
+      code:
+        type: "string"
+        description: "Краткий код ошибки"
+  UserRequest:
+    type: "object"
+    properties:
+      nickname:
+        type: "string"
+        description: "Псевдоним игрока"
+      email:
+        type: "string"
+        description: "Электронная почта игрока"
+      rank:
+        type: "integer"
+        description: "Рейтинг игрока"
+  User:
+    type: "object"
+    properties:
+      nickname:
+        type: "string"
+        description: "Псевдоним"
+      email:
+        type: "string"
+        description: "Электронная почта"
+      rank:
+        type: "integer"
+        description: "Рейтинг"
+      avatarLink:
+        type: "string"
+        description: "Ссылка на аватар"
+  UsersCollection:
+    type: "object"
+    required:
+      - users
+    properties:
+      users:
+        type: "array"
+        items:
+          type: "object"
+      prevPage:
+        description: "Ссылка на предыдущую страницу"
+        type: "string"
+      nextPage:
+        description: "Ссылка на следующую страницу"
+  GameRequest:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: "Тип игры"
+  Game:
+    type: "object"
+    properties:
+      type:
+        type: "string"
+        description: "Тип игры"
+      active:
+        type: "boolean"
+        description: "Флаг того, что игра еще не окончена"
+      userLinks:
+        type: "array"
+        items:
+          type: "string"
+  GamesCollection:
+    type: "object"
+    required:
+      - games
+    properties:
+      games:
+        type: "array"
+        items:
+          type: "object"
+      prevPage:
+        description: "Ссылка на предыдущую страницу"
+        type: "string"
+      nextPage:
+        description: "Ссылка на следующую страницу"
