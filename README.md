@@ -14,7 +14,7 @@
 
 [Георгий Габолаев](https://github.com/gabolaev)
 
-[Артем Икчурин](github.com/a-ikchurin)
+[Артем Икчурин](https://github.com/a-ikchurin)
 
 [Кирилл Кучеров](https://github.com/jpyatachkov)
 
@@ -25,4 +25,4 @@
 
 ## API
 
-Спецификация API доступна на [SwaggerHub](https://app.swaggerhub.com/apis/jpyatachkov/ship-collision/1.0.0), а также может быть найдена в файле `swagger.yaml` этого репозитория.
+Спецификация API доступна на [SwaggerHub](https://app.swaggerhub.com/apis/jpyatachkov/ship-collision/1.0.0).

@@ -55,7 +55,7 @@ public class Paginator<T> {
      * @return Ссылка на страницу с подставленными параметрами.
      */
     private String resolvePageLink(String basePath, int offsetParam, int limitParam) {
-        return basePath + String.format("/?offset=%d&limit=%d", offsetParam, limitParam);
+        return basePath + String.format("?offset=%d&limit=%d", offsetParam, limitParam);
     }
 
     /**
