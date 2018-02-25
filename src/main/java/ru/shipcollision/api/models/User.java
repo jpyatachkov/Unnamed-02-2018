@@ -167,7 +167,7 @@ public class User extends AbstractModel {
     public void comparePasswords(String otherPassword) throws UnauthorizedException {
         final boolean result = passwordHash.equals(otherPassword);
         if (!result) {
-            throw new UnauthorizedException("Incorrect login or password");
+            throw new UnauthorizedException();
         }
     }
 }

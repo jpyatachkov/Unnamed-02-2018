@@ -15,6 +15,7 @@ import ru.shipcollision.api.models.AbstractModel;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -51,7 +52,7 @@ public class UsersController {
      */
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity doPostUser(HttpServletRequest request,
-                                     @RequestBody UserRequestEntity requestBody,
+                                     @Valid @RequestBody UserRequestEntity requestBody,
                                      HttpSession session) throws URISyntaxException, ApiException {
         try {
             final User user = User.fromUserRequestEntity(requestBody);
