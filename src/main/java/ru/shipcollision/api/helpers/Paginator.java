@@ -55,7 +55,7 @@ public class Paginator<T> {
      * @return Ссылка на страницу с подставленными параметрами.
      */
     private String resolvePageLink(String basePath, int offsetParam, int limitParam) {
-        return basePath + String.format("?offset=%d&limit=%d", offsetParam, limitParam);
+        return basePath + String.format("/?offset=%d&limit=%d", offsetParam, limitParam);
     }
 
     /**
@@ -109,6 +109,7 @@ public class Paginator<T> {
      */
     public String resolveNextPageLink(String basePath) {
         int maxOffset = objects.size() / limit;
+        maxOffset += (objects.size() % limit == 0) ? 0 : 1;
         maxOffset = (maxOffset == 0) ? DEFAULT_OFFSET : maxOffset;
         int newOffset = offset + 1;
         newOffset = (newOffset * limit < objects.size()) ? newOffset : maxOffset;
