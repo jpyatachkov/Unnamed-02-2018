@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.Nullable;
 import ru.shipcollision.api.entities.UserRequestEntity;
-import ru.shipcollision.api.exceptions.UnauthorizedException;
+import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
@@ -164,10 +164,10 @@ public class User extends AbstractModel {
         this.passwordHash = passwordHash;
     }
 
-    public void comparePasswords(String otherPassword) throws UnauthorizedException {
+    public void comparePasswords(String otherPassword) throws InvalidCredentialsException {
         final boolean result = passwordHash.equals(otherPassword);
         if (!result) {
-            throw new UnauthorizedException();
+            throw new InvalidCredentialsException();
         }
     }
 }

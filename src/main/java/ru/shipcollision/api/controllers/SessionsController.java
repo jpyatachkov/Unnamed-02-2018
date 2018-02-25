@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 import ru.shipcollision.api.entities.ApiMessageResponseEntity;
 import ru.shipcollision.api.entities.SigninRequestEntity;
+import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.UnauthorizedException;
 import ru.shipcollision.api.helpers.SessionHelper;
 import ru.shipcollision.api.models.AbstractModel;
@@ -20,11 +21,11 @@ public class SessionsController {
 
     @RequestMapping(path = "/signin", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity doSignin(@RequestBody SigninRequestEntity requestBody,
-                                   HttpSession session) throws UnauthorizedException {
+                                   HttpSession session) throws InvalidCredentialsException {
         final SessionHelper sessionHelper = new SessionHelper(session);
         final List<AbstractModel> foundUsers = User.findByEmail(requestBody.getEmail());
         if (foundUsers.isEmpty()) {
-            throw new UnauthorizedException();
+            throw new InvalidCredentialsException();
         }
         final User user = (User) foundUsers.get(0);
         user.comparePasswords(requestBody.getPassword());

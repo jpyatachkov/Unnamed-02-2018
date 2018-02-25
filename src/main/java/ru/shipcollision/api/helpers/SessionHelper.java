@@ -25,6 +25,7 @@ public class SessionHelper {
 
     /**
      * Записывает в куки идентификатор пользователя.
+     *
      * @param user Пользователь, для которого будет открыта сессия.
      */
     public void openSession(User user) {
@@ -33,6 +34,7 @@ public class SessionHelper {
 
     /**
      * Метод для проверки, что хотя бы один пользователь авторизован.
+     *
      * @return Проверяет, установлена ли кука.
      */
     public boolean sessionHasUser() {
@@ -42,6 +44,7 @@ public class SessionHelper {
 
     /**
      * Возвращает текущего пользователя.
+     *
      * @return Пользователь открытой сессии.
      * @throws UnauthorizedException Возбуждается в случае, если пользователь сессии не установлен.
      */
@@ -62,6 +65,7 @@ public class SessionHelper {
 
     /**
      * Закрывает сессию для текущего пользователя.
+     *
      * @throws UnauthorizedException Возбуждается в случае, если пользователь сессии не установлен.
      */
     public void closeSession() throws UnauthorizedException {
