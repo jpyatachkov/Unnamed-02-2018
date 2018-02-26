@@ -9,7 +9,7 @@ import ru.shipcollision.api.entities.ApiMessageResponseEntity;
 import ru.shipcollision.api.entities.SigninRequestEntity;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
-import ru.shipcollision.api.exceptions.UnauthorizedException;
+import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.helpers.SessionHelper;
 import ru.shipcollision.api.models.AbstractModel;
 import ru.shipcollision.api.models.User;
@@ -36,7 +36,7 @@ public class SessionsController {
     }
 
     @RequestMapping(path = "/signout", method = RequestMethod.DELETE)
-    public ResponseEntity doSignout(HttpSession session) throws UnauthorizedException, NotFoundException {
+    public ResponseEntity doSignout(HttpSession session) throws ForbiddenException, NotFoundException {
         final SessionHelper sessionHelper = new SessionHelper(session);
         sessionHelper.closeSession();
         final ApiMessageResponseEntity response = new ApiMessageResponseEntity("You are signed out");

@@ -1,7 +1,7 @@
 package ru.shipcollision.api.helpers;
 
 import ru.shipcollision.api.exceptions.NotFoundException;
-import ru.shipcollision.api.exceptions.UnauthorizedException;
+import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
@@ -45,12 +45,12 @@ public class SessionHelper {
      * Возвращает текущего пользователя.
      *
      * @return Пользователь открытой сессии.
-     * @throws UnauthorizedException Возбуждается в случае, если пользователь сессии не установлен.
+     * @throws ForbiddenException Возбуждается в случае, если пользователь сессии не установлен.
      */
-    public User getCurrentUser() throws UnauthorizedException, NotFoundException {
+    public User getCurrentUser() throws ForbiddenException, NotFoundException {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
         if (userId == null) {
-            throw new UnauthorizedException();
+            throw new ForbiddenException();
         }
         return User.findById((Long) userId);
     }
@@ -58,11 +58,11 @@ public class SessionHelper {
     /**
      * Закрывает сессию для текущего пользователя.
      *
-     * @throws UnauthorizedException Возбуждается в случае, если пользователь сессии не установлен.
+     * @throws ForbiddenException Возбуждается в случае, если пользователь сессии не установлен.
      */
-    public void closeSession() throws UnauthorizedException, NotFoundException {
+    public void closeSession() throws ForbiddenException, NotFoundException {
         if (!sessionHasUser()) {
-            throw new UnauthorizedException();
+            throw new ForbiddenException();
         }
         session.removeAttribute(ATTRIBUTE_NAME);
     }

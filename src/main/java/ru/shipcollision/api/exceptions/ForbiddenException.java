@@ -5,16 +5,16 @@ import org.springframework.http.HttpStatus;
 /**
  * Ошибка авторизации.
  */
-public class UnauthorizedException extends ApiException {
+public class ForbiddenException extends ApiException {
 
     @Override
     protected String getDefaultErrorMessage() {
-        return "User is unauthorized";
+        return "Forbidden";
     }
 
     @Override
     protected String getDefaultErrorCode() {
-        return "unauthorized";
+        return "forbidden";
     }
 
     @Override
