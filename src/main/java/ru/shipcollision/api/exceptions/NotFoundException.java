@@ -2,8 +2,6 @@ package ru.shipcollision.api.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-import javax.validation.constraints.NotNull;
-
 public class NotFoundException extends ApiException {
 
     public NotFoundException(String errorMessage) {

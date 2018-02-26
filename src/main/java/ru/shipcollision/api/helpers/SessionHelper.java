@@ -1,7 +1,7 @@
 package ru.shipcollision.api.helpers;
 
-import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.exceptions.ForbiddenException;
+import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;

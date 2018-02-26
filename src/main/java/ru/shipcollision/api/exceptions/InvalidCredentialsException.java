@@ -1,7 +1,5 @@
 package ru.shipcollision.api.exceptions;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * Неверный логин или пароль.
  */

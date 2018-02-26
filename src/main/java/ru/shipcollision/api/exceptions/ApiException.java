@@ -1,6 +1,5 @@
 package ru.shipcollision.api.exceptions;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatus;
 import ru.shipcollision.api.entities.ApiErrorResponseEntiry;
 
