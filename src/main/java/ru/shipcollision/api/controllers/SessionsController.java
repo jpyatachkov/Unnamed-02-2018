@@ -28,13 +28,13 @@ public class SessionsController {
                                    HttpSession session) throws InvalidCredentialsException {
         final SessionHelper sessionHelper = new SessionHelper(session);
 
-        final List<AbstractModel> foundUsers = User.findByEmail(requestBody.getEmail());
+        final List<AbstractModel> foundUsers = User.findByEmail(requestBody.email);
         if (foundUsers.isEmpty()) {
             throw new InvalidCredentialsException();
         }
 
         final User user = (User) foundUsers.get(0);
-        user.comparePasswords(requestBody.getPassword());
+        user.comparePasswords(requestBody.password);
 
         sessionHelper.openSession(user);
 

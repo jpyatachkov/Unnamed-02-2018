@@ -28,7 +28,7 @@ public class SessionHelper {
      * @param user Пользователь, для которого будет открыта сессия.
      */
     public void openSession(User user) {
-        session.setAttribute(ATTRIBUTE_NAME, user.getId());
+        session.setAttribute(ATTRIBUTE_NAME, user.id);
     }
 
     /**

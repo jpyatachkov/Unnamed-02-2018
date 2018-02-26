@@ -98,6 +98,7 @@ public class Paginator<T> {
     public String resolvePrevPageLink(String basePath) {
         int newOffset = offset - limit;
         newOffset = (newOffset < 1) ? DEFAULT_OFFSET : newOffset;
+
         return (newOffset != offset) ? resolvePageLink(basePath, newOffset, limit) : null;
     }
 
@@ -111,8 +112,10 @@ public class Paginator<T> {
         int maxOffset = objects.size() / limit;
         maxOffset += (objects.size() % limit == 0) ? 0 : 1;
         maxOffset = (maxOffset == 0) ? DEFAULT_OFFSET : maxOffset;
+
         int newOffset = offset + 1;
         newOffset = (newOffset * limit < objects.size()) ? newOffset : maxOffset;
+
         return (newOffset != offset) ? resolvePageLink(basePath, newOffset, limit) : null;
     }
 }

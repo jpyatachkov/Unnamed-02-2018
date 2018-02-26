@@ -97,7 +97,7 @@ public class User extends AbstractModel {
         return (User) findById(COLLECTION, id);
     }
 
-    public static List<AbstractModel> findByEmail(String email) throws NotFoundException {
+    public static List<AbstractModel> findByEmail(String email) {
         final ArrayList<AbstractModel> result = new ArrayList<>();
 
         for (Map.Entry<Long, AbstractModel> entry : COLLECTION.entrySet()) {
@@ -105,10 +105,6 @@ public class User extends AbstractModel {
             if (user.email.equals(email)) {
                 result.add(user);
             }
-        }
-
-        if (result.isEmpty()) {
-            throw new NotFoundException(String.format("User with email %s not found", email));
         }
 
         return result;

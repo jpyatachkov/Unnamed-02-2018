@@ -58,10 +58,8 @@ public class UsersController {
 
             new SessionHelper(session).openSession(user);
 
-            final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.getId()));
-            return ResponseEntity.created(location).body(new ApiMessageResponseEntity(
-                    "User has been created successfully"
-            ));
+            final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.id));
+            return ResponseEntity.created(location).body(user);
         } catch (URISyntaxException error) {
             return ResponseEntity.ok().body(new ApiMessageResponseEntity(
                     "User has been created successfully, no resource URI available"
