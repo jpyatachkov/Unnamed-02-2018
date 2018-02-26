@@ -1,7 +1,7 @@
 package ru.shipcollision.api.exceptions;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.HttpStatus;
+import ru.shipcollision.api.entities.ApiErrorResponseEntiry;
 
 import javax.validation.constraints.NotNull;
 
@@ -11,9 +11,9 @@ import javax.validation.constraints.NotNull;
 public class ApiException extends Exception {
 
     /**
-     * Сообщение, которое будет показано клиенту.
+     * Сообщениес ошибкой, которое будет показано клиенту.
      */
-    private final ExceptionMessage exceptionMessage;
+    private final ApiErrorResponseEntiry errorResponse;
 
     /**
      * HTTP-статус ответа.
@@ -22,19 +22,19 @@ public class ApiException extends Exception {
 
     public ApiException() {
         super();
-        this.exceptionMessage = new ExceptionMessage(getDefaultErrorMessage(), getDefaultErrorCode());
+        this.errorResponse = new ApiErrorResponseEntiry(getDefaultErrorMessage(), getDefaultErrorCode());
         this.httpStatus = getDefaultHttpStatus();
     }
 
     public ApiException(@NotNull String errorMessage) {
         super();
-        this.exceptionMessage = new ExceptionMessage(errorMessage, getDefaultErrorCode());
+        this.errorResponse = new ApiErrorResponseEntiry(errorMessage, getDefaultErrorCode());
         this.httpStatus = getDefaultHttpStatus();
     }
 
     public ApiException(Exception exception) {
         super(exception);
-        this.exceptionMessage = new ExceptionMessage(exception.getMessage(), getDefaultErrorCode());
+        this.errorResponse = new ApiErrorResponseEntiry(exception.getMessage(), getDefaultErrorCode());
         this.httpStatus = getDefaultHttpStatus();
     }
 
@@ -50,50 +50,11 @@ public class ApiException extends Exception {
         return HttpStatus.BAD_REQUEST;
     }
 
-    public ExceptionMessage getExceptionMessage() {
-        return exceptionMessage;
+    public ApiErrorResponseEntiry getResponse() {
+        return errorResponse;
     }
 
     public HttpStatus getHttpStatus() {
         return httpStatus;
-    }
-
-    /**
-     * Класс для инкапсуляции сообщения пользователю.
-     * Вынесено в отдельный класс, так как сериализация Exception с кастомными полями представляется
-     * слишком костыльной.
-     */
-    public static class ExceptionMessage {
-
-        @JsonProperty("message")
-        private String errorMessage;
-
-        @JsonProperty("code")
-        private String errorCode;
-
-        public ExceptionMessage(String errorMessage, String errorCode) {
-            this.errorMessage = errorMessage;
-            this.errorCode = errorCode;
-        }
-
-        @SuppressWarnings("unused")
-        public String getErrorMessage() {
-            return errorMessage;
-        }
-
-        @SuppressWarnings("unused")
-        public void setErrorMessage(String errorMessage) {
-            this.errorMessage = errorMessage;
-        }
-
-        @SuppressWarnings("unused")
-        public String getErrorCode() {
-            return errorCode;
-        }
-
-        @SuppressWarnings("unused")
-        public void setErrorCode(String errorCode) {
-            this.errorCode = errorCode;
-        }
     }
 }

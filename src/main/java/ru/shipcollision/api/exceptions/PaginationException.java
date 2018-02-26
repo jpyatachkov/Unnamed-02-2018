@@ -1,7 +1,5 @@
 package ru.shipcollision.api.exceptions;
 
-import javax.validation.constraints.NotNull;
-
 /**
  * Ошибка пагинации.
  */
@@ -11,7 +9,7 @@ public class PaginationException extends ApiException {
         super();
     }
 
-    public PaginationException(@NotNull String errorMessage) {
+    public PaginationException(String errorMessage) {
         super(errorMessage);
     }
 

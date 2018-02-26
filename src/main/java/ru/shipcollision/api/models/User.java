@@ -15,6 +15,7 @@ import java.util.*;
 /**
  * Модель пользователя (игрока).
  */
+@SuppressWarnings({"PublicField", "unused"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User extends AbstractModel {
 
@@ -27,45 +28,42 @@ public class User extends AbstractModel {
             final int bound = 100500;
 
             final User ai = new User("a_ikchurin", "tyoma11.95@mail.ru", "pswd");
-            ai.setRank(random.nextInt(bound));
+            ai.rank = random.nextInt(bound);
             final User ck = new User("cvkucherov", "cvkucherov@yandex.ru", "pswd");
-            ck.setRank(random.nextInt(bound));
+            ck.rank = random.nextInt(bound);
             final User ga = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
-            ga.setRank(random.nextInt(bound));
+            ga.rank = random.nextInt(bound);
             final User ov = new User("venger", "farir1408@gmail.com", "pswd");
-            ov.setRank(random.nextInt(bound));
+            ov.rank = random.nextInt(bound);
 
-            put(ai.getId(), ai);
-            put(ck.getId(), ck);
-            put(ga.getId(), ga);
-            put(ov.getId(), ov);
+            put(ai.id, ai);
+            put(ck.id, ck);
+            put(ga.id, ga);
+            put(ov.id, ov);
         }
     };
 
     @JsonProperty("nickname")
-    private @NotNull String nickName;
+    public @NotNull String nickName;
 
     @JsonProperty("email")
-    private @NotNull String email;
+    public @NotNull String email;
 
     @JsonProperty("rank")
-    private int rank = 0;
+    public int rank = 0;
 
     @JsonProperty("avatarLink")
     @Nullable
-    private String avatarLink;
+    public String avatarLink;
 
     @JsonIgnore
-    private @NotNull String passwordHash;
+    public @NotNull String passwordHash;
 
-    @SuppressWarnings("unused")
     public User() {
-        super();
+
     }
 
-    @SuppressWarnings("unused")
-    public User(String nickName, String email, String passwordHash) {
-        super();
+    public User(@NotNull String nickName, @NotNull String email, @NotNull String passwordHash) {
         this.nickName = nickName;
         this.email = email;
         this.passwordHash = passwordHash;
@@ -77,91 +75,43 @@ public class User extends AbstractModel {
         }
 
         final User user = new User();
-        user.nickName = request.getNickName();
-        user.email = request.getEmail();
-        user.passwordHash = request.getPassword();
-
+        user.nickName = request.nickName;
+        user.email = request.email;
+        user.passwordHash = request.password;
         return user;
     }
 
     public static List<AbstractModel> getByRating(boolean ascending) {
         final List<AbstractModel> result = new ArrayList<>(COLLECTION.values());
+
         result.sort((AbstractModel o1, AbstractModel o2) -> {
             final User u1 = (User) o1;
             final User u2 = (User) o2;
             return ascending ? u1.rank - u2.rank : u2.rank - u1.rank;
         });
+
         return result;
     }
 
-    @SuppressWarnings("unused")
     public static User findById(Long id) throws NotFoundException {
         return (User) findById(COLLECTION, id);
     }
 
     public static List<AbstractModel> findByEmail(String email) {
         final ArrayList<AbstractModel> result = new ArrayList<>();
+
         for (Map.Entry<Long, AbstractModel> entry : COLLECTION.entrySet()) {
             final User user = (User) entry.getValue();
             if (user.email.equals(email)) {
                 result.add(user);
             }
         }
+
         return result;
     }
 
     public void save() {
-        COLLECTION.put(getId(), this);
-    }
-
-    @SuppressWarnings("unused")
-    public String getNickName() {
-        return nickName;
-    }
-
-    @SuppressWarnings("unused")
-    public void setNickName(String nickName) {
-        this.nickName = nickName;
-    }
-
-    @SuppressWarnings("unused")
-    public String getEmail() {
-        return email;
-    }
-
-    @SuppressWarnings("unused")
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    @SuppressWarnings("unused")
-    public int getRank() {
-        return rank;
-    }
-
-    @SuppressWarnings("unused")
-    public void setRank(int rank) {
-        this.rank = rank;
-    }
-
-    @SuppressWarnings("unused")
-    public String getAvatarLink() {
-        return avatarLink;
-    }
-
-    @SuppressWarnings("unused")
-    public void setAvatarLink(String avatarLink) {
-        this.avatarLink = avatarLink;
-    }
-
-    @SuppressWarnings("unused")
-    public String getPasswordHash() {
-        return passwordHash;
-    }
-
-    @SuppressWarnings("unused")
-    public void setPasswordHash(String passwordHash) {
-        this.passwordHash = passwordHash;
+        COLLECTION.put(id, this);
     }
 
     public void comparePasswords(String otherPassword) throws InvalidCredentialsException {

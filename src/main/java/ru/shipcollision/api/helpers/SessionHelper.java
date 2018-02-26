@@ -1,7 +1,7 @@
 package ru.shipcollision.api.helpers;
 
-import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.exceptions.ForbiddenException;
+import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
@@ -28,7 +28,7 @@ public class SessionHelper {
      * @param user Пользователь, для которого будет открыта сессия.
      */
     public void openSession(User user) {
-        session.setAttribute(ATTRIBUTE_NAME, user.getId());
+        session.setAttribute(ATTRIBUTE_NAME, user.id);
     }
 
     /**
