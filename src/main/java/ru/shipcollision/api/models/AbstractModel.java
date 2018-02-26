@@ -10,20 +10,20 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Базовый класс моделей.
  */
+@SuppressWarnings({"PublicField", "unused"})
 public abstract class AbstractModel {
 
     /**
-     * Генератор ID.
+     * Потокобезопасный генератор ID.
      */
     private static final AtomicLong ID_GENERATOR = new AtomicLong();
 
-    private @NotNull Long id;
+    public @NotNull Long id;
 
     public AbstractModel() {
         this.id = ID_GENERATOR.getAndIncrement();
     }
 
-    @SuppressWarnings("unused")
     protected static AbstractModel findById(Map<Long, AbstractModel> collection, Long id) throws NotFoundException {
         if (collection.containsKey(id)) {
             return collection.get(id);
@@ -46,16 +46,5 @@ public abstract class AbstractModel {
     @Override
     public int hashCode() {
         return id.intValue();
-    }
-
-    // --Commented out by Inspection (26/02/2018, 20:37):public abstract void save();
-
-    public Long getId() {
-        return id;
-    }
-
-    @SuppressWarnings("unused")
-    public void setId(Long id) {
-        this.id = id;
     }
 }
