@@ -13,6 +13,6 @@ public class ApiExceptionHandler {
 
     @ExceptionHandler(ApiException.class)
     public ResponseEntity handleApiException(ApiException error) {
-        return ResponseEntity.status(error.getHttpStatus()).body(error.getExceptionMessage());
+        return ResponseEntity.status(error.getHttpStatus()).body(error.getResponse());
     }
 }

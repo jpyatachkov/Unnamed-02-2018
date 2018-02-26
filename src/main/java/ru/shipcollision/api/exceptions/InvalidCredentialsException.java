@@ -7,14 +7,6 @@ import javax.validation.constraints.NotNull;
  */
 public class InvalidCredentialsException extends ApiException {
 
-    public InvalidCredentialsException() {
-    }
-
-    @SuppressWarnings("unused")
-    public InvalidCredentialsException(@NotNull String errorMessage) {
-        super(errorMessage);
-    }
-
     @Override
     protected String getDefaultErrorMessage() {
         return "Invalid login or password";
