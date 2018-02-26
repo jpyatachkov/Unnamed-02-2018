@@ -19,7 +19,6 @@ import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.List;
 
 /**
  * Контроллер API пользователей.
@@ -34,14 +33,13 @@ public class UsersController {
                                           HttpServletRequest request) throws PaginationException {
         offset = (offset == null) ? Paginator.DEFAULT_OFFSET : offset;
         limit = (limit == null) ? Paginator.DEFAULT_LIMIT : limit;
-        final List<AbstractModel> usersByRating = User.getByRating(false);
-        final Paginator<AbstractModel> paginator = new Paginator<>(usersByRating, offset, limit);
-        final ScoreboardResponseEntity response = new ScoreboardResponseEntity(
+
+        final Paginator<AbstractModel> paginator = new Paginator<>(User.getByRating(false), offset, limit);
+        return ResponseEntity.ok().body(new ScoreboardResponseEntity(
                 paginator.paginate(),
                 paginator.resolvePrevPageLink(request.getRequestURI()),
                 paginator.resolveNextPageLink(request.getRequestURI())
-        );
-        return ResponseEntity.ok().body(response);
+        ));
     }
 
     /**
@@ -53,17 +51,21 @@ public class UsersController {
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity doPostUser(HttpServletRequest request,
                                      @Valid @RequestBody UserRequestEntity requestBody,
-                                     HttpSession session) throws URISyntaxException, ApiException {
+                                     HttpSession session) throws ApiException {
         try {
             final User user = User.fromUserRequestEntity(requestBody);
             user.save();
-            final SessionHelper sessionHelper = new SessionHelper(session);
-            sessionHelper.openSession(user);
-            final URI location = new URI(request.getRequestURI() + String.format("/%d/", user.getId()));
-            final ApiMessageResponseEntity response = new ApiMessageResponseEntity(
+
+            new SessionHelper(session).openSession(user);
+
+            final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.getId()));
+            return ResponseEntity.created(location).body(new ApiMessageResponseEntity(
                     "User has been created successfully"
-            );
-            return ResponseEntity.created(location).body(response);
+            ));
+        } catch (URISyntaxException error) {
+            return ResponseEntity.ok().body(new ApiMessageResponseEntity(
+                    "User has been created successfully, no resource URI available"
+            ));
         } catch (ValidationException error) {
             throw new ApiException(error);
         }

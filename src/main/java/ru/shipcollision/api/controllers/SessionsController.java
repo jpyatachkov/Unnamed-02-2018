@@ -17,6 +17,9 @@ import ru.shipcollision.api.models.User;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
+/**
+ * Контроллер аутентификации и авторизации.
+ */
 @RestController
 public class SessionsController {
 
@@ -24,22 +27,23 @@ public class SessionsController {
     public ResponseEntity doSignin(@RequestBody SigninRequestEntity requestBody,
                                    HttpSession session) throws InvalidCredentialsException {
         final SessionHelper sessionHelper = new SessionHelper(session);
+
         final List<AbstractModel> foundUsers = User.findByEmail(requestBody.getEmail());
         if (foundUsers.isEmpty()) {
             throw new InvalidCredentialsException();
         }
+
         final User user = (User) foundUsers.get(0);
         user.comparePasswords(requestBody.getPassword());
+
         sessionHelper.openSession(user);
-        final ApiMessageResponseEntity response = new ApiMessageResponseEntity("You are signed in");
-        return ResponseEntity.ok().body(response);
+
+        return ResponseEntity.ok().body(new ApiMessageResponseEntity("You are signed in"));
     }
 
     @RequestMapping(path = "/signout", method = RequestMethod.DELETE)
     public ResponseEntity doSignout(HttpSession session) throws ForbiddenException, NotFoundException {
-        final SessionHelper sessionHelper = new SessionHelper(session);
-        sessionHelper.closeSession();
-        final ApiMessageResponseEntity response = new ApiMessageResponseEntity("You are signed out");
-        return ResponseEntity.ok().body(response);
+        new SessionHelper(session).closeSession();
+        return ResponseEntity.ok().body(new ApiMessageResponseEntity("You are signed out"));
     }
 }

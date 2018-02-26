@@ -10,6 +10,9 @@ import ru.shipcollision.api.helpers.SessionHelper;
 
 import javax.servlet.http.HttpSession;
 
+/**
+ * Контроллер для доступа к методам текущего пользователя.
+ */
 @RestController
 @RequestMapping(path = "/me")
 public class MeController {
