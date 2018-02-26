@@ -1,7 +1,9 @@
 language: java
 jdk:
   - oraclejdk9
-
+branches:
+  only:
+    -dev
 
 #deploy:
 #  provider: heroku
