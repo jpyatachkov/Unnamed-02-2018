@@ -94,4 +94,7 @@ fabric.properties
 # macOS files
 .DS_Store
 
+# какая-то непонятная еборга
+.project
+bin/*
 

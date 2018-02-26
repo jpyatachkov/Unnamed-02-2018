@@ -29,6 +29,6 @@ public class UnauthorizedException extends ApiException {
 
     @Override
     protected HttpStatus getDefaultHttpStatus() {
-        return HttpStatus.UNAUTHORIZED;
+        return HttpStatus.FORBIDDEN;
     }
 }
