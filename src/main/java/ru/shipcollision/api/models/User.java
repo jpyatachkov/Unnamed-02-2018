@@ -21,7 +21,7 @@ public class User extends AbstractModel {
     /**
      * Колдекция для хранения пользователей. Временная заглушка.
      */
-    private static Map<Long, AbstractModel> collection = new HashMap<>() {
+    private static final Map<Long, AbstractModel> COLLECTION = new HashMap<>() {
         {
             final Random random = new Random();
             final int bound = 100500;
@@ -30,14 +30,14 @@ public class User extends AbstractModel {
             ai.setRank(random.nextInt(bound));
             final User ck = new User("cvkucherov", "cvkucherov@yandex.ru", "pswd");
             ck.setRank(random.nextInt(bound));
-            final User gg = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
-            gg.setRank(random.nextInt(bound));
+            final User ga = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
+            ga.setRank(random.nextInt(bound));
             final User ov = new User("venger", "farir1408@gmail.com", "pswd");
             ov.setRank(random.nextInt(bound));
 
             put(ai.getId(), ai);
             put(ck.getId(), ck);
-            put(gg.getId(), gg);
+            put(ga.getId(), ga);
             put(ov.getId(), ov);
         }
     };
@@ -85,7 +85,7 @@ public class User extends AbstractModel {
     }
 
     public static List<AbstractModel> getByRating(boolean ascending) {
-        final List<AbstractModel> result = new ArrayList<>(collection.values());
+        final List<AbstractModel> result = new ArrayList<>(COLLECTION.values());
         result.sort((AbstractModel o1, AbstractModel o2) -> {
             final User u1 = (User) o1;
             final User u2 = (User) o2;
@@ -96,12 +96,12 @@ public class User extends AbstractModel {
 
     @SuppressWarnings("unused")
     public static User findById(Long id) throws NotFoundException {
-        return (User) findById(collection, id);
+        return (User) findById(COLLECTION, id);
     }
 
     public static List<AbstractModel> findByEmail(String email) {
         final ArrayList<AbstractModel> result = new ArrayList<>();
-        for (Map.Entry<Long, AbstractModel> entry : collection.entrySet()) {
+        for (Map.Entry<Long, AbstractModel> entry : COLLECTION.entrySet()) {
             final User user = (User) entry.getValue();
             if (user.email.equals(email)) {
                 result.add(user);
@@ -110,9 +110,8 @@ public class User extends AbstractModel {
         return result;
     }
 
-    @Override
     public void save() {
-        collection.put(getId(), this);
+        COLLECTION.put(getId(), this);
     }
 
     @SuppressWarnings("unused")

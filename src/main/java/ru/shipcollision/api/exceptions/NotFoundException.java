@@ -6,10 +6,6 @@ import javax.validation.constraints.NotNull;
 
 public class NotFoundException extends ApiException {
 
-    public NotFoundException() {
-        super();
-    }
-
     public NotFoundException(@NotNull String errorMessage) {
         super(errorMessage);
     }

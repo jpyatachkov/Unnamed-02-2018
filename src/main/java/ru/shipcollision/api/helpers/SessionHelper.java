@@ -2,11 +2,9 @@ package ru.shipcollision.api.helpers;
 
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.exceptions.UnauthorizedException;
-import ru.shipcollision.api.models.AbstractModel;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 
 /**
  * Хелпер для работы с сессиями.
@@ -18,7 +16,7 @@ public class SessionHelper {
      */
     public static final String ATTRIBUTE_NAME = "JSESSIONID";
 
-    private HttpSession session;
+    private final HttpSession session;
 
     public SessionHelper(HttpSession session) {
         this.session = session;

@@ -1,0 +1,8 @@
+{
+  "properties": [
+    {
+      "name": "ru.shipcollision.api.access-control-allow-origin",
+      "type": "java.lang.String",
+      "description": "Description for ru.shipcollision.api.access-control-allow-origin."
+  }
+] }

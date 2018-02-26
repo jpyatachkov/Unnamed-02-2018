@@ -13,12 +13,12 @@ public class ApiException extends Exception {
     /**
      * Сообщение, которое будет показано клиенту.
      */
-    private ExceptionMessage exceptionMessage;
+    private final ExceptionMessage exceptionMessage;
 
     /**
      * HTTP-статус ответа.
      */
-    private HttpStatus httpStatus;
+    private final HttpStatus httpStatus;
 
     public ApiException() {
         super();

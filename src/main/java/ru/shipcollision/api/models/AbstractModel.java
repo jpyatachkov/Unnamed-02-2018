@@ -3,8 +3,6 @@ package ru.shipcollision.api.models;
 import ru.shipcollision.api.exceptions.NotFoundException;
 
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
@@ -38,7 +36,7 @@ public abstract class AbstractModel {
         if (this == object) {
             return true;
         }
-        if (object == null || getClass() != object.getClass()) {
+        if (object == null || !Objects.equals(getClass(), object.getClass())) {
             return false;
         }
         final AbstractModel other = (AbstractModel) object;
@@ -50,7 +48,7 @@ public abstract class AbstractModel {
         return id.intValue();
     }
 
-    public abstract void save();
+    // --Commented out by Inspection (26/02/2018, 20:37):public abstract void save();
 
     public Long getId() {
         return id;

@@ -28,17 +28,17 @@ public class Paginator<T> {
     /**
      * Объекты для пагинации.
      */
-    private List<T> objects;
+    private final List<T> objects;
 
     /**
      * Текущий номер страницы.
      */
-    private int offset;
+    private final int offset;
 
     /**
      * Текущее количество элементов на странице.
      */
-    private int limit;
+    private final int limit;
 
     public Paginator(List<T> objects, int offset, int limit) {
         this.objects = objects;

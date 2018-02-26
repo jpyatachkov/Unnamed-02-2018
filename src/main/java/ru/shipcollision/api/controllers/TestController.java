@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Контроллер проверки доступности API.
  */
@@ -12,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
 
     /**
-     * Если этот метод отдает 200 OK, сервис доступен.
+     * Если этот метод отдает OK - сервис доступен.
      */
     @RequestMapping(method = RequestMethod.HEAD)
-    public void doHead() {
-
+    public void doHead(HttpServletResponse response) {
+        response.setHeader("Status", "OK");
     }
 }
