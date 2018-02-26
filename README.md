@@ -1,5 +1,7 @@
 # Игра "Ship Collision"
 
+![](https://travis-ci.org/jpyatachkov/Unnamed-02-2018.svg?branch=master)
+
 Реализация бекенда игры "SHIP COLLISION" - морского боя с кастомными правилами для курса "Углубленное программирование на Java".
 
 ## Содержание
