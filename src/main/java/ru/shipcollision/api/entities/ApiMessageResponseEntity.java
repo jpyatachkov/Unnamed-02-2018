@@ -8,25 +8,16 @@ import javax.validation.constraints.NotNull;
 /**
  * Ответ API об успешном окончании действия с API.
  */
+@SuppressWarnings("PublicField")
 public class ApiMessageResponseEntity {
 
     /**
      * Описание успешно выполненного действия.
      */
     @JsonProperty("message")
-    private @NotNull String message;
+    public @NotNull String message;
 
     public ApiMessageResponseEntity(@NotNull String message) {
-        this.message = message;
-    }
-
-    @SuppressWarnings("unused")
-    public String getMessage() {
-        return message;
-    }
-
-    @SuppressWarnings("unused")
-    public void setMessage(@NotNull String message) {
         this.message = message;
     }
 }
