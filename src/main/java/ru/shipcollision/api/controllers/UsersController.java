@@ -71,10 +71,6 @@ public class UsersController {
 
     @RequestMapping(path = "/{userId}", method = RequestMethod.GET)
     public ResponseEntity doGetUser(@PathVariable Integer userId) throws NotFoundException {
-        final List<AbstractModel> found = User.findById(userId.longValue());
-        if (found.isEmpty()) {
-            throw new NotFoundException(String.format("User with id %d not found", userId));
-        }
-        return ResponseEntity.ok().body(found.get(0));
+        return ResponseEntity.ok().body(User.findById(userId.longValue()));
     }
 }

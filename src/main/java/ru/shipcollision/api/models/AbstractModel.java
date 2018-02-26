@@ -1,5 +1,7 @@
 package ru.shipcollision.api.models;
 
+import ru.shipcollision.api.exceptions.NotFoundException;
+
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +26,11 @@ public abstract class AbstractModel {
     }
 
     @SuppressWarnings("unused")
-    protected static List<AbstractModel> findById(Map<Long, AbstractModel> collection, Long id) {
-        final List<AbstractModel> result = new ArrayList<>();
+    protected static AbstractModel findById(Map<Long, AbstractModel> collection, Long id) throws NotFoundException {
         if (collection.containsKey(id)) {
-            result.add(collection.get(id));
+            return collection.get(id);
         }
-        return result;
+        throw new NotFoundException(String.format("User with id %d not found", id));
     }
 
     @Override

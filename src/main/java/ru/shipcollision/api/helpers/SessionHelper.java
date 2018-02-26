@@ -1,5 +1,6 @@
 package ru.shipcollision.api.helpers;
 
+import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.exceptions.UnauthorizedException;
 import ru.shipcollision.api.models.AbstractModel;
 import ru.shipcollision.api.models.User;
@@ -37,9 +38,9 @@ public class SessionHelper {
      *
      * @return Проверяет, установлена ли кука.
      */
-    public boolean sessionHasUser() {
+    public boolean sessionHasUser() throws NotFoundException {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
-        return userId != null && User.findById((Long) userId).size() == 1;
+        return userId != null && User.findById((Long) userId) != null;
     }
 
     /**
@@ -48,19 +49,12 @@ public class SessionHelper {
      * @return Пользователь открытой сессии.
      * @throws UnauthorizedException Возбуждается в случае, если пользователь сессии не установлен.
      */
-    public User getCurrentUser() throws UnauthorizedException {
+    public User getCurrentUser() throws UnauthorizedException, NotFoundException {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
         if (userId == null) {
             throw new UnauthorizedException();
         }
-        final List<AbstractModel> foundUsers = User.findById((Long) userId);
-        if (foundUsers.isEmpty()) {
-            throw new UnauthorizedException();
-        } else if (foundUsers.size() > 1) {
-            throw new UnauthorizedException("Invalid cookie. Try to sign in once more");
-        } else {
-            return (User) foundUsers.get(0);
-        }
+        return User.findById((Long) userId);
     }
 
     /**
@@ -68,7 +62,7 @@ public class SessionHelper {
      *
      * @throws UnauthorizedException Возбуждается в случае, если пользователь сессии не установлен.
      */
-    public void closeSession() throws UnauthorizedException {
+    public void closeSession() throws UnauthorizedException, NotFoundException {
         if (!sessionHasUser()) {
             throw new UnauthorizedException();
         }
