@@ -16,7 +16,6 @@ public class MeController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity doGetMe(HttpSession session) throws ForbiddenException, NotFoundException {
-        final SessionHelper sessionHelper = new SessionHelper(session);
-        return ResponseEntity.ok().body(sessionHelper.getCurrentUser());
+        return ResponseEntity.ok().body(new SessionHelper(session).getCurrentUser());
     }
 }
