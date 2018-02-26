@@ -9,7 +9,7 @@ import javax.validation.constraints.NotEmpty;
 /**
  * Запрос на создание пользователя.
  */
-@SuppressWarnings({"PublicField", "unused"})
+@SuppressWarnings("PublicField")
 public class UserRequestEntity {
 
     @JsonProperty("nickname")

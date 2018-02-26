@@ -75,6 +75,8 @@
                 <configuration>
                     <configLocation>park_checks.xml</configLocation>
                     <consoleOutput>true</consoleOutput>
+                    <suppressionsLocation>checkstyle-suppressions.xml</suppressionsLocation>
+                    <suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
                 </configuration>
                 <executions>
                     <execution>
