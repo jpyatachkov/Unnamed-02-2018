@@ -1,12 +1,11 @@
 language: java
 jdk:
-  - oraclejdk9
+- oraclejdk9
 branches:
   only:
-    -dev
-
+  - master
+  - dev
 #deploy:
 #  provider: heroku
 #  api_key:
 #    secure: "API KEY"
-
