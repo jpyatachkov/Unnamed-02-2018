@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.Nullable;
 import ru.shipcollision.api.entities.UserRequestEntity;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
+import ru.shipcollision.api.exceptions.NotFoundException;
 
 import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
@@ -29,14 +30,14 @@ public class User extends AbstractModel {
             ai.setRank(random.nextInt(bound));
             final User ck = new User("cvkucherov", "cvkucherov@yandex.ru", "pswd");
             ck.setRank(random.nextInt(bound));
-            final User ge = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
-            ge.setRank(random.nextInt(bound));
+            final User gg = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
+            gg.setRank(random.nextInt(bound));
             final User ov = new User("venger", "farir1408@gmail.com", "pswd");
             ov.setRank(random.nextInt(bound));
 
             put(ai.getId(), ai);
             put(ck.getId(), ck);
-            put(ge.getId(), ge);
+            put(gg.getId(), gg);
             put(ov.getId(), ov);
         }
     };
@@ -94,8 +95,8 @@ public class User extends AbstractModel {
     }
 
     @SuppressWarnings("unused")
-    public static List<AbstractModel> findById(Long id) {
-        return findById(collection, id);
+    public static User findById(Long id) throws NotFoundException {
+        return (User) findById(collection, id);
     }
 
     public static List<AbstractModel> findByEmail(String email) {
