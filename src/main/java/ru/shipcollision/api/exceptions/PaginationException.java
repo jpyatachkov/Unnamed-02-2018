@@ -6,20 +6,10 @@ package ru.shipcollision.api.exceptions;
 public class PaginationException extends ApiException {
 
     public PaginationException() {
-        super();
+        super("Invalid page number or elements limit");
     }
 
     public PaginationException(String errorMessage) {
         super(errorMessage);
-    }
-
-    @Override
-    protected String getDefaultErrorMessage() {
-        return "Invalid page number or elements limit";
-    }
-
-    @Override
-    protected String getDefaultErrorCode() {
-        return "pagination_error";
     }
 }
