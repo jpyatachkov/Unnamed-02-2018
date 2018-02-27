@@ -27,4 +27,4 @@
 
 ## API
 
-Спецификация API доступна на [SwaggerHub](https://app.swaggerhub.com/apis/jpyatachkov/ship-collision/1.0.0).
+Спецификация API доступна на [SwaggerHub](https://app.swaggerhub.com/apis/jpyatachkov/ship-collision/).

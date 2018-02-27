@@ -7,7 +7,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 /**
- * Запрос на создание пользователя.
+ * Запрос на создание и полное обновление пользователя.
  */
 @SuppressWarnings("PublicField")
 public class UserRequestEntity {
