@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.ApiMessage;

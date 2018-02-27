@@ -1,8 +1,6 @@
 package ru.shipcollision.api.services;
 
 import ru.shipcollision.api.controllers.MeController;
-import ru.shipcollision.api.exceptions.InvalidParamsException;
-import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 
 import java.util.List;

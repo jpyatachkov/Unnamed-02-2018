@@ -2,7 +2,6 @@ package ru.shipcollision.api.services;
 
 import org.springframework.stereotype.Service;
 import ru.shipcollision.api.exceptions.ForbiddenException;
-import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
@@ -47,6 +46,7 @@ public class SessionService {
 
     /**
      * Возвращает текущего пользователя.
+     *
      * @return Пользователь открытой сессии.
      */
     public User getCurrentUser() {
