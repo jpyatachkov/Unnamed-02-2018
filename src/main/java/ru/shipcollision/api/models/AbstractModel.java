@@ -24,13 +24,6 @@ public abstract class AbstractModel {
         this.id = ID_GENERATOR.getAndIncrement();
     }
 
-    protected static AbstractModel findById(Map<Long, AbstractModel> collection, Long id) throws NotFoundException {
-        if (collection.containsKey(id)) {
-            return collection.get(id);
-        }
-        throw new NotFoundException(String.format("User with id %d not found", id));
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object) {
