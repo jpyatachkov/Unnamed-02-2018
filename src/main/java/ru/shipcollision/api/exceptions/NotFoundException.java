@@ -1,7 +1,9 @@
 package ru.shipcollision.api.exceptions;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.ResponseStatus;
 
+@ResponseStatus(HttpStatus.NOT_FOUND)
 public class NotFoundException extends ApiException {
 
     public NotFoundException(String errorMessage) {
@@ -16,10 +18,5 @@ public class NotFoundException extends ApiException {
     @Override
     protected String getDefaultErrorCode() {
         return "not_found";
-    }
-
-    @Override
-    protected HttpStatus getDefaultHttpStatus() {
-        return HttpStatus.NOT_FOUND;
     }
 }
