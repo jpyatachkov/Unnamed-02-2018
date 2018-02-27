@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.Nullable;
+import ru.shipcollision.api.entities.UserPartialRequestEntity;
 import ru.shipcollision.api.entities.UserRequestEntity;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
+import ru.shipcollision.api.exceptions.PasswordConfirmationException;
 
-import javax.validation.ValidationException;
 import javax.validation.constraints.NotNull;
 import java.util.*;
 
@@ -69,9 +70,9 @@ public class User extends AbstractModel {
         this.passwordHash = passwordHash;
     }
 
-    public static User fromUserRequestEntity(UserRequestEntity request) throws ValidationException {
+    public static User fromUserRequestEntity(UserRequestEntity request) throws PasswordConfirmationException {
         if (!request.passwordConfirmed()) {
-            throw new ValidationException("Password confirmation failed");
+            throw new PasswordConfirmationException();
         }
 
         final User user = new User();
@@ -110,8 +111,35 @@ public class User extends AbstractModel {
         return result;
     }
 
+    public void update(UserRequestEntity userFields) throws PasswordConfirmationException {
+        nickName = userFields.nickName;
+        email = userFields.email;
+        if (userFields.passwordConfirmed()) {
+            passwordHash = userFields.password;
+        } else {
+            throw new PasswordConfirmationException();
+        }
+    }
+
+    public void partialUpdate(UserPartialRequestEntity userFields) throws PasswordConfirmationException {
+        nickName = (userFields.nickName != null) ? userFields.nickName : nickName;
+        email = (userFields.email != null) ? userFields.email : email;
+
+        if (userFields.hasPassword()) {
+            if (userFields.passwordConfirmed()) {
+                passwordHash = userFields.password;
+            } else {
+                throw new PasswordConfirmationException();
+            }
+        }
+    }
+
     public void save() {
         COLLECTION.put(id, this);
+    }
+
+    public void delete() {
+        COLLECTION.remove(id);
     }
 
     public void comparePasswords(String otherPassword) throws InvalidCredentialsException {
