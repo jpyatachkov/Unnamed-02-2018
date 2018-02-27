@@ -116,7 +116,7 @@ public class User extends AbstractModel {
     public void partialUpdate(UserPartialRequestEntity userFields) {
         nickName = (userFields.nickName != null) ? userFields.nickName : nickName;
         email = (userFields.email != null) ? userFields.email : email;
-        passwordHash = (userFields.password != null) ? userFields.password: passwordHash;
+        passwordHash = (userFields.password != null) ? userFields.password : passwordHash;
     }
 
     public void save() {
