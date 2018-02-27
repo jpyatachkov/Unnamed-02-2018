@@ -10,13 +10,12 @@ import javax.servlet.http.HttpServletResponse;
  * Контроллер проверки доступности API.
  */
 @RestController
-@RequestMapping(path = "/test")
-public class TestController {
+public class ToolController {
 
     /**
      * Если этот метод отдает OK - сервис доступен.
      */
-    @RequestMapping(method = RequestMethod.HEAD)
+    @RequestMapping(path = "/ping", method = RequestMethod.HEAD)
     public void doHead(HttpServletResponse response) {
         response.setHeader("Status", "OK");
     }
