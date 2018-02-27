@@ -20,5 +20,5 @@ public class UserRequestEntity {
 
     @JsonProperty("password")
     public @Length(min = 6, message = "Password must be at least 6 characters") @NotEmpty String password;
-    
+
 }
