@@ -85,6 +85,7 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 # VisualStudioCode template
+.vscode/
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -98,3 +99,4 @@ fabric.properties
 .project
 bin/*
 .classpath
+api.iml
