@@ -109,10 +109,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void partialUpdate(User user, MeController.PartialUpdateRequest requestBody) {
-        user.nickName = (requestBody.nickName != null) ? requestBody.nickName : user.nickName;
-        user.email = (requestBody.email != null) ? requestBody.email : user.email;
-        user.passwordHash = (requestBody.password != null) ? requestBody.password : user.passwordHash;
-        save(user);
+        final User tmpUser = new User();
+        tmpUser.id = user.id;
+
+        tmpUser.nickName = (requestBody.nickName != null) ? requestBody.nickName : user.nickName;
+        tmpUser.email = (requestBody.email != null) ? requestBody.email : user.email;
+        tmpUser.passwordHash = (requestBody.password != null) ? requestBody.password : user.passwordHash;
+
+        save(tmpUser);
     }
 
     @Override
