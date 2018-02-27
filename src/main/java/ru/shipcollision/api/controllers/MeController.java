@@ -10,7 +10,6 @@ import ru.shipcollision.api.entities.UserPartialRequestEntity;
 import ru.shipcollision.api.entities.UserRequestEntity;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.NotFoundException;
-import ru.shipcollision.api.exceptions.PasswordConfirmationException;
 import ru.shipcollision.api.helpers.SessionHelper;
 import ru.shipcollision.api.models.User;
 
@@ -32,8 +31,7 @@ public class MeController {
     @RequestMapping(method = RequestMethod.PUT)
     public ResponseEntity doPutMe(@RequestBody @Valid UserRequestEntity updateUserRequest,
                                   HttpSession session) throws ForbiddenException,
-            NotFoundException,
-            PasswordConfirmationException {
+            NotFoundException {
         final User currentUser = new SessionHelper(session).getCurrentUser();
         currentUser.update(updateUserRequest);
         currentUser.save();
@@ -43,8 +41,7 @@ public class MeController {
     @RequestMapping(method = RequestMethod.PATCH)
     public ResponseEntity doPathMe(@RequestBody @Valid UserPartialRequestEntity updateUserRequest,
                                    HttpSession session) throws ForbiddenException,
-            NotFoundException,
-            PasswordConfirmationException {
+            NotFoundException {
         final User currentUser = new SessionHelper(session).getCurrentUser();
         currentUser.partialUpdate(updateUserRequest);
         currentUser.save();

@@ -8,7 +8,6 @@ import ru.shipcollision.api.entities.ScoreboardResponseEntity;
 import ru.shipcollision.api.entities.UserRequestEntity;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.exceptions.PaginationException;
-import ru.shipcollision.api.exceptions.PasswordConfirmationException;
 import ru.shipcollision.api.helpers.Paginator;
 import ru.shipcollision.api.helpers.SessionHelper;
 import ru.shipcollision.api.models.AbstractModel;
@@ -50,7 +49,7 @@ public class UsersController {
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity doPostUser(HttpServletRequest request,
                                      @Valid @RequestBody UserRequestEntity requestBody,
-                                     HttpSession session) throws PasswordConfirmationException {
+                                     HttpSession session) {
         try {
             final User user = User.fromUserRequestEntity(requestBody);
             user.save();

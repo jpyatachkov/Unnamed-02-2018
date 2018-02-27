@@ -8,7 +8,6 @@ import ru.shipcollision.api.entities.UserPartialRequestEntity;
 import ru.shipcollision.api.entities.UserRequestEntity;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
-import ru.shipcollision.api.exceptions.PasswordConfirmationException;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
@@ -70,10 +69,7 @@ public class User extends AbstractModel {
         this.passwordHash = passwordHash;
     }
 
-    public static User fromUserRequestEntity(UserRequestEntity request) throws PasswordConfirmationException {
-        if (!request.passwordConfirmed()) {
-            throw new PasswordConfirmationException();
-        }
+    public static User fromUserRequestEntity(UserRequestEntity request) {
 
         final User user = new User();
         user.nickName = request.nickName;
@@ -111,27 +107,16 @@ public class User extends AbstractModel {
         return result;
     }
 
-    public void update(UserRequestEntity userFields) throws PasswordConfirmationException {
+    public void update(UserRequestEntity userFields) {
         nickName = userFields.nickName;
         email = userFields.email;
-        if (userFields.passwordConfirmed()) {
-            passwordHash = userFields.password;
-        } else {
-            throw new PasswordConfirmationException();
-        }
+        passwordHash = userFields.password;
     }
 
-    public void partialUpdate(UserPartialRequestEntity userFields) throws PasswordConfirmationException {
+    public void partialUpdate(UserPartialRequestEntity userFields) {
         nickName = (userFields.nickName != null) ? userFields.nickName : nickName;
         email = (userFields.email != null) ? userFields.email : email;
-
-        if (userFields.hasPassword()) {
-            if (userFields.passwordConfirmed()) {
-                passwordHash = userFields.password;
-            } else {
-                throw new PasswordConfirmationException();
-            }
-        }
+        passwordHash = (userFields.password != null) ? userFields.password: passwordHash;
     }
 
     public void save() {
