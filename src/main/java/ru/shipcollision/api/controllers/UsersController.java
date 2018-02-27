@@ -47,7 +47,7 @@ public class UsersController {
     @GetMapping(path = "/scoreboard")
     public ResponseEntity doGetScoreboard(@RequestParam(required = false) Integer offset,
                                           @RequestParam(required = false) Integer limit,
-                                          HttpServletRequest request) throws PaginationException {
+                                          HttpServletRequest request) {
         paginationService.setOffset(offset);
         paginationService.setLimit(limit);
         paginationService.setObjects(userService.getByRating(false));
@@ -67,7 +67,7 @@ public class UsersController {
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doPostUser(HttpServletRequest request,
                                      @Valid @RequestBody User user,
-                                     HttpSession session) throws InvalidParamsException {
+                                     HttpSession session) {
         try {
             userService.save(user);
             sessionService.setSession(session);
@@ -82,7 +82,7 @@ public class UsersController {
     }
 
     @GetMapping(path = "/{userId}")
-    public ResponseEntity doGetUser(@PathVariable Integer userId) throws NotFoundException {
+    public ResponseEntity doGetUser(@PathVariable Integer userId) {
         return ResponseEntity.ok().body(userService.findById(userId.longValue()));
     }
 

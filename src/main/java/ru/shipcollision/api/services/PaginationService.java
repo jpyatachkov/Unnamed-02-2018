@@ -59,7 +59,7 @@ public class PaginationService<T> {
      *
      * @return Страница с элементами или пустая коллекция.
      */
-    public List<T> paginate() throws PaginationException {
+    public List<T> paginate() {
         if (objects.isEmpty()) {
             return objects;
         }

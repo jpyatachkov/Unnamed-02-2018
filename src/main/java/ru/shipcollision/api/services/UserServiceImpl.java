@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findById(Long id) throws NotFoundException {
+    public User findById(Long id) {
         if (hasId(id)) {
             return ALL_USERS.get(id);
         }
@@ -74,7 +74,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEmail(String email) throws NotFoundException {
+    public User findByEmail(String email) {
         for (Map.Entry<Long, User> entry : ALL_USERS.entrySet()) {
             final User user = entry.getValue();
             if (user.email.equals(email)) {
@@ -85,7 +85,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void save(User user) throws InvalidParamsException {
+    public void save(User user) {
         if (!hasUser(user) && (hasNickName(user.nickName) || hasEmail(user.email))) {
             throw new InvalidParamsException("Cannot create user: fields nickname and email should be unique");
         }
@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void partialUpdate(User user, MeController.PartialUpdateRequest requestBody) throws InvalidParamsException {
+    public void partialUpdate(User user, MeController.PartialUpdateRequest requestBody) {
         user.nickName = (requestBody.nickName != null) ? requestBody.nickName : user.nickName;
         user.email = (requestBody.email != null) ? requestBody.email : user.email;
         user.passwordHash = (requestBody.password != null) ? requestBody.password : user.passwordHash;
@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void update(User user, MeController.CreateOrFullUpdateRequest requestBody) throws InvalidParamsException {
+    public void update(User user, MeController.CreateOrFullUpdateRequest requestBody) {
         user.nickName = requestBody.nickName;
         user.email = requestBody.email;
         user.passwordHash = requestBody.password;

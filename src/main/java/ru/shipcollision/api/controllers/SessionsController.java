@@ -34,7 +34,7 @@ public class SessionsController {
     @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @RequestMapping(path = "/signin", method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity doSignin(@RequestBody SigninRequest signinRequest,
-                                   HttpSession session) throws InvalidCredentialsException {
+                                   HttpSession session) {
         sessionService.setSession(session);
 
         final User user;
@@ -52,7 +52,7 @@ public class SessionsController {
     }
 
     @DeleteMapping(path = "/signout")
-    public ResponseEntity doSignout(HttpSession session) throws ForbiddenException, NotFoundException {
+    public ResponseEntity doSignout(HttpSession session) {
         sessionService.setSession(session);
         sessionService.closeSession();
         return ResponseEntity.ok().body(new ApiMessage("You are signed out"));

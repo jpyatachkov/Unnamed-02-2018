@@ -40,18 +40,16 @@ public class SessionService {
      *
      * @return Проверяет, установлена ли кука.
      */
-    public boolean sessionHasUser() throws NotFoundException {
+    public boolean sessionHasUser() {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
         return userId != null && userService.findById((Long) userId) != null;
     }
 
     /**
      * Возвращает текущего пользователя.
-     *
      * @return Пользователь открытой сессии.
-     * @throws ForbiddenException Возбуждается в случае, если пользователь сессии не установлен.
      */
-    public User getCurrentUser() throws ForbiddenException, NotFoundException {
+    public User getCurrentUser() {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
         if (userId == null) {
             throw new ForbiddenException();
@@ -61,10 +59,8 @@ public class SessionService {
 
     /**
      * Закрывает сессию для текущего пользователя.
-     *
-     * @throws ForbiddenException Возбуждается в случае, если пользователь сессии не установлен.
      */
-    public void closeSession() throws ForbiddenException, NotFoundException {
+    public void closeSession() {
         if (!sessionHasUser()) {
             throw new ForbiddenException();
         }

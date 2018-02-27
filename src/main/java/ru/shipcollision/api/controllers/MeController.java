@@ -35,16 +35,14 @@ public class MeController {
     }
 
     @GetMapping
-    public ResponseEntity doGetMe(HttpSession session) throws ForbiddenException, NotFoundException {
+    public ResponseEntity doGetMe(HttpSession session) {
         sessionService.setSession(session);
         return ResponseEntity.ok().body(sessionService.getCurrentUser());
     }
 
     @PutMapping
     public ResponseEntity doPutMe(@RequestBody @Valid CreateOrFullUpdateRequest updateRequest,
-                                  HttpSession session) throws ForbiddenException,
-            NotFoundException,
-            InvalidParamsException {
+                                  HttpSession session) {
         sessionService.setSession(session);
         final User currentUser = sessionService.getCurrentUser();
         userService.update(currentUser, updateRequest);
@@ -53,9 +51,7 @@ public class MeController {
 
     @PatchMapping
     public ResponseEntity doPathMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
-                                   HttpSession session) throws ForbiddenException,
-            NotFoundException,
-            InvalidParamsException {
+                                   HttpSession session) {
         sessionService.setSession(session);
         final User currentUser = sessionService.getCurrentUser();
         userService.partialUpdate(currentUser, updateRequest);
@@ -63,7 +59,7 @@ public class MeController {
     }
 
     @DeleteMapping
-    public ResponseEntity doDeleteMe(HttpSession session) throws ForbiddenException, NotFoundException {
+    public ResponseEntity doDeleteMe(HttpSession session) {
         sessionService.setSession(session);
         final User currentUser = sessionService.getCurrentUser();
         sessionService.closeSession();

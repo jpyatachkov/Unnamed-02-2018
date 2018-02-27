@@ -11,15 +11,15 @@ public interface UserService {
 
     List<User> getByRating(boolean ascending);
 
-    User findById(Long id) throws NotFoundException;
+    User findById(Long id);
 
-    User findByEmail(String email) throws NotFoundException;
+    User findByEmail(String email);
 
-    void save(User user) throws InvalidParamsException;
+    void save(User user);
 
     void delete(User user);
 
-    void partialUpdate(User user, MeController.PartialUpdateRequest requestBody) throws InvalidParamsException;
+    void partialUpdate(User user, MeController.PartialUpdateRequest requestBody);
 
-    void update(User user, MeController.CreateOrFullUpdateRequest requestBody) throws InvalidParamsException;
+    void update(User user, MeController.CreateOrFullUpdateRequest requestBody);
 }
