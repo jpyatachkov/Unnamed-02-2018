@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.shipcollision.api.entities.ApiMessageResponseEntity;
 import ru.shipcollision.api.entities.ScoreboardResponseEntity;
 import ru.shipcollision.api.entities.UserRequestEntity;
-import ru.shipcollision.api.exceptions.ApiException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.exceptions.PaginationException;
+import ru.shipcollision.api.exceptions.PasswordConfirmationException;
 import ru.shipcollision.api.helpers.Paginator;
 import ru.shipcollision.api.helpers.SessionHelper;
 import ru.shipcollision.api.models.AbstractModel;
@@ -16,7 +16,6 @@ import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import javax.validation.ValidationException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -51,7 +50,7 @@ public class UsersController {
     @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
     public ResponseEntity doPostUser(HttpServletRequest request,
                                      @Valid @RequestBody UserRequestEntity requestBody,
-                                     HttpSession session) throws ApiException {
+                                     HttpSession session) throws PasswordConfirmationException {
         try {
             final User user = User.fromUserRequestEntity(requestBody);
             user.save();
@@ -64,8 +63,6 @@ public class UsersController {
             return ResponseEntity.ok().body(new ApiMessageResponseEntity(
                     "User has been created successfully, no resource URI available"
             ));
-        } catch (ValidationException error) {
-            throw new ApiException(error);
         }
     }
 

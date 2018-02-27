@@ -4,11 +4,13 @@
         "-//Puppy Crawl//DTD Suppressions 1.0//EN"
         "http://www.puppycrawl.com/dtds/suppressions_1_0.dtd">
 
+<!--Подавляет испекции для контейнеров запроса и ответа, т.к. использование  открытых полей в них оправданно-->
 <suppressions>
     <suppress checks="VisibilityModifier" files="ApiErrorResponseEntiry.java"/>
     <suppress checks="VisibilityModifier" files="ApiMessageResponseEntity.java"/>
     <suppress checks="VisibilityModifier" files="ScoreboardResponseEntity.java"/>
     <suppress checks="VisibilityModifier" files="SigninRequestEntity.java"/>
+    <suppress checks="VisibilityModifier" files="UserPartialRequestEntity.java"/>
     <suppress checks="VisibilityModifier" files="UserRequestEntity.java"/>
     <suppress checks="VisibilityModifier" files="AbstractModel.java"/>
     <suppress checks="VisibilityModifier" files="User.java"/>

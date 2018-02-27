@@ -32,12 +32,6 @@ public class ApiException extends Exception {
         this.httpStatus = getDefaultHttpStatus();
     }
 
-    public ApiException(Exception exception) {
-        super(exception);
-        this.errorResponse = new ApiErrorResponseEntiry(exception.getMessage(), getDefaultErrorCode());
-        this.httpStatus = getDefaultHttpStatus();
-    }
-
     protected String getDefaultErrorMessage() {
         return "Error occured";
     }
