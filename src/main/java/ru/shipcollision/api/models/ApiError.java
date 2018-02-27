@@ -1,4 +1,4 @@
-package ru.shipcollision.api.entities;
+package ru.shipcollision.api.models;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -8,7 +8,7 @@ import javax.validation.constraints.NotNull;
  * Ответ API с описанием произошедшей ошибки.
  */
 @SuppressWarnings("PublicField")
-public class ApiErrorResponseEntiry {
+public class ApiError {
 
     /**
      * Описание ошибки.
@@ -22,7 +22,7 @@ public class ApiErrorResponseEntiry {
     @JsonProperty("code")
     public @NotNull String code;
 
-    public ApiErrorResponseEntiry(@NotNull String message, @NotNull String code) {
+    public ApiError(@NotNull String message, @NotNull String code) {
         this.message = message;
         this.code = code;
     }

@@ -1,21 +1,20 @@
 package ru.shipcollision.api.controllers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import ru.shipcollision.api.entities.ApiMessageResponseEntity;
-import ru.shipcollision.api.entities.SigninRequestEntity;
+import org.springframework.web.bind.annotation.*;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
-import ru.shipcollision.api.helpers.SessionHelper;
-import ru.shipcollision.api.models.AbstractModel;
+import ru.shipcollision.api.models.ApiMessage;
 import ru.shipcollision.api.models.User;
+import ru.shipcollision.api.services.SessionService;
+import ru.shipcollision.api.services.UserService;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Контроллер аутентификации и авторизации.
@@ -23,27 +22,52 @@ import java.util.List;
 @RestController
 public class SessionsController {
 
-    @RequestMapping(path = "/signin", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity doSignin(@RequestBody SigninRequestEntity requestBody,
-                                   HttpSession session) throws InvalidCredentialsException {
-        final SessionHelper sessionHelper = new SessionHelper(session);
+    private final SessionService sessionService;
 
-        final List<AbstractModel> foundUsers = User.findByEmail(requestBody.email);
-        if (foundUsers.isEmpty()) {
-            throw new InvalidCredentialsException();
-        }
+    private final UserService userService;
 
-        final User user = (User) foundUsers.get(0);
-        user.comparePasswords(requestBody.password);
-
-        sessionHelper.openSession(user);
-
-        return ResponseEntity.ok().body(new ApiMessageResponseEntity("You are signed in"));
+    public SessionsController(SessionService sessionService, UserService userService) {
+        this.sessionService = sessionService;
+        this.userService = userService;
     }
 
-    @RequestMapping(path = "/signout", method = RequestMethod.DELETE)
+    @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @RequestMapping(path = "/signin", method = RequestMethod.POST, consumes = "application/json")
+    public ResponseEntity doSignin(@RequestBody SigninRequest signinRequest,
+                                   HttpSession session) throws InvalidCredentialsException {
+        sessionService.setSession(session);
+
+        final User user;
+        try {
+            user = userService.findByEmail(signinRequest.email);
+        } catch (NotFoundException error) {
+            throw new InvalidCredentialsException(error);
+        }
+
+        if (user.passwordHash.equals(signinRequest.password)) {
+            sessionService.openSession(user);
+            return ResponseEntity.ok().body(new ApiMessage("You are signed in"));
+        }
+        throw new InvalidCredentialsException();
+    }
+
+    @DeleteMapping(path = "/signout")
     public ResponseEntity doSignout(HttpSession session) throws ForbiddenException, NotFoundException {
-        new SessionHelper(session).closeSession();
-        return ResponseEntity.ok().body(new ApiMessageResponseEntity("You are signed out"));
+        sessionService.setSession(session);
+        sessionService.closeSession();
+        return ResponseEntity.ok().body(new ApiMessage("You are signed out"));
+    }
+
+    /**
+     * Класс, представляющий запрос на аутентификацию.
+     */
+    @SuppressWarnings("PublicField")
+    public static final class SigninRequest {
+
+        @JsonProperty("email")
+        public @Email @NotEmpty String email;
+
+        @JsonProperty("password")
+        public @NotEmpty String password;
     }
 }

@@ -1,16 +1,11 @@
 package ru.shipcollision.api.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.lang.Nullable;
-import ru.shipcollision.api.entities.UserPartialRequestEntity;
-import ru.shipcollision.api.entities.UserRequestEntity;
-import ru.shipcollision.api.exceptions.InvalidCredentialsException;
-import ru.shipcollision.api.exceptions.NotFoundException;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.*;
 
 /**
  * Модель пользователя (игрока).
@@ -25,15 +20,15 @@ public class User extends AbstractModel {
     @JsonProperty("email")
     public @NotNull String email;
 
-    @JsonProperty("rank")
+    @JsonProperty(value = "rank", access = JsonProperty.Access.READ_ONLY)
     public int rank = 0;
 
-    @JsonProperty("avatarLink")
+    @JsonProperty(value = "avatarLink", access = JsonProperty.Access.READ_ONLY)
     @Nullable
     public String avatarLink;
 
-    @JsonIgnore
-    public @NotNull String passwordHash;
+    @JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
+    public @NotEmpty String passwordHash;
 
     public User() {
         super();

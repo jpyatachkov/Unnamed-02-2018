@@ -1,22 +1,27 @@
 package ru.shipcollision.api.controllers;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.catalina.servlet4preview.http.HttpServletRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import ru.shipcollision.api.entities.ApiMessageResponseEntity;
-import ru.shipcollision.api.entities.ScoreboardResponseEntity;
-import ru.shipcollision.api.entities.UserRequestEntity;
+import ru.shipcollision.api.exceptions.InvalidParamsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.exceptions.PaginationException;
-import ru.shipcollision.api.helpers.Paginator;
-import ru.shipcollision.api.helpers.SessionHelper;
-import ru.shipcollision.api.models.AbstractModel;
+import ru.shipcollision.api.models.ApiMessage;
 import ru.shipcollision.api.models.User;
+import ru.shipcollision.api.services.PaginationService;
+import ru.shipcollision.api.services.SessionService;
+import ru.shipcollision.api.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
 
 /**
  * Контроллер API пользователей.
@@ -25,18 +30,31 @@ import java.net.URISyntaxException;
 @RequestMapping(path = "/users")
 public class UsersController {
 
-    @RequestMapping(path = "/scoreboard", method = RequestMethod.GET)
+    private final PaginationService<User> paginationService;
+
+    private final SessionService sessionService;
+
+    private final UserService userService;
+
+    public UsersController(PaginationService<User> paginationService,
+                           SessionService sessionService,
+                           UserService userService) {
+        this.paginationService = paginationService;
+        this.sessionService = sessionService;
+        this.userService = userService;
+    }
+
+    @GetMapping(path = "/scoreboard")
     public ResponseEntity doGetScoreboard(@RequestParam(required = false) Integer offset,
                                           @RequestParam(required = false) Integer limit,
                                           HttpServletRequest request) throws PaginationException {
-        offset = (offset == null) ? Paginator.DEFAULT_OFFSET : offset;
-        limit = (limit == null) ? Paginator.DEFAULT_LIMIT : limit;
-
-        final Paginator<AbstractModel> paginator = new Paginator<>(User.getByRating(false), offset, limit);
-        return ResponseEntity.ok().body(new ScoreboardResponseEntity(
-                paginator.paginate(),
-                paginator.resolvePrevPageLink(request.getRequestURI()),
-                paginator.resolveNextPageLink(request.getRequestURI())
+        paginationService.setOffset(offset);
+        paginationService.setLimit(limit);
+        paginationService.setObjects(userService.getByRating(false));
+        return ResponseEntity.ok().body(new Scoreboard(
+                paginationService.paginate(),
+                paginationService.resolvePrevPageLink(request.getRequestURI()),
+                paginationService.resolveNextPageLink(request.getRequestURI())
         ));
     }
 
@@ -46,27 +64,47 @@ public class UsersController {
      * Можно создавать повторяющихся пользователей.
      * !!!
      */
-    @RequestMapping(method = RequestMethod.POST, consumes = "application/json")
+    @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doPostUser(HttpServletRequest request,
-                                     @Valid @RequestBody UserRequestEntity requestBody,
-                                     HttpSession session) {
+                                     @Valid @RequestBody User user,
+                                     HttpSession session) throws InvalidParamsException {
         try {
-            final User user = User.fromUserRequestEntity(requestBody);
-            user.save();
-
-            new SessionHelper(session).openSession(user);
-
+            userService.save(user);
+            sessionService.setSession(session);
+            sessionService.openSession(user);
             final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.id));
             return ResponseEntity.created(location).body(user);
         } catch (URISyntaxException error) {
-            return ResponseEntity.ok().body(new ApiMessageResponseEntity(
+            return ResponseEntity.ok().body(new ApiMessage(
                     "User has been created successfully, no resource URI available"
             ));
         }
     }
 
-    @RequestMapping(path = "/{userId}", method = RequestMethod.GET)
+    @GetMapping(path = "/{userId}")
     public ResponseEntity doGetUser(@PathVariable Integer userId) throws NotFoundException {
-        return ResponseEntity.ok().body(User.findById(userId.longValue()));
+        return ResponseEntity.ok().body(userService.findById(userId.longValue()));
+    }
+
+    @SuppressWarnings("PublicField")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    public static final class Scoreboard {
+
+        @JsonProperty("users")
+        public @NotNull List<User> users;
+
+        @Nullable
+        @JsonProperty("prevPage")
+        public String prevPageLink;
+
+        @Nullable
+        @JsonProperty(value = "nextPage")
+        public String nextPageLink;
+
+        public Scoreboard(@NotNull List<User> users, String prevPageLink, String nextPageLink) {
+            this.users = users;
+            this.prevPageLink = prevPageLink;
+            this.nextPageLink = nextPageLink;
+        }
     }
 }

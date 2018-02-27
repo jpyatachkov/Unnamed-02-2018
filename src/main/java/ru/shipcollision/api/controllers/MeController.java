@@ -1,20 +1,22 @@
 package ru.shipcollision.api.controllers;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-import ru.shipcollision.api.entities.ApiMessageResponseEntity;
-import ru.shipcollision.api.entities.UserPartialRequestEntity;
-import ru.shipcollision.api.entities.UserRequestEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.web.bind.annotation.*;
 import ru.shipcollision.api.exceptions.ForbiddenException;
+import ru.shipcollision.api.exceptions.InvalidParamsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
-import ru.shipcollision.api.helpers.SessionHelper;
+import ru.shipcollision.api.models.ApiMessage;
 import ru.shipcollision.api.models.User;
+import ru.shipcollision.api.services.SessionService;
+import ru.shipcollision.api.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotEmpty;
 
 /**
  * Контроллер для доступа к методам текущего пользователя.
@@ -23,39 +25,80 @@ import javax.validation.Valid;
 @RequestMapping(path = "/me")
 public class MeController {
 
-    @RequestMapping(method = RequestMethod.GET)
+    private final SessionService sessionService;
+
+    private final UserService userService;
+
+    public MeController(SessionService sessionService, UserService userService) {
+        this.sessionService = sessionService;
+        this.userService = userService;
+    }
+
+    @GetMapping
     public ResponseEntity doGetMe(HttpSession session) throws ForbiddenException, NotFoundException {
-        return ResponseEntity.ok().body(new SessionHelper(session).getCurrentUser());
+        sessionService.setSession(session);
+        return ResponseEntity.ok().body(sessionService.getCurrentUser());
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public ResponseEntity doPutMe(@RequestBody @Valid UserRequestEntity updateUserRequest,
+    @PutMapping
+    public ResponseEntity doPutMe(@RequestBody @Valid CreateOrFullUpdateRequest updateRequest,
                                   HttpSession session) throws ForbiddenException,
-            NotFoundException {
-        final User currentUser = new SessionHelper(session).getCurrentUser();
-        currentUser.update(updateUserRequest);
-        currentUser.save();
+            NotFoundException,
+            InvalidParamsException {
+        sessionService.setSession(session);
+        final User currentUser = sessionService.getCurrentUser();
+        userService.update(currentUser, updateRequest);
         return ResponseEntity.ok().body(currentUser);
     }
 
-    @RequestMapping(method = RequestMethod.PATCH)
-    public ResponseEntity doPathMe(@RequestBody @Valid UserPartialRequestEntity updateUserRequest,
+    @PatchMapping
+    public ResponseEntity doPathMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
                                    HttpSession session) throws ForbiddenException,
-            NotFoundException {
-        final User currentUser = new SessionHelper(session).getCurrentUser();
-        currentUser.partialUpdate(updateUserRequest);
-        currentUser.save();
+            NotFoundException,
+            InvalidParamsException {
+        sessionService.setSession(session);
+        final User currentUser = sessionService.getCurrentUser();
+        userService.partialUpdate(currentUser, updateRequest);
         return ResponseEntity.ok().body(currentUser);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE)
+    @DeleteMapping
     public ResponseEntity doDeleteMe(HttpSession session) throws ForbiddenException, NotFoundException {
-        final SessionHelper sessionHelper = new SessionHelper(session);
-        final User currentUser = sessionHelper.getCurrentUser();
-        sessionHelper.closeSession();
-        currentUser.delete();
-        return ResponseEntity.ok().body(new ApiMessageResponseEntity(
+        sessionService.setSession(session);
+        final User currentUser = sessionService.getCurrentUser();
+        sessionService.closeSession();
+        userService.delete(currentUser);
+        return ResponseEntity.ok().body(new ApiMessage(
                 "Your profile has been delete successfully. You are signed out"
         ));
+    }
+
+    @SuppressWarnings("PublicField")
+    public static final class CreateOrFullUpdateRequest {
+
+        @JsonProperty("nickname")
+        public @NotEmpty String nickName;
+
+        @JsonProperty("email")
+        public @Email @NotEmpty String email;
+
+        @JsonProperty("password")
+        public @Length(min = 6, message = "Password must be at least 6 characters") @NotEmpty String password;
+    }
+
+    @SuppressWarnings("PublicField")
+    public static final class PartialUpdateRequest {
+
+        @Nullable
+        @JsonProperty("nickname")
+        public String nickName;
+
+        @Nullable
+        @JsonProperty("email")
+        public @Email String email;
+
+        @Nullable
+        @JsonProperty("password")
+        public @Length(min = 6, message = "Password must be at least 6 characters") String password;
     }
 }

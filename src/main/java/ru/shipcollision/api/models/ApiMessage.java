@@ -1,4 +1,4 @@
-package ru.shipcollision.api.entities;
+package ru.shipcollision.api.models;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  * Ответ API об успешном окончании действия с API.
  */
 @SuppressWarnings("PublicField")
-public class ApiMessageResponseEntity {
+public class ApiMessage {
 
     /**
      * Описание успешно выполненного действия.
@@ -17,7 +17,7 @@ public class ApiMessageResponseEntity {
     @JsonProperty("message")
     public @NotNull String message;
 
-    public ApiMessageResponseEntity(@NotNull String message) {
+    public ApiMessage(@NotNull String message) {
         this.message = message;
     }
 }

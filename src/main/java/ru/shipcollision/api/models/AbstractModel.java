@@ -1,9 +1,6 @@
 package ru.shipcollision.api.models;
 
-import ru.shipcollision.api.exceptions.NotFoundException;
-
 import javax.validation.constraints.NotNull;
-import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
