@@ -9,3 +9,4 @@ deploy:
   provider: heroku
   api_key:
     secure: aa1ac079-ab7b-46d4-9eeb-7789413fbd76
+    on: dev
