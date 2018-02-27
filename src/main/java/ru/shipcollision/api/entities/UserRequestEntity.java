@@ -20,11 +20,5 @@ public class UserRequestEntity {
 
     @JsonProperty("password")
     public @Length(min = 6, message = "Password must be at least 6 characters") @NotEmpty String password;
-
-    @JsonProperty("passwordConfirmation")
-    public @NotEmpty String confirmation;
-
-    public boolean passwordConfirmed() {
-        return password.equals(confirmation);
-    }
+    
 }
