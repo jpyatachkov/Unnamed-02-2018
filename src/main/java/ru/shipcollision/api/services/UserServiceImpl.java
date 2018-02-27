@@ -1,6 +1,7 @@
 package ru.shipcollision.api.services;
 
 import org.springframework.stereotype.Service;
+import ru.shipcollision.api.controllers.MeController;
 import ru.shipcollision.api.exceptions.InvalidParamsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
@@ -31,15 +32,15 @@ public class UserServiceImpl implements UserService {
         }
     };
 
-    private boolean hasUser(User user) {
+    public boolean hasUser(User user) {
         return ALL_USERS.containsKey(user.id);
     }
 
-    private boolean hasId(Long id) {
+    public boolean hasId(Long id) {
         return ALL_USERS.containsKey(id);
     }
 
-    private boolean hasNickName(String nickName) {
+    public boolean hasNickName(String nickName) {
         for (Map.Entry<Long, User> entry : ALL_USERS.entrySet()) {
             if (entry.getValue().nickName.equals(nickName)) {
                 return true;
@@ -48,7 +49,7 @@ public class UserServiceImpl implements UserService {
         return false;
     }
 
-    private boolean hasEmail(String email) {
+    public boolean hasEmail(String email) {
         for (Map.Entry<Long, User> entry : ALL_USERS.entrySet()) {
             if (entry.getValue().email.equals(email)) {
                 return true;
@@ -85,29 +86,40 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) throws InvalidParamsException {
-        if (hasUser(user) && (hasNickName(user.nickName) || hasEmail(user.email))) {
-            throw new InvalidParamsException("User cannot be saved: id, nickname and email ,ust be unique");
+        if (!hasUser(user) && (hasNickName(user.nickName) || hasEmail(user.email))) {
+            throw new InvalidParamsException("Cannot create user: fields nickname and email should be unique");
         }
+
+        if (user.nickName.isEmpty()) {
+            throw new InvalidParamsException("Nickname could not be empty");
+        }
+        if (user.email.isEmpty()) {
+            throw new InvalidParamsException("Email could not be empty");
+        }
+
         ALL_USERS.put(user.id, user);
     }
 
     @Override
-    public void delete(User user) throws NotFoundException {
+    public void delete(User user) {
         if (hasUser(user)) {
             ALL_USERS.remove(user.id);
         }
-        throw new NotFoundException(String.format("User with id %d not found", user.id));
     }
 
     @Override
-    public void partialUpdate(User user) throws InvalidParamsException, NotFoundException {
-        final User oldUser = findById(user.id);
-        oldUser.nickName = (user.nickName != null && !user.nickName.isEmpty()) ?
-                user.nickName : oldUser.nickName;
-        oldUser.email = (user.email != null && !user.email.isEmpty()) ?
-                user.email : oldUser.email;
-        oldUser.passwordHash = (user.passwordHash != null && !user.passwordHash.isEmpty()) ?
-                user.passwordHash : oldUser.passwordHash;
-        save(oldUser);
+    public void partialUpdate(User user, MeController.PartialUpdateRequest requestBody) throws InvalidParamsException {
+        user.nickName = (requestBody.nickName != null) ? requestBody.nickName : user.nickName;
+        user.email = (requestBody.email != null) ? requestBody.email : user.email;
+        user.passwordHash = (requestBody.password != null) ? requestBody.password : user.passwordHash;
+        save(user);
+    }
+
+    @Override
+    public void update(User user, MeController.CreateOrFullUpdateRequest requestBody) throws InvalidParamsException {
+        user.nickName = requestBody.nickName;
+        user.email = requestBody.email;
+        user.passwordHash = requestBody.password;
+        save(user);
     }
 }

@@ -1,6 +1,6 @@
 package ru.shipcollision.api.services;
 
-import ru.shipcollision.api.exceptions.ApiException;
+import ru.shipcollision.api.controllers.MeController;
 import ru.shipcollision.api.exceptions.InvalidParamsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
@@ -17,7 +17,9 @@ public interface UserService {
 
     void save(User user) throws InvalidParamsException;
 
-    void delete(User user) throws NotFoundException;
+    void delete(User user);
 
-    void partialUpdate(User user) throws InvalidParamsException, NotFoundException;
+    void partialUpdate(User user, MeController.PartialUpdateRequest requestBody) throws InvalidParamsException;
+
+    void update(User user, MeController.CreateOrFullUpdateRequest requestBody) throws InvalidParamsException;
 }

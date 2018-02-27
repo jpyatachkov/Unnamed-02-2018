@@ -1,7 +1,7 @@
 package ru.shipcollision.api.exceptions;
 
 import org.springframework.http.HttpStatus;
-import ru.shipcollision.api.entities.ApiErrorResponseEntiry;
+import ru.shipcollision.api.models.ApiError;
 
 import javax.validation.constraints.NotNull;
 
@@ -13,7 +13,7 @@ public class ApiException extends Exception {
     /**
      * Сообщениес ошибкой, которое будет показано клиенту.
      */
-    private final ApiErrorResponseEntiry errorResponse;
+    private final ApiError errorResponse;
 
     /**
      * HTTP-статус ответа.
@@ -22,14 +22,20 @@ public class ApiException extends Exception {
 
     public ApiException() {
         super();
-        this.errorResponse = new ApiErrorResponseEntiry(getDefaultErrorMessage(), getDefaultErrorCode());
+        this.errorResponse = new ApiError(getDefaultErrorMessage(), getDefaultErrorCode());
         this.httpStatus = getDefaultHttpStatus();
     }
 
     public ApiException(@NotNull String errorMessage) {
         super();
-        this.errorResponse = new ApiErrorResponseEntiry(errorMessage, getDefaultErrorCode());
+        this.errorResponse = new ApiError(errorMessage, getDefaultErrorCode());
         this.httpStatus = getDefaultHttpStatus();
+    }
+
+    ApiException(ApiException error) {
+        super(error);
+        this.errorResponse = error.errorResponse;
+        this.httpStatus = error.httpStatus;
     }
 
     protected String getDefaultErrorMessage() {
@@ -44,7 +50,7 @@ public class ApiException extends Exception {
         return HttpStatus.BAD_REQUEST;
     }
 
-    public ApiErrorResponseEntiry getResponse() {
+    public ApiError getResponse() {
         return errorResponse;
     }
 
