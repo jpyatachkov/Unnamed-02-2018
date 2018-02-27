@@ -7,6 +7,8 @@ branches:
   - dev
 deploy:
   provider: heroku
+  app:
+    master: api-shipcollision
+    dev: dev-api-shipcollision
   api_key:
-    secure: aa1ac079-ab7b-46d4-9eeb-7789413fbd76
-    on: dev
+    secure: UOjZgs6XjE+XPfA1n7kVDfAHeprZv1DzZqyPkrvZ6Efw+dbeDC7HkUZDG3GTzNknN1Y7zkYM0mO++p7FYwLCSbcaYUVxJ64K8zEyOJvIp6/U8+3kmiPstgMjFxGM15i9dGbqfsXxdrI2xSI0FHR2U1Z6d0eMlIsIS37IRg3BT1jvBwMIytlBufHO08dY5fVhD+Oe777hmBPAllU4sbBD2Qe39u55/DMLhtMqpghOVgR7rjNIlPhdo300jXzmjk32P/JBCd5HYNysr9jw858c7ATkDLgAmRthML+wcMrATQGEsZvkh9nGSMAbsnihcEWrD07KmEy/LhoH/kT548mtziw8HzaYUhktgkwiLJluVTCN+Mhw2P7/M06WRkEEupDfy6Q3HFj8DD12DebzbyPb0n1+6T0w94X0Xu5b4cmcZIlxTDA9nM/AEEKigpFs4oNzVIzbrz9vjV35puS3w9PmBIon6Demwy6ithdK+u7BA1IpWuNh0DrTX2kIpAkq2geZnOZg4zbnO2sobedpXDc8Rms5ADvD5b2mYOThVkK7uM3NH4ZLSuezyJugiWetzP0YIU8ULSMgHBAnLB/FFaJZB+E7IU1I+xFB4PSnxPUquDfnjLBg4/R+5qz2+o/xlEXvxB+xYad8r0pWCaJ5BJC8ilDGAdp2DwclbNk79xcdiE0=

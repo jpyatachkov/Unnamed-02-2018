@@ -97,4 +97,4 @@ fabric.properties
 # какая-то непонятная еборга
 .project
 bin/*
-
+.classpath
