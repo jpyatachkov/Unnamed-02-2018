@@ -6,13 +6,23 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Модель пользователя (игрока).
  */
 @SuppressWarnings({"PublicField", "unused"})
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class User extends AbstractModel {
+public class User {
+
+    /**
+     * Потокобезопасный генератор ID.
+     */
+    private static final AtomicLong ID_GENERATOR = new AtomicLong();
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public @NotNull Long id;
 
     @JsonProperty("nickname")
     public @NotNull String nickName;
@@ -31,13 +41,30 @@ public class User extends AbstractModel {
     public @NotEmpty String passwordHash;
 
     public User() {
-        super();
+        this.id = ID_GENERATOR.getAndIncrement();
     }
 
     public User(@NotNull String nickName, @NotNull String email, @NotNull String passwordHash) {
-        super();
+        this.id = ID_GENERATOR.getAndIncrement();
         this.nickName = nickName;
         this.email = email;
         this.passwordHash = passwordHash;
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+        if (object == null || !Objects.equals(getClass(), object.getClass())) {
+            return false;
+        }
+        final User other = (User) object;
+        return Objects.equals(id, other.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return id.intValue();
     }
 }
