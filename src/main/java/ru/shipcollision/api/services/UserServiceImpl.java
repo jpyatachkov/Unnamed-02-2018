@@ -34,7 +34,6 @@ public class UserServiceImpl implements UserService {
         allUsers.put(ov.id, ov);
     }
 
-
     public boolean hasUser(User user) {
         return allUsers.containsKey(user.id);
     }
