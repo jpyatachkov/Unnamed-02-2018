@@ -11,37 +11,40 @@ import java.util.*;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static final Map<Long, User> ALL_USERS = new HashMap<>() {
-        {
-            final Random random = new Random();
-            final int bound = 100500;
+    private final Map<Long, User> allUsers;
 
-            final User ai = new User("a_ikchurin", "tyoma11.95@mail.ru", "pswd");
-            ai.rank = random.nextInt(bound);
-            final User ck = new User("cvkucherov", "cvkucherov@yandex.ru", "pswd");
-            ck.rank = random.nextInt(bound);
-            final User ga = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
-            ga.rank = random.nextInt(bound);
-            final User ov = new User("venger", "farir1408@gmail.com", "pswd");
-            ov.rank = random.nextInt(bound);
+    public UserServiceImpl() {
+        final Random random = new Random();
+        final int bound = 100500;
 
-            put(ai.id, ai);
-            put(ck.id, ck);
-            put(ga.id, ga);
-            put(ov.id, ov);
-        }
-    };
+        final User ai = new User("a_ikchurin", "tyoma11.95@mail.ru", "pswd");
+        ai.rank = random.nextInt(bound);
+        final User ck = new User("cvkucherov", "cvkucherov@yandex.ru", "pswd");
+        ck.rank = random.nextInt(bound);
+        final User ga = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
+        ga.rank = random.nextInt(bound);
+        final User ov = new User("venger", "farir1408@gmail.com", "pswd");
+        ov.rank = random.nextInt(bound);
+
+        allUsers = new HashMap<>();
+
+        allUsers.put(ai.id, ai);
+        allUsers.put(ck.id, ck);
+        allUsers.put(ga.id, ga);
+        allUsers.put(ov.id, ov);
+    }
+
 
     public boolean hasUser(User user) {
-        return ALL_USERS.containsKey(user.id);
+        return allUsers.containsKey(user.id);
     }
 
     public boolean hasId(Long id) {
-        return ALL_USERS.containsKey(id);
+        return allUsers.containsKey(id);
     }
 
     public boolean hasNickName(String nickName) {
-        for (Map.Entry<Long, User> entry : ALL_USERS.entrySet()) {
+        for (Map.Entry<Long, User> entry : allUsers.entrySet()) {
             if (entry.getValue().nickName.equals(nickName)) {
                 return true;
             }
@@ -50,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     public boolean hasEmail(String email) {
-        for (Map.Entry<Long, User> entry : ALL_USERS.entrySet()) {
+        for (Map.Entry<Long, User> entry : allUsers.entrySet()) {
             if (entry.getValue().email.equals(email)) {
                 return true;
             }
@@ -60,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> getByRating(boolean ascending) {
-        final List<User> users = new ArrayList<>(ALL_USERS.values());
+        final List<User> users = new ArrayList<>(allUsers.values());
         users.sort((User u1, User u2) -> ascending ? (u1.rank - u2.rank) : (u2.rank - u1.rank));
         return users;
     }
@@ -68,14 +71,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findById(Long id) {
         if (hasId(id)) {
-            return ALL_USERS.get(id);
+            return allUsers.get(id);
         }
         throw new NotFoundException(String.format("User with id %d not found", id));
     }
 
     @Override
     public User findByEmail(String email) {
-        for (Map.Entry<Long, User> entry : ALL_USERS.entrySet()) {
+        for (Map.Entry<Long, User> entry : allUsers.entrySet()) {
             final User user = entry.getValue();
             if (user.email.equals(email)) {
                 return user;
@@ -97,13 +100,13 @@ public class UserServiceImpl implements UserService {
             throw new InvalidParamsException("Email could not be empty");
         }
 
-        ALL_USERS.put(user.id, user);
+        allUsers.put(user.id, user);
     }
 
     @Override
     public void delete(User user) {
         if (hasUser(user)) {
-            ALL_USERS.remove(user.id);
+            allUsers.remove(user.id);
         }
     }
 

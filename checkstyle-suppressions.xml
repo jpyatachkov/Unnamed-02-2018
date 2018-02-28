@@ -9,8 +9,6 @@
     <suppress checks="VisibilityModifier" files="MeController.java"/>
     <suppress checks="VisibilityModifier" files="SessionsController.java"/>
     <suppress checks="VisibilityModifier" files="UsersController.java"/>
-    <suppress checks="VisibilityModifier" files="AbstractModel.java"/>
-    <suppress checks="VisibilityModifier" files="ApiError.java"/>
     <suppress checks="VisibilityModifier" files="ApiMessage.java"/>
     <suppress checks="VisibilityModifier" files="User.java"/>
 </suppressions>
