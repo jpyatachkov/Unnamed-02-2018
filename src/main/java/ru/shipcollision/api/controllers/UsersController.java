@@ -64,7 +64,7 @@ public class UsersController {
      */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doPostUser(HttpServletRequest request,
-                                     @Valid @RequestBody User user,
+                                     @RequestBody @Valid User user,
                                      HttpSession session) {
         try {
             userService.save(user);
