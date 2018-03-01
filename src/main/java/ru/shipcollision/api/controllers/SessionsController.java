@@ -12,6 +12,7 @@ import ru.shipcollision.api.services.SessionService;
 import ru.shipcollision.api.services.UserService;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
@@ -19,7 +20,7 @@ import javax.validation.constraints.NotEmpty;
  * Контроллер аутентификации и авторизации.
  */
 @RestController
-@CrossOrigin("https://ship-collision.herokuapp.com/")
+@CrossOrigin(value = "https://ship-collision.herokuapp.com/", allowCredentials = "true")
 public class SessionsController {
 
     private final SessionService sessionService;
@@ -32,8 +33,7 @@ public class SessionsController {
     }
 
     @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @RequestMapping(path = "/signin", method = RequestMethod.POST, consumes = "application/json")
-    public ResponseEntity doSignin(@RequestBody SigninRequest signinRequest,
+    public ResponseEntity doSignin(@RequestBody @Valid SigninRequest signinRequest,
                                    HttpSession session) {
         sessionService.setSession(session);
 

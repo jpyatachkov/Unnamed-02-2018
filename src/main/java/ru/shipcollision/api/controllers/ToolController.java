@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  * Контроллер проверки доступности API.
  */
 @RestController
-@CrossOrigin("https://ship-collision.herokuapp.com/")
+@CrossOrigin(value = "https://ship-collision.herokuapp.com/", allowCredentials = "true")
 public class ToolController {
 
     /**

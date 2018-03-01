@@ -20,7 +20,7 @@ import javax.validation.constraints.NotEmpty;
  */
 @RestController
 @RequestMapping(path = "/me")
-@CrossOrigin("https://ship-collision.herokuapp.com/")
+@CrossOrigin(value = "https://ship-collision.herokuapp.com/", allowCredentials = "true")
 public class MeController {
 
     private final SessionService sessionService;
