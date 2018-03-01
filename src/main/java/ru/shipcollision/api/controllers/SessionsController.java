@@ -19,6 +19,7 @@ import javax.validation.constraints.NotEmpty;
  * Контроллер аутентификации и авторизации.
  */
 @RestController
+@CrossOrigin("https://ship-collision.herokuapp.com/")
 public class SessionsController {
 
     private final SessionService sessionService;

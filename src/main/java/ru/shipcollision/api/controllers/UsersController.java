@@ -25,6 +25,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(path = "/users")
+@CrossOrigin("https://ship-collision.herokuapp.com/")
 public class UsersController {
 
     private final PaginationService<User> paginationService;

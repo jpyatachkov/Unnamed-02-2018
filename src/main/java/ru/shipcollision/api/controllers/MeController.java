@@ -20,6 +20,7 @@ import javax.validation.constraints.NotEmpty;
  */
 @RestController
 @RequestMapping(path = "/me")
+@CrossOrigin("https://ship-collision.herokuapp.com/")
 public class MeController {
 
     private final SessionService sessionService;
@@ -37,21 +38,21 @@ public class MeController {
         return ResponseEntity.ok().body(sessionService.getCurrentUser());
     }
 
+    @PatchMapping
+    public ResponseEntity doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
+                                    HttpSession session) {
+        sessionService.setSession(session);
+        final User currentUser = sessionService.getCurrentUser();
+        userService.partialUpdate(currentUser, updateRequest);
+        return ResponseEntity.ok().body(sessionService.getCurrentUser());
+    }
+
     @PutMapping
     public ResponseEntity doPutMe(@RequestBody @Valid CreateOrFullUpdateRequest updateRequest,
                                   HttpSession session) {
         sessionService.setSession(session);
         final User currentUser = sessionService.getCurrentUser();
         userService.update(currentUser, updateRequest);
-        return ResponseEntity.ok().body(currentUser);
-    }
-
-    @PatchMapping
-    public ResponseEntity doPathMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
-                                   HttpSession session) {
-        sessionService.setSession(session);
-        final User currentUser = sessionService.getCurrentUser();
-        userService.partialUpdate(currentUser, updateRequest);
         return ResponseEntity.ok().body(currentUser);
     }
 

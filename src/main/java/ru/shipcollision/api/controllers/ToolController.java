@@ -1,5 +1,6 @@
 package ru.shipcollision.api.controllers;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -10,6 +11,7 @@ import javax.servlet.http.HttpServletResponse;
  * Контроллер проверки доступности API.
  */
 @RestController
+@CrossOrigin("https://ship-collision.herokuapp.com/")
 public class ToolController {
 
     /**
