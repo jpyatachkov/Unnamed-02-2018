@@ -34,33 +34,29 @@ public class MeController {
 
     @GetMapping
     public ResponseEntity doGetMe(HttpSession session) {
-        sessionService.setSession(session);
-        return ResponseEntity.ok().body(sessionService.getCurrentUser());
+        return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
     }
 
     @PatchMapping
     public ResponseEntity doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
                                     HttpSession session) {
-        sessionService.setSession(session);
-        final User currentUser = sessionService.getCurrentUser();
+        final User currentUser = sessionService.getCurrentUser(session);
         userService.partialUpdate(currentUser, updateRequest);
-        return ResponseEntity.ok().body(sessionService.getCurrentUser());
+        return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
     }
 
     @PutMapping
     public ResponseEntity doPutMe(@RequestBody @Valid CreateOrFullUpdateRequest updateRequest,
                                   HttpSession session) {
-        sessionService.setSession(session);
-        final User currentUser = sessionService.getCurrentUser();
+        final User currentUser = sessionService.getCurrentUser(session);
         userService.update(currentUser, updateRequest);
         return ResponseEntity.ok().body(currentUser);
     }
 
     @DeleteMapping
     public ResponseEntity doDeleteMe(HttpSession session) {
-        sessionService.setSession(session);
-        final User currentUser = sessionService.getCurrentUser();
-        sessionService.closeSession();
+        final User currentUser = sessionService.getCurrentUser(session);
+        sessionService.closeSession(session);
         userService.delete(currentUser);
         return ResponseEntity.ok().body(new ApiMessage(
                 "Your profile has been delete successfully. You are signed out"

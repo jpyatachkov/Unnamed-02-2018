@@ -6,11 +6,9 @@ import javax.servlet.http.HttpSession;
 
 public interface SessionService {
 
-    void openSession(User user);
+    void openSession(HttpSession session, User user);
 
-    void closeSession();
+    void closeSession(HttpSession session);
 
-    User getCurrentUser();
-
-    void setSession(HttpSession session);
+    User getCurrentUser(HttpSession session);
 }

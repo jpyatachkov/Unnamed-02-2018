@@ -35,8 +35,6 @@ public class SessionsController {
     @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doSignin(@RequestBody @Valid SigninRequest signinRequest,
                                    HttpSession session) {
-        sessionService.setSession(session);
-
         final User user;
         try {
             user = userService.findByEmail(signinRequest.email);
@@ -45,7 +43,7 @@ public class SessionsController {
         }
 
         if (user.passwordHash.equals(signinRequest.password)) {
-            sessionService.openSession(user);
+            sessionService.openSession(session, user);
             return ResponseEntity.ok().body(new ApiMessage("You are signed in"));
         }
         throw new InvalidCredentialsException();
@@ -53,8 +51,7 @@ public class SessionsController {
 
     @DeleteMapping(path = "/signout")
     public ResponseEntity doSignout(HttpSession session) {
-        sessionService.setSession(session);
-        sessionService.closeSession();
+        sessionService.closeSession(session);
         return ResponseEntity.ok().body(new ApiMessage("You are signed out"));
     }
 

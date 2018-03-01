@@ -19,8 +19,6 @@ public class SessionServiceImpl implements SessionService {
 
     private final UserService userService;
 
-    private HttpSession session;
-
     public SessionServiceImpl(UserService userService) {
         this.userService = userService;
     }
@@ -30,7 +28,7 @@ public class SessionServiceImpl implements SessionService {
      *
      * @return Проверяет, установлена ли кука.
      */
-    private boolean sessionHasUser() {
+    private boolean sessionHasUser(HttpSession session) {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
         return userId != null && userService.findById((Long) userId) != null;
     }
@@ -41,7 +39,7 @@ public class SessionServiceImpl implements SessionService {
      * @param user Пользователь, для которого будет открыта сессия.
      */
     @Override
-    public void openSession(User user) {
+    public void openSession(HttpSession session, User user) {
         session.setAttribute(ATTRIBUTE_NAME, user.id);
     }
 
@@ -51,7 +49,7 @@ public class SessionServiceImpl implements SessionService {
      * @return Пользователь открытой сессии.
      */
     @Override
-    public User getCurrentUser() {
+    public User getCurrentUser(HttpSession session) {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
         if (userId == null) {
             throw new ForbiddenException();
@@ -63,15 +61,10 @@ public class SessionServiceImpl implements SessionService {
      * Закрывает сессию для текущего пользователя.
      */
     @Override
-    public void closeSession() {
-        if (!sessionHasUser()) {
+    public void closeSession(HttpSession session) {
+        if (!sessionHasUser(session)) {
             throw new ForbiddenException();
         }
         session.removeAttribute(ATTRIBUTE_NAME);
-    }
-
-    @Override
-    public void setSession(HttpSession session) {
-        this.session = session;
     }
 }

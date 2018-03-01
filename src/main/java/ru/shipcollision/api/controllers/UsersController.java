@@ -68,8 +68,7 @@ public class UsersController {
                                      HttpSession session) {
         try {
             userService.save(user);
-            sessionService.setSession(session);
-            sessionService.openSession(user);
+            sessionService.openSession(session, user);
             final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.id));
             return ResponseEntity.created(location).body(user);
         } catch (URISyntaxException error) {
