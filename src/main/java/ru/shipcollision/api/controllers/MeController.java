@@ -19,8 +19,6 @@ import javax.validation.constraints.NotEmpty;
  * Контроллер для доступа к методам текущего пользователя.
  */
 @RestController
-@RequestMapping(path = "/me")
-@CrossOrigin(value = {"https://ship-collision.herokuapp.com", "http://localhost:5000"}, allowCredentials = "true")
 public class MeController {
 
     private final SessionService sessionService;
