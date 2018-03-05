@@ -20,7 +20,7 @@ import javax.validation.constraints.NotEmpty;
  * Контроллер аутентификации и авторизации.
  */
 @RestController
-@CrossOrigin(value = "https://ship-collision.herokuapp.com/", allowCredentials = "true")
+@CrossOrigin(value = {"https://ship-collision.herokuapp.com", "http://localhost:5000"}, allowCredentials = "true")
 public class SessionsController {
 
     private final SessionService sessionService;

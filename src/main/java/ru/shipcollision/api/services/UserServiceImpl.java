@@ -42,9 +42,9 @@ public class UserServiceImpl implements UserService {
         return allUsers.containsKey(id);
     }
 
-    public boolean hasNickName(String nickName) {
+    public boolean hasusername(String username) {
         for (Map.Entry<Long, User> entry : allUsers.entrySet()) {
-            if (entry.getValue().nickName.equals(nickName)) {
+            if (entry.getValue().username.equals(username)) {
                 return true;
             }
         }
@@ -88,12 +88,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
-        if (!hasUser(user) && (hasNickName(user.nickName) || hasEmail(user.email))) {
-            throw new InvalidParamsException("Cannot create user: fields nickname and email should be unique");
+        if (!hasUser(user) && (hasusername(user.username) || hasEmail(user.email))) {
+            throw new InvalidParamsException("Cannot create user: fields username and email should be unique");
         }
 
-        if (user.nickName.isEmpty()) {
-            throw new InvalidParamsException("Nickname could not be empty");
+        if (user.username.isEmpty()) {
+            throw new InvalidParamsException("username could not be empty");
         }
         if (user.email.isEmpty()) {
             throw new InvalidParamsException("Email could not be empty");
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
         final User tmpUser = new User();
         tmpUser.id = user.id;
 
-        tmpUser.nickName = (requestBody.nickName != null) ? requestBody.nickName : user.nickName;
+        tmpUser.username = (requestBody.username != null) ? requestBody.username : user.username;
         tmpUser.email = (requestBody.email != null) ? requestBody.email : user.email;
         tmpUser.passwordHash = (requestBody.password != null) ? requestBody.password : user.passwordHash;
 
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void update(User user, MeController.CreateOrFullUpdateRequest requestBody) {
-        user.nickName = requestBody.nickName;
+        user.username = requestBody.username;
         user.email = requestBody.email;
         user.passwordHash = requestBody.password;
         save(user);

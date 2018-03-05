@@ -20,7 +20,7 @@ import javax.validation.constraints.NotEmpty;
  */
 @RestController
 @RequestMapping(path = "/me")
-@CrossOrigin(value = "https://ship-collision.herokuapp.com/", allowCredentials = "true")
+@CrossOrigin(value = {"https://ship-collision.herokuapp.com", "http://localhost:5000"}, allowCredentials = "true")
 public class MeController {
 
     private final SessionService sessionService;
@@ -67,7 +67,7 @@ public class MeController {
     public static final class CreateOrFullUpdateRequest {
 
         @JsonProperty("nickname")
-        public @NotEmpty String nickName;
+        public @NotEmpty String username;
 
         @JsonProperty("email")
         public @Email @NotEmpty String email;
@@ -80,8 +80,8 @@ public class MeController {
     public static final class PartialUpdateRequest {
 
         @Nullable
-        @JsonProperty("nickname")
-        public String nickName;
+        @JsonProperty("username")
+        public String username;
 
         @Nullable
         @JsonProperty("email")

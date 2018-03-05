@@ -24,8 +24,8 @@ public class User {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public @NotNull Long id;
 
-    @JsonProperty("nickname")
-    public @NotNull String nickName;
+    @JsonProperty("username")
+    public @NotNull String username;
 
     @JsonProperty("email")
     public @NotNull String email;
@@ -44,9 +44,9 @@ public class User {
         this.id = ID_GENERATOR.getAndIncrement();
     }
 
-    public User(@NotNull String nickName, @NotNull String email, @NotNull String passwordHash) {
+    public User(@NotNull String username, @NotNull String email, @NotNull String passwordHash) {
         this.id = ID_GENERATOR.getAndIncrement();
-        this.nickName = nickName;
+        this.username = username;
         this.email = email;
         this.passwordHash = passwordHash;
     }
