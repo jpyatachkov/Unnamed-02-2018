@@ -3,7 +3,10 @@ package ru.shipcollision.api.controllers;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.ApiMessage;
@@ -20,7 +23,6 @@ import javax.validation.constraints.NotEmpty;
  * Контроллер аутентификации и авторизации.
  */
 @RestController
-@CrossOrigin(value = {"https://ship-collision.herokuapp.com", "http://localhost:5000"}, allowCredentials = "true")
 public class SessionsController {
 
     private final SessionService sessionService;
