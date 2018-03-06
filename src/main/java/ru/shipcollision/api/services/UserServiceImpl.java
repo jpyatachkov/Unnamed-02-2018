@@ -116,7 +116,7 @@ public class UserServiceImpl implements UserService {
 
         tmpUser.username = (requestBody.username != null) ? requestBody.username : user.username;
         tmpUser.email = (requestBody.email != null) ? requestBody.email : user.email;
-        tmpUser.passwordHash = (requestBody.password != null) ? requestBody.password : user.passwordHash;
+        tmpUser.password = (requestBody.password != null) ? requestBody.password : user.password;
 
         save(tmpUser);
     }
@@ -125,7 +125,7 @@ public class UserServiceImpl implements UserService {
     public void update(User user, MeController.CreateOrFullUpdateRequest requestBody) {
         user.username = requestBody.username;
         user.email = requestBody.email;
-        user.passwordHash = requestBody.password;
+        user.password = requestBody.password;
         save(user);
     }
 }

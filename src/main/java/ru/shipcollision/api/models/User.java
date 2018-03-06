@@ -38,17 +38,17 @@ public class User {
     public String avatarLink;
 
     @JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
-    public @NotEmpty String passwordHash;
+    public @NotEmpty String password;
 
     public User() {
         this.id = ID_GENERATOR.getAndIncrement();
     }
 
-    public User(@NotNull String username, @NotNull String email, @NotNull String passwordHash) {
+    public User(@NotNull String username, @NotNull String email, @NotNull String password) {
         this.id = ID_GENERATOR.getAndIncrement();
         this.username = username;
         this.email = email;
-        this.passwordHash = passwordHash;
+        this.password = password;
     }
 
     @Override
