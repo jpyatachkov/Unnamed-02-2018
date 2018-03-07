@@ -88,3 +88,6 @@ fabric.properties
 #Gedit
 *~
 bin/*
+
+# Custom file uploads
+uploads/
