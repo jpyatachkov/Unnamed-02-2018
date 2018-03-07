@@ -32,18 +32,14 @@ public class MeController {
 
     private final FileIOService fileIOService;
 
-    private final ServletContext servletContext;
-
     private final SessionService sessionService;
 
     private final UserService userService;
 
     public MeController(FileIOService fileIOService,
-                        ServletContext servletContext,
                         SessionService sessionService,
                         UserService userService) {
         this.fileIOService = fileIOService;
-        this.servletContext = servletContext;
         this.sessionService = sessionService;
         this.userService = userService;
     }
@@ -82,11 +78,16 @@ public class MeController {
     @PostMapping(path = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> doUploadAvatar(@RequestParam("file") MultipartFile avatar, HttpSession session) {
         final User currentUser = sessionService.getCurrentUser(session);
-        currentUser.avatarLink = fileIOService.saveAndGetPath(avatar);
+
+        if (fileIOService.fileExists(currentUser.avatarLink)) {
+            fileIOService.deleteFile(currentUser.avatarLink);
+        }
+
+        currentUser.avatarLink = fileIOService.saveFileAndGetResourcePath(avatar);
 
         try {
-            final URI avatarUri = new URI(currentUser.avatarLink);
-            return ResponseEntity.created(avatarUri).body(currentUser);
+            final URI avatarURI = new URI(currentUser.avatarLink);
+            return ResponseEntity.created(avatarURI).body(currentUser);
         } catch (URISyntaxException e) {
             return ResponseEntity.ok().body(new ApiMessage(
                     "User has been created successfully, no resource URI available"

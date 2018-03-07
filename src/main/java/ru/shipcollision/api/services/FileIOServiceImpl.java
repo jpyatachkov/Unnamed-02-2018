@@ -16,7 +16,12 @@ public class FileIOServiceImpl implements FileIOService {
     public static final String BASE_PATH = "uploads";
 
     @Override
-    public String saveAndGetPath(MultipartFile file) {
+    public boolean fileExists(String resoursePath) {
+        return Files.exists(UploadResourceResolver.toAbsolutePath(resoursePath));
+    }
+
+    @Override
+    public String saveFileAndGetResourcePath(MultipartFile file) {
         final UploadResourceResolver resolver = new UploadResourceResolver(file.getOriginalFilename());
 
         try (FileOutputStream out = new FileOutputStream(resolver.getSaveFilePath())) {
@@ -32,8 +37,12 @@ public class FileIOServiceImpl implements FileIOService {
     }
 
     @Override
-    public MultipartFile load(String path) {
-        return null;
+    public void deleteFile(String resoursePath) {
+        try {
+            Files.delete(UploadResourceResolver.toAbsolutePath(resoursePath));
+        } catch (IOException e) {
+            throw new ApiException(String.format("Impossible to remove %s", resoursePath));
+        }
     }
 
     private static final class UploadResourceResolver {
@@ -43,6 +52,11 @@ public class FileIOServiceImpl implements FileIOService {
         private String resoursePath;
 
         private String saveFilePath;
+
+        public static Path toAbsolutePath(String resoursePath) {
+            resoursePath = (resoursePath != null && resoursePath.charAt(0) == '/') ? resoursePath.substring(1) : resoursePath;
+            return Paths.get(String.format("%s", resoursePath)).toAbsolutePath();
+        }
 
         private UploadResourceResolver(String originalFilename) {
             final LocalDateTime now = LocalDateTime.now();

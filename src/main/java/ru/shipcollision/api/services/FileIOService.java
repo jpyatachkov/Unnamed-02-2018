@@ -6,7 +6,9 @@ import java.io.IOException;
 
 public interface FileIOService {
 
-    String saveAndGetPath(MultipartFile file);
+    boolean fileExists(String resoursePath);
 
-    MultipartFile load(String path);
+    String saveFileAndGetResourcePath(MultipartFile file);
+
+    void deleteFile(String resoursePath);
 }
