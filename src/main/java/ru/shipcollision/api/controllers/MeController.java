@@ -2,7 +2,6 @@ package ru.shipcollision.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.hibernate.validator.constraints.Length;
-import org.springframework.beans.factory.annotation.Required;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -14,14 +13,12 @@ import ru.shipcollision.api.services.FileIOService;
 import ru.shipcollision.api.services.SessionService;
 import ru.shipcollision.api.services.UserService;
 
-import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ResourceBundle;
 
 /**
  * Контроллер для доступа к методам текущего пользователя.

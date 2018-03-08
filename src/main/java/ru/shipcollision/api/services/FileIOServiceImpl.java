@@ -4,7 +4,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.shipcollision.api.exceptions.ApiException;
 
-import java.io.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -53,11 +55,6 @@ public class FileIOServiceImpl implements FileIOService {
 
         private String saveFilePath;
 
-        public static Path toAbsolutePath(String resoursePath) {
-            resoursePath = (resoursePath != null && resoursePath.charAt(0) == '/') ? resoursePath.substring(1) : resoursePath;
-            return Paths.get(String.format("%s", resoursePath)).toAbsolutePath();
-        }
-
         private UploadResourceResolver(String originalFilename) {
             final LocalDateTime now = LocalDateTime.now();
 
@@ -91,6 +88,11 @@ public class FileIOServiceImpl implements FileIOService {
 
             resoursePath = String.format("/%s/%s/%s", BASE_PATH, resoursePath, filename);
             saveFilePath = String.format("%s/%s", uploadPath.toString(), filename);
+        }
+
+        public static Path toAbsolutePath(String resoursePath) {
+            resoursePath = (resoursePath != null && resoursePath.charAt(0) == '/') ? resoursePath.substring(1) : resoursePath;
+            return Paths.get(String.format("%s", resoursePath)).toAbsolutePath();
         }
 
         public String getResoursePath() {
