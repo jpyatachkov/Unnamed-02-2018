@@ -19,7 +19,7 @@ public class StaticResourcesConfiguration implements WebMvcConfigurer {
         /*
          * Если убрать / в конце, то все поломается. При этом toAbsolutePath по умолчанию убирает слеш!
          * Вы будете писать GET http://localhost:8080/uploads/2018/3/8/file.png,
-         * а он будет маппить в uploads(нет слеша)2018/3/8/file.png
+         * а он будет маппить в uploads(нет слеша)2018/3/8/file.png и естественно ничего не найдет!
          */
         final String resourseLocation = "file://" + Paths.get("uploads").toAbsolutePath().toString() + '/';
         registry.addResourceHandler("/uploads/**")

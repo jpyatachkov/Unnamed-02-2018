@@ -73,7 +73,7 @@ public class MeController {
     }
 
     @PostMapping(path = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> doUploadAvatar(@RequestParam("file") MultipartFile avatar, HttpSession session) {
+    public ResponseEntity<?> doUploadAvatar(@RequestParam(value = "avatar") MultipartFile avatar, HttpSession session) {
         final User currentUser = sessionService.getCurrentUser(session);
 
         if (fileIOService.fileExists(currentUser.avatarLink)) {
@@ -91,6 +91,19 @@ public class MeController {
             ));
         }
     }
+
+    @DeleteMapping(path = "/avatar")
+    public ResponseEntity<?> doDeleteAvatar(HttpSession session) {
+        final User currentUser = sessionService.getCurrentUser(session);
+
+        if (fileIOService.fileExists(currentUser.avatarLink)) {
+            fileIOService.deleteFile(currentUser.avatarLink);
+            currentUser.avatarLink = null;
+        }
+
+        return ResponseEntity.ok().body(currentUser);
+    }
+
 
     @SuppressWarnings("PublicField")
     public static final class CreateOrFullUpdateRequest {
