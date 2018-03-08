@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.UnsupportedMediaTypeStatusException;
 import ru.shipcollision.api.models.ApiMessage;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.FileIOService;
@@ -26,6 +27,8 @@ import java.net.URISyntaxException;
 @RestController
 @RequestMapping(path = "/me")
 public class MeController {
+
+    private static final String AVATAR_CONTENT_TYPE_PATTERN = "^image/.+";
 
     private final FileIOService fileIOService;
 
@@ -73,7 +76,13 @@ public class MeController {
     }
 
     @PostMapping(path = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<?> doUploadAvatar(@RequestParam(value = "avatar") MultipartFile avatar, HttpSession session) {
+    public ResponseEntity<?> doUploadAvatar(@RequestPart(value = "avatar") MultipartFile avatar, HttpSession session) {
+        final String avatarContentType = avatar.getContentType();
+
+        if (!avatarContentType.matches(AVATAR_CONTENT_TYPE_PATTERN)) {
+            throw new UnsupportedMediaTypeStatusException(avatarContentType);
+        }
+
         final User currentUser = sessionService.getCurrentUser(session);
 
         if (fileIOService.fileExists(currentUser.avatarLink)) {
