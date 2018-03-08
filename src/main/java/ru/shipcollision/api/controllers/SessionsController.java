@@ -38,6 +38,7 @@ public class SessionsController {
     public ResponseEntity doSignin(@RequestBody @Valid SigninRequest signinRequest,
                                    HttpSession session) {
         final User user;
+
         try {
             user = userService.findByEmail(signinRequest.email);
         } catch (NotFoundException error) {
@@ -48,6 +49,7 @@ public class SessionsController {
             sessionService.openSession(session, user);
             return ResponseEntity.ok().body(new ApiMessage("You are signed in"));
         }
+
         throw new InvalidCredentialsException();
     }
 
