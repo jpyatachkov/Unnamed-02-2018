@@ -50,8 +50,8 @@ public class PaginationServiceImpl<T> implements PaginationService<T> {
      * @param limitParam  Количество записей на страницуе.
      * @return Ссылка на страницу с подставленными параметрами.
      */
-    private String resolvePageLink(String basePath, int offsetParam, int limitParam) {
-        return basePath + String.format("?offset=%d&limit=%d", offsetParam, limitParam);
+    private String resolvePageParams(String basePath, int offsetParam, int limitParam) {
+        return String.format("/?offset=%d&limit=%d", offsetParam, limitParam);
     }
 
     /**
@@ -97,7 +97,7 @@ public class PaginationServiceImpl<T> implements PaginationService<T> {
         int newOffset = offset - limit;
         newOffset = (newOffset < 1) ? DEFAULT_OFFSET : newOffset;
 
-        return (newOffset != offset) ? resolvePageLink(basePath, newOffset, limit) : null;
+        return (newOffset != offset) ? resolvePageParams(basePath, newOffset, limit) : null;
     }
 
     /**
@@ -115,7 +115,7 @@ public class PaginationServiceImpl<T> implements PaginationService<T> {
         int newOffset = offset + 1;
         newOffset = (newOffset * limit < objects.size()) ? newOffset : maxOffset;
 
-        return (newOffset != offset) ? resolvePageLink(basePath, newOffset, limit) : null;
+        return (newOffset != offset) ? resolvePageParams(basePath, newOffset, limit) : null;
     }
 
     @Override
