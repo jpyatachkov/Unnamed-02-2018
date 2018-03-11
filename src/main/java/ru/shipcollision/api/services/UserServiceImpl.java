@@ -185,7 +185,7 @@ public class UserServiceImpl implements UserService {
         tmpUser.username = (requestBody.username != null) ? requestBody.username : user.username;
         tmpUser.email = (requestBody.email != null) ? requestBody.email : user.email;
         tmpUser.password = (requestBody.password != null) ? requestBody.password : user.password;
-
+        tmpUser.rank = user.rank;
         save(tmpUser);
     }
 
