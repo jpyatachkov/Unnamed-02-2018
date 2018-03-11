@@ -94,7 +94,7 @@ public class PaginationServiceImpl<T> implements PaginationService<T> {
      */
     @Override
     public String resolvePrevPageLink(String basePath) {
-        int newOffset = offset - limit;
+        int newOffset = offset - 1;
         newOffset = (newOffset < 1) ? DEFAULT_OFFSET : newOffset;
 
         return (newOffset != offset) ? resolvePageParams(basePath, newOffset, limit) : null;
