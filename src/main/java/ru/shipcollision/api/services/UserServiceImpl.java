@@ -1,5 +1,6 @@
 package ru.shipcollision.api.services;
 
+import com.github.javafaker.Faker;
 import org.springframework.stereotype.Service;
 import ru.shipcollision.api.controllers.MeController;
 import ru.shipcollision.api.exceptions.InvalidParamsException;
@@ -13,25 +14,92 @@ public class UserServiceImpl implements UserService {
 
     private final Map<Long, User> allUsers;
 
+    @SuppressWarnings("QuestionableName")
     public UserServiceImpl() {
+        final Faker faker = new Faker();
         final Random random = new Random();
         final int bound = 100500;
+        final String password = "password1";
 
-        final User ai = new User("a_ikchurin", "tyoma11.95@mail.ru", "pswd");
-        ai.rank = random.nextInt(bound);
-        final User ck = new User("cvkucherov", "cvkucherov@yandex.ru", "pswd");
-        ck.rank = random.nextInt(bound);
-        final User ga = new User("gabolaev", "gabolaev98@gmail.com", "pswd");
-        ga.rank = random.nextInt(bound);
-        final User ov = new User("venger", "farir1408@gmail.com", "pswd");
-        ov.rank = random.nextInt(bound);
+        final User ai = new User(
+                "a_ikchurin",
+                "tyoma11.95@mail.ru",
+                random.nextInt(bound),
+                password
+        );
+        final User ck = new User(
+                "cvkucherov",
+                "cvkucherov@yandex.ru",
+                random.nextInt(bound),
+                password
+        );
+        final User gg = new User(
+                "gabolaev",
+                "gabolaev98@gmail.com",
+                random.nextInt(bound),
+                password
+        );
+        final User ov = new User(
+                "venger",
+                "farir1408@gmail.com",
+                random.nextInt(bound),
+                password
+        );
+        final User ao = new User(
+                "a.ostapenko",
+                "a.ostapenko@corp.mail.ru",
+                bound,
+                password
+        );
+        final User dd = new User(
+                "d.dorofeev",
+                "d.dorofeev@corp.mail.ru",
+                bound,
+                password
+        );
+        final User au = new User(
+                "a.udalov",
+                "a.udalov@corp.mail.ru",
+                bound,
+                password
+        );
+        final User mt = new User(
+                "marina.titova",
+                "marina.titova@corp.mail.ru",
+                bound,
+                password
+        );
+        final User at = new User(
+                "a.tyuldyukov",
+                "a.tyuldyukov@corp.mail.ru",
+                bound,
+                password
+        );
 
         allUsers = new HashMap<>();
 
         allUsers.put(ai.id, ai);
         allUsers.put(ck.id, ck);
-        allUsers.put(ga.id, ga);
+        allUsers.put(gg.id, gg);
         allUsers.put(ov.id, ov);
+        allUsers.put(ao.id, ao);
+        allUsers.put(dd.id, dd);
+        allUsers.put(au.id, au);
+        allUsers.put(mt.id, mt);
+        allUsers.put(at.id, at);
+
+        final int maxFakeUsers = 100;
+
+        for (int i = 0; i < maxFakeUsers; i++) {
+            final String email = faker.internet().emailAddress();
+            final User fakeUser = new User(
+                    email.split("@")[0],
+                    email,
+                    random.nextInt(bound),
+                    password
+            );
+            allUsers.put(fakeUser.id, fakeUser);
+        }
     }
 
     public boolean hasUser(User user) {

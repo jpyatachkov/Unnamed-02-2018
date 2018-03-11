@@ -51,6 +51,14 @@ public class User {
         this.password = password;
     }
 
+    public User(@NotNull String username, @NotNull String email, int rank, @NotEmpty String password) {
+        this.id = ID_GENERATOR.getAndIncrement();
+        this.username = username;
+        this.email = email;
+        this.password = password;
+        this.rank = rank;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
