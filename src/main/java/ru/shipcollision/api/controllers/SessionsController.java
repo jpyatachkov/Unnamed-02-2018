@@ -55,8 +55,9 @@ public class SessionsController {
 
     @DeleteMapping(path = "/signout")
     public ResponseEntity doSignout(HttpSession session) {
+        final User currentUser = sessionService.getCurrentUser(session);
         sessionService.closeSession(session);
-        return ResponseEntity.ok().body(new ApiMessage("You are signed out"));
+        return ResponseEntity.ok().body(currentUser);
     }
 
     /**
