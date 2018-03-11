@@ -47,7 +47,7 @@ public class SessionsController {
 
         if (user.password.equals(signinRequest.password)) {
             sessionService.openSession(session, user);
-            return ResponseEntity.ok().body(new ApiMessage("You are signed in"));
+            return ResponseEntity.ok().body(user);
         }
 
         throw new InvalidCredentialsException();
