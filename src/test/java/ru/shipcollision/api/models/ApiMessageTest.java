@@ -12,22 +12,17 @@ import java.util.stream.Stream;
  */
 class ApiMessageTest {
 
-    private static Stream<Arguments> provideMessageContent() {
-        return Stream.of(
-                Arguments.of(""),
-                Arguments.of("aaa")
-        );
-    }
-
-    /**
-     * Проверяет, что желаемое содержание сообщения соответствует действительному.
-     *
-     * @param messageContent Желаемое содержание сообщения.
-     */
     @ParameterizedTest
     @MethodSource("provideMessageContent")
     public void testActualContentEqualsExpected(String messageContent) {
         final ApiMessage message = new ApiMessage(messageContent);
         Assertions.assertEquals(message.message, messageContent);
+    }
+
+    private static Stream<Arguments> provideMessageContent() {
+        return Stream.of(
+                Arguments.of(""),
+                Arguments.of("aaa")
+        );
     }
 }
