@@ -46,12 +46,6 @@ class UserServiceTest {
     }
 
     @ParameterizedTest
-    @MethodSource("provideCorrectIds")
-    public void testCanFindUserByCorrectIds(long correctId) {
-        Assertions.assertNotNull(userService.findById(correctId));
-    }
-
-    @ParameterizedTest
     @MethodSource("provideIncorrectIds")
     public void testCannotFindUserByIncorrectIds(long incorrectId) {
         Assertions.assertThrows(NotFoundException.class, () -> userService.findById(incorrectId));
@@ -83,47 +77,12 @@ class UserServiceTest {
     }
 
     @Test
-    public void testCanSaveNotExisting() {
-        final User existingUser = userService.findById((long) 1);
-        Assertions.assertNotNull(existingUser);
-
-        final int newRank = existingUser.rank + 200;
-        existingUser.rank = newRank;
-        userService.save(existingUser);
-        final User savedUser = userService.findById((long) 1);
-        Assertions.assertEquals(existingUser, savedUser);
-        Assertions.assertEquals(newRank, savedUser.rank);
-    }
-
-    @Test
-    public void testCanNotSaveExisting() {
-        final User user = userService.findById((long) 1);
-        user.id = Long.MAX_VALUE;
-        Assertions.assertThrows(InvalidParamsException.class, () -> userService.save(user));
-    }
-
-    @Test
     public void canDeleteExisting() {
         final User user = new User("a", "a@a.com", "p");
         userService.save(user);
         Assertions.assertTrue(userService.hasUser(user));
         userService.delete(user);
         Assertions.assertFalse(userService.hasUser(user));
-    }
-
-    @Test
-    public void testCannotDeleteNotExisting() {
-        final User user = new User("a", "a@a.com", "p");
-        Assertions.assertFalse(userService.hasUser(user));
-        Assertions.assertThrows(NotFoundException.class, () -> userService.delete(user));
-    }
-
-    private static Stream<Arguments> provideCorrectIds() {
-        return Stream.of(
-                Arguments.of((long) 1),
-                Arguments.of((long) 0),
-                Arguments.of((long) 100)
-        );
     }
 
     private static Stream<Arguments> provideIncorrectIds() {
