@@ -1,5 +1,6 @@
 package ru.shipcollision.api.services;
 
+import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -68,6 +69,19 @@ class UserServiceTest {
         Assertions.assertThrows(NotFoundException.class, () -> userService.findByEmail(incorrectEmail));
     }
 
+    @ParameterizedTest
+    @MethodSource("provideUsersWithCorrectFields")
+    public void testCanSaveUsersWithCorrectFields(User user) {
+        userService.save(user);
+        Assertions.assertEquals(user, userService.findByEmail(user.email));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideUsersWithIncorrectFields")
+    public void testCannotSaveUsersWithIncorrectFields(User user) {
+        Assertions.assertThrows(InvalidParamsException.class, () -> userService.save(user));
+    }
+
     @Test
     public void testCanSaveNotExisting() {
         final User existingUser = userService.findById((long) 1);
@@ -86,6 +100,22 @@ class UserServiceTest {
         final User user = userService.findById((long) 1);
         user.id = Long.MAX_VALUE;
         Assertions.assertThrows(InvalidParamsException.class, () -> userService.save(user));
+    }
+
+    @Test
+    public void canDeleteExisting() {
+        final User user = new User("a", "a@a.com", "p");
+        userService.save(user);
+        Assertions.assertTrue(userService.hasUser(user));
+        userService.delete(user);
+        Assertions.assertFalse(userService.hasUser(user));
+    }
+
+    @Test
+    public void testCannotDeleteNotExisting() {
+        final User user = new User("a", "a@a.com", "p");
+        Assertions.assertFalse(userService.hasUser(user));
+        Assertions.assertThrows(NotFoundException.class, () -> userService.delete(user));
     }
 
     private static Stream<Arguments> provideCorrectIds() {
@@ -113,6 +143,24 @@ class UserServiceTest {
         return Stream.of(
                 Arguments.of("aaaa"),
                 Arguments.of("not-existing-email@corp.mail.ru")
+        );
+    }
+
+    private static Stream<Arguments> provideUsersWithCorrectFields() {
+        return Stream.of(
+                Arguments.of(new User("newnickname", "new@email.com", "password1")),
+                Arguments.of(new User("evenmorenewnickname", "even.more.new@email.com", "password1"))
+        );
+    }
+
+    private static Stream<Arguments> provideUsersWithIncorrectFields() {
+        return Stream.of(
+                Arguments.of(new User("", "email@mail.ru", "password1")),
+                Arguments.of(new User("username", "", "password1")),
+                Arguments.of(new User("username", "email@mail.ru", "")),
+                Arguments.of(new User("cvkucherov", "email@mail.ru", "password1")),
+                Arguments.of(new User("cvk", "cvkucherov@yandex.ru", "password1")),
+                Arguments.of(new User("cvkucherov", "cvkucherov@yandex.ru", "password1"))
         );
     }
 }
