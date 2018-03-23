@@ -2,45 +2,59 @@ package ru.shipcollision.api.models;
 
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import javax.validation.Validation;
+import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 import javax.validation.constraints.NotNull;
 import java.util.stream.Stream;
 
-/**
- * Тест модели пользователя.
- */
+@DisplayName("Тест модели пользователя")
 class UserTest {
 
     @Test
+    @DisplayName("id увеличивается")
     public void testIdIncrements() {
         final User u1 = new User();
         final User u2 = new User();
 
         Assertions.assertNotEquals(u1.id, u2.id);
-        Assertions.assertTrue(u1.id < u2.id, "Second user id must be > than first user id");
+        Assertions.assertTrue(
+                u1.id < u2.id,
+                "id пользователя, созданного позже, меньше, чем id пользователя, созданного раньше"
+        );
     }
 
     @ParameterizedTest
     @MethodSource("provideCorrectUserData")
+    @DisplayName("можно создать пользователя с корректными данными")
     public void testUserCreatedWithCorrectData(String username, String email, int rank, String password) {
+        final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        final Validator validator = validatorFactory.getValidator();
+
         User user = new User(username, email, password);
+
+        Assertions.assertTrue(validator.validate(user).isEmpty());
+
         Assertions.assertNotNull(user);
         Assertions.assertNull(user.avatarLink);
-        Assertions.assertTrue(user.id >= 0, "User id must be >= 0");
+        Assertions.assertTrue(user.id >= 0, "id должно быть неотрицательным");
         Assertions.assertEquals(username, user.username);
         Assertions.assertEquals(email, user.email);
         Assertions.assertEquals(password, user.password);
         Assertions.assertNotEquals(rank, user.rank);
 
         user = new User(username, email, rank, password);
+
+        Assertions.assertTrue(validator.validate(user).isEmpty());
+
         Assertions.assertNull(user.avatarLink);
-        Assertions.assertTrue(user.id >= 0, "User id must be >= 0");
+        Assertions.assertTrue(user.id >= 0, "id должно быть неотрицательным");
         Assertions.assertEquals(username, user.username);
         Assertions.assertEquals(email, user.email);
         Assertions.assertEquals(password, user.password);
@@ -49,28 +63,32 @@ class UserTest {
 
     @ParameterizedTest
     @MethodSource("provideIncorrectUserData")
+    @DisplayName("валидации пользователя с некорректными данными не проходят")
     public void testUserNotCreatedWithInvalidData(String username, String email, int rank, String password) {
         final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         final User user = new User(username, email, rank, password);
-
         Assertions.assertFalse(validatorFactory.getValidator().validate(user).isEmpty());
     }
 
     @ParameterizedTest
     @MethodSource("provideObjectPairs")
+    @DisplayName("проверка объектов на равенство дает корректные результаты")
     public void testEquals(@NotNull Object user1, Object user2, boolean equals) {
         Assertions.assertEquals(user1.equals(user2), equals);
     }
 
     @Test
+    @DisplayName("хэш-код объекта соответствует ожидаемому")
     public void testHashCode() {
         final User user = new User();
         Assertions.assertEquals(user.id.intValue(), user.hashCode());
     }
 
     private static Stream<Arguments> provideCorrectUserData() {
+        final Faker faker = new Faker();
+
         return Stream.of(
-                Arguments.of("username", "email@mail.ru", 1, "password1")
+                Arguments.of(faker.name().username(), faker.internet().emailAddress(), 1, faker.internet().password())
         );
     }
 
