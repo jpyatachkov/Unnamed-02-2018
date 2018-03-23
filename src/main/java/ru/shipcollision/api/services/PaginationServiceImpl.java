@@ -51,7 +51,8 @@ public class PaginationServiceImpl<T> implements PaginationService<T> {
      * @return Ссылка на страницу с подставленными параметрами.
      */
     private String resolvePageLink(String basePath, int offsetParam, int limitParam) {
-        return basePath + String.format("?offset=%d&limit=%d", offsetParam, limitParam);
+        final String terminatingSlash = (basePath.isEmpty() || basePath.endsWith("/")) ? "" : "/";
+        return basePath + terminatingSlash + String.format("?offset=%d&limit=%d", offsetParam, limitParam);
     }
 
     /**
@@ -70,11 +71,14 @@ public class PaginationServiceImpl<T> implements PaginationService<T> {
         }
 
         final int startIdx = limit * (offset - 1);
-        if (startIdx >= objects.size()) {
+        if (startIdx >= objects.size() || startIdx < 0) {
             throw new PaginationException();
         }
 
         int endIdx = startIdx + limit;
+        if (endIdx < 0) {
+            throw new PaginationException();
+        }
         if (endIdx > objects.size()) {
             endIdx = objects.size();
         }
