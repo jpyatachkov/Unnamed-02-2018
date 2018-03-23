@@ -19,7 +19,7 @@ import ru.shipcollision.api.models.User;
         webEnvironment = SpringBootTest.WebEnvironment.NONE,
         classes = {SessionServiceImpl.class, UserServiceImpl.class}
 )
-@DisplayName("Тест сервиса сессий")
+@DisplayName("Тест cервиса сессий")
 public class SessionServiceImplTest {
 
     @MockBean
