@@ -2,6 +2,7 @@ package ru.shipcollision.api.services;
 
 import org.springframework.stereotype.Service;
 import ru.shipcollision.api.exceptions.ForbiddenException;
+import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
@@ -28,9 +29,18 @@ public class SessionServiceImpl implements SessionService {
      *
      * @return Проверяет, установлена ли кука.
      */
-    private boolean sessionHasUser(HttpSession session) {
+    private User getUserFromSession(HttpSession session) {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
-        return userId != null && userService.findById((Long) userId) != null;
+
+        if (userId == null)
+            throw new ForbiddenException();
+
+        try {
+            return userService.findById((Long) userId);
+        } catch (NotFoundException e) {
+            session.removeAttribute(ATTRIBUTE_NAME);
+            throw new ForbiddenException();
+        }
     }
 
     /**
@@ -50,11 +60,7 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public User getCurrentUser(HttpSession session) {
-        final Object userId = session.getAttribute(ATTRIBUTE_NAME);
-        if (userId == null) {
-            throw new ForbiddenException();
-        }
-        return userService.findById((Long) userId);
+        return getUserFromSession(session);
     }
 
     /**
@@ -62,9 +68,8 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void closeSession(HttpSession session) {
-        if (!sessionHasUser(session)) {
-            throw new ForbiddenException();
+        if (getUserFromSession(session) != null) {
+            session.removeAttribute(ATTRIBUTE_NAME);
         }
-        session.removeAttribute(ATTRIBUTE_NAME);
     }
 }

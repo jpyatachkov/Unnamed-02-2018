@@ -9,7 +9,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.AdditionalMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,9 +19,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.shipcollision.api.CorrectUserHelper;
 import ru.shipcollision.api.exceptions.ForbiddenException;
-import ru.shipcollision.api.exceptions.InvalidCredentialsException;
-import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.SessionServiceImpl;
 import ru.shipcollision.api.services.UserServiceImpl;
@@ -51,21 +49,11 @@ public class SessionsControllerTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
-    private User getCorrectUser() {
-        final User correctUser = new User();
-        correctUser.id = CorrectUserParams.id;
-        correctUser.username = CorrectUserParams.username;
-        correctUser.email = CorrectUserParams.email;
-        correctUser.rank = CorrectUserParams.rank;
-        correctUser.password = CorrectUserParams.password;
-        return correctUser;
-    }
-
     /**
      * Эмуляция залогиненного пользователя.
      */
     private void mockSessionServiceWithUser() {
-        final User correctUser = getCorrectUser();
+        final User correctUser = CorrectUserHelper.getCorrectUser();
         Mockito.when(sessionService.getCurrentUser(Mockito.any())).thenReturn(correctUser);
     }
 
@@ -78,39 +66,7 @@ public class SessionsControllerTest {
 
     @BeforeEach
     public void mockUserService() {
-        final User correctUser = getCorrectUser();
-
-        // UserService будет отвечать успешно, только если кидать ему на вход
-        // correctUser'a или его атрибуты. В остальных случаях будет исключение.
-        Mockito.when(userService.hasEmail(correctUser.email))
-                .thenReturn(true);
-        Mockito.when(userService.hasEmail(AdditionalMatchers.not(Mockito.eq(correctUser.email))))
-                .thenThrow(InvalidCredentialsException.class);
-
-        Mockito.when(userService.hasId(correctUser.id))
-                .thenReturn(true);
-        Mockito.when(userService.hasId(AdditionalMatchers.not(Mockito.eq(correctUser.id))))
-                .thenThrow(InvalidCredentialsException.class);
-
-        Mockito.when(userService.hasUser(correctUser))
-                .thenReturn(true);
-        Mockito.when(userService.hasUser(AdditionalMatchers.not(Mockito.eq(correctUser))))
-                .thenThrow(InvalidCredentialsException.class);
-
-        Mockito.when(userService.hasusername(correctUser.username))
-                .thenReturn(true);
-        Mockito.when(userService.hasusername(AdditionalMatchers.not(Mockito.eq(correctUser.username))))
-                .thenThrow(InvalidCredentialsException.class);
-
-        Mockito.when(userService.findById(correctUser.id))
-                .thenReturn(correctUser);
-        Mockito.when(userService.findById(AdditionalMatchers.not(Mockito.eq(correctUser.id))))
-                .thenThrow(NotFoundException.class);
-
-        Mockito.when(userService.findByEmail(correctUser.email))
-                .thenReturn(correctUser);
-        Mockito.when(userService.findByEmail(AdditionalMatchers.not(Mockito.eq(correctUser.email))))
-                .thenThrow(NotFoundException.class);
+        CorrectUserHelper.mockUserService(userService);
     }
 
     @Test
@@ -118,7 +74,7 @@ public class SessionsControllerTest {
     public void testCorrectSignin() {
         mockSessionServiceWithUser();
 
-        final User user = getCorrectUser();
+        final User user = CorrectUserHelper.getCorrectUser();
         final SessionsController.SigninRequest signinRequest =
                 new SessionsController.SigninRequest(user.email, user.password);
         final ResponseEntity<User> response = testRestTemplate.postForEntity(SIGNIN_ROUTE, signinRequest, User.class);
@@ -174,33 +130,9 @@ public class SessionsControllerTest {
         final Faker faker = new Faker();
 
         return Stream.of(
-                Arguments.of(CorrectUserParams.email, faker.internet().password()),
-                Arguments.of(faker.internet().emailAddress(), CorrectUserParams.password),
+                Arguments.of(CorrectUserHelper.email, faker.internet().password()),
+                Arguments.of(faker.internet().emailAddress(), CorrectUserHelper.password),
                 Arguments.of(faker.internet().emailAddress(), faker.internet().password())
         );
-    }
-
-    @SuppressWarnings("PublicField")
-    private static class CorrectUserParams {
-
-        public static Long id;
-
-        public static String username;
-
-        public static String email;
-
-        public static int rank;
-
-        public static String password;
-
-        static {
-            final Faker faker = new Faker();
-
-            id = (long) 1;
-            username = faker.name().username();
-            email = faker.internet().emailAddress();
-            rank = 1;
-            password = faker.internet().password();
-        }
     }
 }
