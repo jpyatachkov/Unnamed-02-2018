@@ -33,14 +33,23 @@ public class CorrectUserHelper {
 
     public static User getCorrectUser() {
         final User correctUser = new User();
-
         correctUser.id = id;
         correctUser.username = username;
         correctUser.email = email;
         correctUser.rank = rank;
         correctUser.password = password;
-
         return correctUser;
+    }
+
+    public static User getRandomCorrectUser() {
+        final Faker faker = new Faker();
+
+        final User user = new User();
+        user.username = faker.name().username();
+        user.email = faker.internet().emailAddress();
+        user.rank = faker.random().nextInt(1);
+        user.password = faker.internet().password();
+        return user;
     }
 
     public static void mockUserService(UserServiceImpl userService) {
@@ -77,5 +86,28 @@ public class CorrectUserHelper {
                 .thenReturn(correctUser);
         Mockito.when(userService.findByEmail(AdditionalMatchers.not(Mockito.eq(correctUser.email))))
                 .thenThrow(NotFoundException.class);
+    }
+
+    /**
+     * Класс для тестов, чтобы не ломать ограничения модели User.
+     */
+    @SuppressWarnings({"PublicField", "InnerClassFieldHidesOuterClassField"})
+    public static class ProxyUser {
+
+        public String username;
+
+        public String email;
+
+        public String password;
+
+        public ProxyUser(String username, String email, String password) {
+            this.username = username;
+            this.email = email;
+            this.password = password;
+        }
+
+        public static ProxyUser fromUser(User user) {
+            return new ProxyUser(user.username, user.email, user.password);
+        }
     }
 }
