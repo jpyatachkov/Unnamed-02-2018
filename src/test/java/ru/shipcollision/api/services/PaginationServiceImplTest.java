@@ -27,6 +27,87 @@ public class PaginationServiceImplTest {
     @Autowired
     private PaginationServiceImpl<Object> paginationService;
 
+    private static Stream<Arguments> provideCorrectPaginationData() {
+        return Stream.of(
+                Arguments.of(List.of(1, 2, 3), 1, 10, List.of(1, 2, 3)),
+                Arguments.of(List.of(1, 2, 3), 1, 100, List.of(1, 2, 3)),
+                Arguments.of(List.of(1, 2, 3), 1, 1, List.of(1)),
+                Arguments.of(List.of(1, 2, 3), 2, 1, List.of(2)),
+                Arguments.of(List.of(1, 2, 3), 2, 2, List.of(3))
+        );
+    }
+
+    private static Stream<Arguments> provideIncorrectPaginationData() {
+        return Stream.of(
+                Arguments.of(List.of(1, 2, 3), 4, 10),
+                Arguments.of(List.of(1, 2, 3), 4, PaginationServiceImpl.MAX_LIMIT + 1),
+                Arguments.of(List.of(1, 2, 3), -1, 10),
+                Arguments.of(List.of(1, 2, 3), 1, -10),
+                Arguments.of(List.of(1, 2, 3), -1, -10)
+        );
+    }
+
+    @SuppressWarnings("MagicNumber")
+    private static Stream<Arguments> provideLongListSizes() {
+        return Stream.of(
+                Arguments.of(10000),
+                Arguments.of(978)
+        );
+    }
+
+    private static Stream<Arguments> provideDataForLinkResolving() {
+        return Stream.of(
+                Arguments.of(
+                        List.of(1, 2, 3, 4, 5),
+                        2,
+                        1,
+                        "base",
+                        String.format("base/?offset=%d&limit=%d", 1, 1),
+                        String.format("base/?offset=%d&limit=%d", 3, 1)
+                ),
+                Arguments.of(
+                        List.of(1, 2, 3, 4, 5),
+                        2,
+                        1,
+                        "base/",
+                        String.format("base/?offset=%d&limit=%d", 1, 1),
+                        String.format("base/?offset=%d&limit=%d", 3, 1)
+                ),
+                Arguments.of(
+                        List.of(1, 2, 3, 4, 5),
+                        2,
+                        1,
+                        "",
+                        String.format("?offset=%d&limit=%d", 1, 1),
+                        String.format("?offset=%d&limit=%d", 3, 1)
+                ),
+                Arguments.of(
+                        List.of(1, 2, 3, 4, 5),
+                        1,
+                        1,
+                        "",
+                        null,
+                        String.format("?offset=%d&limit=%d", 2, 1)
+                ),
+                Arguments.of(
+                        List.of(1, 2, 3, 4, 5),
+                        5,
+                        1,
+                        "",
+                        String.format("?offset=%d&limit=%d", 4, 1),
+                        null
+                ),
+                Arguments.of(
+                        List.of(1, 2, 3, 4, 5),
+                        1,
+                        10,
+                        "",
+                        null,
+                        null
+                )
+        );
+    }
+
     @Test
     @DisplayName("пагинация пустого массива даст пустой массив")
     public void testEmptyListPagination() {
@@ -107,86 +188,5 @@ public class PaginationServiceImplTest {
 
         Assertions.assertEquals(expectedPrev, paginationService.resolvePrevPageLink(basePath));
         Assertions.assertEquals(expectedNext, paginationService.resolveNextPageLink(basePath));
-    }
-
-    private static Stream<Arguments> provideCorrectPaginationData() {
-        return Stream.of(
-                Arguments.of(List.of(1, 2, 3), 1, 10, List.of(1, 2, 3)),
-                Arguments.of(List.of(1, 2, 3), 1, 100, List.of(1, 2, 3)),
-                Arguments.of(List.of(1, 2, 3), 1, 1, List.of(1)),
-                Arguments.of(List.of(1, 2, 3), 2, 1, List.of(2)),
-                Arguments.of(List.of(1, 2, 3), 2, 2, List.of(3))
-        );
-    }
-
-    private static Stream<Arguments> provideIncorrectPaginationData() {
-        return Stream.of(
-                Arguments.of(List.of(1, 2, 3), 4, 10),
-                Arguments.of(List.of(1, 2, 3), 4, PaginationServiceImpl.MAX_LIMIT + 1),
-                Arguments.of(List.of(1, 2, 3), -1, 10),
-                Arguments.of(List.of(1, 2, 3), 1, -10),
-                Arguments.of(List.of(1, 2, 3), -1, -10)
-        );
-    }
-
-    @SuppressWarnings("MagicNumber")
-    private static Stream<Arguments> provideLongListSizes() {
-        return Stream.of(
-                Arguments.of(10000),
-                Arguments.of(978)
-        );
-    }
-
-    private static Stream<Arguments> provideDataForLinkResolving() {
-        return Stream.of(
-                Arguments.of(
-                        List.of(1, 2, 3, 4, 5),
-                        2,
-                        1,
-                        "base",
-                        String.format("base/?offset=%d&limit=%d", 1, 1),
-                        String.format("base/?offset=%d&limit=%d", 3, 1)
-                ),
-                Arguments.of(
-                        List.of(1, 2, 3, 4, 5),
-                        2,
-                        1,
-                        "base/",
-                        String.format("base/?offset=%d&limit=%d", 1, 1),
-                        String.format("base/?offset=%d&limit=%d", 3, 1)
-                ),
-                Arguments.of(
-                        List.of(1, 2, 3, 4, 5),
-                        2,
-                        1,
-                        "",
-                        String.format("?offset=%d&limit=%d", 1, 1),
-                        String.format("?offset=%d&limit=%d", 3, 1)
-                ),
-                Arguments.of(
-                        List.of(1, 2, 3, 4, 5),
-                        1,
-                        1,
-                        "",
-                        null,
-                        String.format("?offset=%d&limit=%d", 2, 1)
-                ),
-                Arguments.of(
-                        List.of(1, 2, 3, 4, 5),
-                        5,
-                        1,
-                        "",
-                        String.format("?offset=%d&limit=%d", 4, 1),
-                        null
-                ),
-                Arguments.of(
-                        List.of(1, 2, 3, 4, 5),
-                        1,
-                        10,
-                        "",
-                        null,
-                        null
-                )
-        );
     }
 }

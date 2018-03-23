@@ -47,6 +47,37 @@ public class UsersControllerTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    private static List<User> generateUsersList() {
+        final Faker faker = new Faker();
+
+        final ArrayList<User> users = new ArrayList<>();
+        for (int i = 0; i < 10; i++) {
+            final User user = new User();
+
+            user.id = (long) i;
+            user.username = faker.name().username();
+            user.email = faker.internet().emailAddress();
+            user.rank = 10 - i;
+            // Линки на аватар есть не у всех, чтобы проверить, что в случае отсутствия линка
+            // такого поля в ответе сервера не будет.
+            user.avatarLink = (i % 2 == 0) ? faker.internet().url() : null;
+            user.password = faker.internet().password();
+
+            users.add(user);
+        }
+
+        return users;
+    }
+
+    private static Stream<Arguments> provideUserPages() {
+        final String prevPageLink = String.format(PAGE_LINK_FORMAT, 1, 10);
+        final String nextPageLink = String.format(PAGE_LINK_FORMAT, 3, 10);
+
+        return Stream.of(
+                Arguments.of(generateUsersList(), prevPageLink, nextPageLink)
+        );
+    }
+
     @BeforeEach
     public void mockUserService() {
         CorrectUserHelper.mockUserService(userService);
@@ -116,36 +147,5 @@ public class UsersControllerTest {
         Assertions.assertFalse(headers.isEmpty());
         Assertions.assertNotNull(headers.get("Location").get(0));
         Assertions.assertNotNull(response.getBody());
-    }
-
-    private static List<User> generateUsersList() {
-        final Faker faker = new Faker();
-
-        final ArrayList<User> users = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            final User user = new User();
-
-            user.id = (long) i;
-            user.username = faker.name().username();
-            user.email = faker.internet().emailAddress();
-            user.rank = 10 - i;
-            // Линки на аватар есть не у всех, чтобы проверить, что в случае отсутствия линка
-            // такого поля в ответе сервера не будет.
-            user.avatarLink = (i % 2 == 0) ? faker.internet().url() : null;
-            user.password = faker.internet().password();
-
-            users.add(user);
-        }
-
-        return users;
-    }
-
-    private static Stream<Arguments> provideUserPages() {
-        final String prevPageLink = String.format(PAGE_LINK_FORMAT, 1, 10);
-        final String nextPageLink = String.format(PAGE_LINK_FORMAT, 3, 10);
-
-        return Stream.of(
-                Arguments.of(generateUsersList(), prevPageLink, nextPageLink)
-        );
     }
 }

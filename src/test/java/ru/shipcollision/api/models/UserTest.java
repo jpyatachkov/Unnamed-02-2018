@@ -17,6 +17,52 @@ import java.util.stream.Stream;
 @DisplayName("Тест модели пользователя")
 class UserTest {
 
+    private static Stream<Arguments> provideCorrectUserData() {
+        final Faker faker = new Faker();
+
+        return Stream.of(
+                Arguments.of(faker.name().username(), faker.internet().emailAddress(), 1, faker.internet().password())
+        );
+    }
+
+    private static Stream<Arguments> provideIncorrectUserData() {
+        final Faker faker = new Faker();
+
+        final String correctUsername = faker.name().username();
+        final String correctEmail = faker.internet().emailAddress();
+        final int correctRank = 100500;
+        final String correctPassword = faker.internet().password();
+
+        return Stream.of(
+                Arguments.of(null, correctEmail, correctRank, correctPassword),
+                Arguments.of("", correctEmail, correctRank, correctPassword),
+                Arguments.of("aaa", correctEmail, correctRank, correctPassword),
+                Arguments.of(correctUsername, null, correctRank, correctPassword),
+                Arguments.of(correctUsername, "", correctRank, correctPassword),
+                Arguments.of(correctUsername, "not_email", correctRank, correctPassword),
+                Arguments.of(correctUsername, correctEmail, -10, correctPassword),
+                Arguments.of(correctUsername, correctEmail, correctRank, null),
+                Arguments.of(correctUsername, correctEmail, correctRank, ""),
+                Arguments.of(correctUsername, correctEmail, correctRank, "aaa")
+        );
+    }
+
+    private static Stream<Arguments> provideObjectPairs() {
+        final User user = new User();
+
+        return Stream.of(
+                Arguments.of(new User(), null, false),
+                Arguments.of(new User(), "aaaa", false),
+                Arguments.of(new User(), new User(), false),
+                Arguments.of(
+                        new User("username", "email@mail.ru", "password1"),
+                        new User("username", "email@mail.ru", "password1"),
+                        false
+                ),
+                Arguments.of(user, user, true)
+        );
+    }
+
     @Test
     @DisplayName("id увеличивается")
     public void testIdIncrements() {
@@ -82,51 +128,5 @@ class UserTest {
     public void testHashCode() {
         final User user = new User();
         Assertions.assertEquals(user.id.intValue(), user.hashCode());
-    }
-
-    private static Stream<Arguments> provideCorrectUserData() {
-        final Faker faker = new Faker();
-
-        return Stream.of(
-                Arguments.of(faker.name().username(), faker.internet().emailAddress(), 1, faker.internet().password())
-        );
-    }
-
-    private static Stream<Arguments> provideIncorrectUserData() {
-        final Faker faker = new Faker();
-
-        final String correctUsername = faker.name().username();
-        final String correctEmail = faker.internet().emailAddress();
-        final int correctRank = 100500;
-        final String correctPassword = faker.internet().password();
-
-        return Stream.of(
-                Arguments.of(null, correctEmail, correctRank, correctPassword),
-                Arguments.of("", correctEmail, correctRank, correctPassword),
-                Arguments.of("aaa", correctEmail, correctRank, correctPassword),
-                Arguments.of(correctUsername, null, correctRank, correctPassword),
-                Arguments.of(correctUsername, "", correctRank, correctPassword),
-                Arguments.of(correctUsername, "not_email", correctRank, correctPassword),
-                Arguments.of(correctUsername, correctEmail, -10, correctPassword),
-                Arguments.of(correctUsername, correctEmail, correctRank, null),
-                Arguments.of(correctUsername, correctEmail, correctRank, ""),
-                Arguments.of(correctUsername, correctEmail, correctRank, "aaa")
-        );
-    }
-
-    private static Stream<Arguments> provideObjectPairs() {
-        final User user = new User();
-
-        return Stream.of(
-                Arguments.of(new User(), null, false),
-                Arguments.of(new User(), "aaaa", false),
-                Arguments.of(new User(), new User(), false),
-                Arguments.of(
-                        new User("username", "email@mail.ru", "password1"),
-                        new User("username", "email@mail.ru", "password1"),
-                        false
-                ),
-                Arguments.of(user, user, true)
-        );
     }
 }

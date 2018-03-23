@@ -11,18 +11,18 @@ import java.util.stream.Stream;
 @DisplayName("Тест модели сообщения API")
 class ApiMessageTest {
 
+    private static Stream<Arguments> provideMessageContent() {
+        return Stream.of(
+                Arguments.of(""),
+                Arguments.of("aaa")
+        );
+    }
+
     @ParameterizedTest
     @MethodSource("provideMessageContent")
     @DisplayName("то, что мы записываем, совпадает с тем, что мы видим")
     public void testActualContentEqualsExpected(String messageContent) {
         final ApiMessage message = new ApiMessage(messageContent);
         Assertions.assertEquals(message.message, messageContent);
-    }
-
-    private static Stream<Arguments> provideMessageContent() {
-        return Stream.of(
-                Arguments.of(""),
-                Arguments.of("aaa")
-        );
     }
 }

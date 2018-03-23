@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import ru.shipcollision.api.models.ApiMessage;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.PaginationService;
 import ru.shipcollision.api.services.SessionService;

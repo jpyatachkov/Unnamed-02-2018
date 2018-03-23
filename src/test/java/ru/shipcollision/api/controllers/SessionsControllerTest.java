@@ -49,6 +49,16 @@ public class SessionsControllerTest {
     @Autowired
     private TestRestTemplate testRestTemplate;
 
+    private static Stream<Arguments> provideIncorrectCredentials() {
+        final Faker faker = new Faker();
+
+        return Stream.of(
+                Arguments.of(CorrectUserHelper.email, faker.internet().password()),
+                Arguments.of(faker.internet().emailAddress(), CorrectUserHelper.password),
+                Arguments.of(faker.internet().emailAddress(), faker.internet().password())
+        );
+    }
+
     /**
      * Эмуляция залогиненного пользователя.
      */
@@ -124,15 +134,5 @@ public class SessionsControllerTest {
         final ResponseEntity<Object> response =
                 testRestTemplate.exchange(SIGNOUT_ROUTE, HttpMethod.DELETE, null, Object.class);
         Assertions.assertEquals(response.getStatusCode(), HttpStatus.FORBIDDEN);
-    }
-
-    private static Stream<Arguments> provideIncorrectCredentials() {
-        final Faker faker = new Faker();
-
-        return Stream.of(
-                Arguments.of(CorrectUserHelper.email, faker.internet().password()),
-                Arguments.of(faker.internet().emailAddress(), CorrectUserHelper.password),
-                Arguments.of(faker.internet().emailAddress(), faker.internet().password())
-        );
     }
 }
