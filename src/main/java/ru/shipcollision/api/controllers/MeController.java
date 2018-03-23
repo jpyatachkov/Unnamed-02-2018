@@ -52,17 +52,15 @@ public class MeController {
     @PatchMapping
     public ResponseEntity doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
                                     HttpSession session) {
-        final User currentUser = sessionService.getCurrentUser(session);
-        userService.partialUpdate(currentUser, updateRequest);
+        userService.partialUpdate(sessionService.getCurrentUser(session), updateRequest);
         return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
     }
 
     @PutMapping
     public ResponseEntity doPutMe(@RequestBody @Valid CreateOrFullUpdateRequest updateRequest,
                                   HttpSession session) {
-        final User currentUser = sessionService.getCurrentUser(session);
-        userService.update(currentUser, updateRequest);
-        return ResponseEntity.ok().body(currentUser);
+        userService.update(sessionService.getCurrentUser(session), updateRequest);
+        return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
     }
 
     @DeleteMapping
