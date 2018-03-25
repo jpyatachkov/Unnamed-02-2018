@@ -89,7 +89,7 @@ public class SessionsControllerTest {
                 new SessionsController.SigninRequest(user.email, user.password);
         final ResponseEntity<User> response = testRestTemplate.postForEntity(SIGNIN_ROUTE, signinRequest, User.class);
 
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
         final HttpHeaders responseHeaders = response.getHeaders();
         final User responseUser = response.getBody();
@@ -100,8 +100,8 @@ public class SessionsControllerTest {
         Assertions.assertFalse(cookies.isEmpty());
 
         Assertions.assertNotNull(responseUser);
-        Assertions.assertEquals(responseUser.email, user.email);
-        Assertions.assertEquals(responseUser.username, user.username);
+        Assertions.assertEquals(user.email, responseUser.email);
+        Assertions.assertEquals(user.username, responseUser.username);
         Assertions.assertNull(responseUser.password);
     }
 
@@ -115,7 +115,7 @@ public class SessionsControllerTest {
                 new SessionsController.SigninRequest(email, password);
         final ResponseEntity<Object> response = testRestTemplate.postForEntity(SIGNIN_ROUTE, request, Object.class);
 
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+        Assertions.assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
     @Test
@@ -124,7 +124,7 @@ public class SessionsControllerTest {
         mockSessionServiceWithUser();
         final ResponseEntity<Object> response =
                 testRestTemplate.exchange(SIGNOUT_ROUTE, HttpMethod.DELETE, null, Object.class);
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
     }
 
     @Test
@@ -133,6 +133,6 @@ public class SessionsControllerTest {
         mockSessionServiceWithoutUser();
         final ResponseEntity<Object> response =
                 testRestTemplate.exchange(SIGNOUT_ROUTE, HttpMethod.DELETE, null, Object.class);
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.FORBIDDEN);
+        Assertions.assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
     }
 }

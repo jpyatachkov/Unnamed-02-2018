@@ -59,13 +59,13 @@ public class SessionServiceImplTest {
         sessionService.openSession(sessionWithoutUser, correctUser);
 
         Assertions.assertNotNull(sessionWithoutUser.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME));
-        Assertions.assertEquals(sessionWithoutUser.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME), correctUser.id);
+        Assertions.assertEquals(correctUser.id, sessionWithoutUser.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME));
     }
 
     @Test
     @DisplayName("можно получить текущего пользователя из открытой сессии")
     public void testCanGetCurrentUserFromOpenedSession() {
-        Assertions.assertEquals(sessionService.getCurrentUser(sessionWithUser), CorrectUserHelper.getCorrectUser());
+        Assertions.assertEquals(CorrectUserHelper.getCorrectUser(), sessionService.getCurrentUser(sessionWithUser));
     }
 
     @Test

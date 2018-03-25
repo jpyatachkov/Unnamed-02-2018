@@ -120,7 +120,7 @@ class UserTest {
     @MethodSource("provideObjectPairs")
     @DisplayName("проверка объектов на равенство дает корректные результаты")
     public void testEquals(@NotNull Object user1, Object user2, boolean equals) {
-        Assertions.assertEquals(user1.equals(user2), equals);
+        Assertions.assertEquals(equals, user1.equals(user2));
     }
 
     @Test

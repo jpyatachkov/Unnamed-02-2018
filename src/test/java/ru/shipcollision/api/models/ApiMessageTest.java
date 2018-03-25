@@ -23,6 +23,6 @@ class ApiMessageTest {
     @DisplayName("то, что мы записываем, совпадает с тем, что мы видим")
     public void testActualContentEqualsExpected(String messageContent) {
         final ApiMessage message = new ApiMessage(messageContent);
-        Assertions.assertEquals(message.message, messageContent);
+        Assertions.assertEquals(messageContent, message.message);
     }
 }

@@ -28,11 +28,11 @@ public class ToolControllerTest {
     public void testAPIAccessible() {
         final ResponseEntity<Object> response =
                 testRestTemplate.exchange(PING_ROUTE, HttpMethod.HEAD, null, Object.class);
-        Assertions.assertEquals(response.getStatusCode(), HttpStatus.OK);
+        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
 
         final HttpHeaders headers = response.getHeaders();
         Assertions.assertFalse(headers.isEmpty());
         Assertions.assertFalse(headers.get("Status").isEmpty());
-        Assertions.assertEquals(headers.get("Status").get(0), "OK");
+        Assertions.assertEquals("OK", headers.get("Status").get(0));
     }
 }
