@@ -60,7 +60,11 @@ public class FileIOServiceImpl implements FileIOService {
             final LocalDateTime now = LocalDateTime.now();
 
             final String fileExtension = originalFilename.split("\\.")[1];
-            filename = String.format("%s.%s", UUID.randomUUID().toString(), fileExtension);
+            filename = String.format(
+                    "%s.%s",
+                    UUID.randomUUID().toString().replace("-", ""),
+                    fileExtension
+            );
 
             final String resourseDirectoryPath = String.format(
                     "%d/%d/%d",
