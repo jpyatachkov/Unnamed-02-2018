@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Service
 public class FileIOServiceImpl implements FileIOService {
@@ -59,26 +60,16 @@ public class FileIOServiceImpl implements FileIOService {
             final LocalDateTime now = LocalDateTime.now();
 
             final String fileExtension = originalFilename.split("\\.")[1];
-            filename = String.format(
-                    "%d%d%d.%s",
-                    now.getHour(),
-                    now.getMinute(),
-                    now.getSecond(),
-                    fileExtension
-            );
+            filename = String.format("%s.%s", UUID.randomUUID().toString(), fileExtension);
 
-            resoursePath = String.format(
+            final String resourseDirectoryPath = String.format(
                     "%d/%d/%d",
                     now.getYear(),
                     now.getMonthValue(),
                     now.getDayOfMonth()
             );
 
-            final Path uploadPath = Paths.get(String.format(
-                    "%s/%s",
-                    BASE_PATH,
-                    resoursePath
-            )).toAbsolutePath();
+            final Path uploadPath = Paths.get(BASE_PATH, resourseDirectoryPath).toAbsolutePath();
 
             try {
                 Files.createDirectories(uploadPath);
@@ -86,12 +77,13 @@ public class FileIOServiceImpl implements FileIOService {
                 throw new ApiException(String.format("Impossible to create directory %s", uploadPath));
             }
 
-            resoursePath = String.format("/%s/%s/%s", BASE_PATH, resoursePath, filename);
-            saveFilePath = String.format("%s/%s", uploadPath.toString(), filename);
+            resoursePath = '/' + Paths.get(BASE_PATH, resourseDirectoryPath, filename).toString();
+            saveFilePath = Paths.get(uploadPath.toString(), filename).toString();
         }
 
         public static Path toAbsolutePath(String resoursePath) {
-            resoursePath = (resoursePath != null && resoursePath.charAt(0) == '/') ? resoursePath.substring(1) : resoursePath;
+            resoursePath = (resoursePath != null && resoursePath.charAt(0) == '/') ?
+                    resoursePath.substring(1) : resoursePath;
             return Paths.get(String.format("%s", resoursePath)).toAbsolutePath();
         }
 
