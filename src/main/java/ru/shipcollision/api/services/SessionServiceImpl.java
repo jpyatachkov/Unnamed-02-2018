@@ -32,8 +32,9 @@ public class SessionServiceImpl implements SessionService {
     private User getUserFromSession(HttpSession session) {
         final Object userId = session.getAttribute(ATTRIBUTE_NAME);
 
-        if (userId == null)
+        if (userId == null) {
             throw new ForbiddenException();
+        }
 
         try {
             return userService.findById((Long) userId);
