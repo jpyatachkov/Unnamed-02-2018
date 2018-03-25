@@ -82,8 +82,8 @@ public class FileIOServiceImpl implements FileIOService {
         }
 
         public static Path toAbsolutePath(String resoursePath) {
-            resoursePath = (resoursePath != null && resoursePath.charAt(0) == '/') ?
-                    resoursePath.substring(1) : resoursePath;
+            resoursePath =
+                    (resoursePath != null && resoursePath.charAt(0) == '/') ? resoursePath.substring(1) : resoursePath;
             return Paths.get(String.format("%s", resoursePath)).toAbsolutePath();
         }
 
