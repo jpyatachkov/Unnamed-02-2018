@@ -76,9 +76,9 @@ public class CorrectUserHelper {
         Mockito.when(userService.hasUser(AdditionalMatchers.not(Mockito.eq(correctUser))))
                 .thenThrow(InvalidCredentialsException.class);
 
-        Mockito.when(userService.hasusername(correctUser.username))
+        Mockito.when(userService.hasUsername(correctUser.username))
                 .thenReturn(true);
-        Mockito.when(userService.hasusername(AdditionalMatchers.not(Mockito.eq(correctUser.username))))
+        Mockito.when(userService.hasUsername(AdditionalMatchers.not(Mockito.eq(correctUser.username))))
                 .thenThrow(InvalidCredentialsException.class);
 
         Mockito.when(userService.findById(correctUser.id))
