@@ -62,13 +62,22 @@ public class SessionsController {
     /**
      * Класс, представляющий запрос на аутентификацию.
      */
-    @SuppressWarnings("PublicField")
-    public static final class SigninRequest {
+    @SuppressWarnings({"PublicField", "unused"})
+    protected static final class SigninRequest {
 
         @JsonProperty("email")
         public @Email @NotEmpty String email;
 
         @JsonProperty("password")
         public @NotEmpty String password;
+
+        public SigninRequest() {
+        }
+
+        public SigninRequest(@Email @NotEmpty String email,
+                             @NotEmpty String password) {
+            this.email = email;
+            this.password = password;
+        }
     }
 }

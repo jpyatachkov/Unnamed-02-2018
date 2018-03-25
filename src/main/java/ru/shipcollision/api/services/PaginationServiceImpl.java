@@ -70,11 +70,14 @@ public class PaginationServiceImpl<T> implements PaginationService<T> {
         }
 
         final int startIdx = limit * (offset - 1);
-        if (startIdx >= objects.size()) {
+        if (startIdx >= objects.size() || startIdx < 0) {
             throw new PaginationException();
         }
 
         int endIdx = startIdx + limit;
+        if (endIdx < 0) {
+            throw new PaginationException();
+        }
         if (endIdx > objects.size()) {
             endIdx = objects.size();
         }

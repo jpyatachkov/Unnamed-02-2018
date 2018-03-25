@@ -160,8 +160,11 @@ public class UserServiceImpl implements UserService {
             throw new InvalidParamsException("Cannot create user: fields username and email should be unique");
         }
 
+        if (user.password.isEmpty()) {
+            throw new InvalidParamsException("Password could not be empty");
+        }
         if (user.username.isEmpty()) {
-            throw new InvalidParamsException("username could not be empty");
+            throw new InvalidParamsException("Username could not be empty");
         }
         if (user.email.isEmpty()) {
             throw new InvalidParamsException("Email could not be empty");
@@ -174,6 +177,8 @@ public class UserServiceImpl implements UserService {
     public void delete(User user) {
         if (hasUser(user)) {
             allUsers.remove(user.id);
+        } else {
+            throw new NotFoundException(String.format("User with id %d not found", user.id));
         }
     }
 

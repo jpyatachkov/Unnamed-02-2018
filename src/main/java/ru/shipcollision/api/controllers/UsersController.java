@@ -7,7 +7,6 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
-import ru.shipcollision.api.models.ApiMessage;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.PaginationService;
 import ru.shipcollision.api.services.SessionService;
@@ -55,26 +54,14 @@ public class UsersController {
         ));
     }
 
-    /**
-     * Создание пользователя
-     * !!!
-     * Можно создавать повторяющихся пользователей.
-     * !!!
-     */
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doPostUser(HttpServletRequest request,
                                      @RequestBody @Valid User user,
-                                     HttpSession session) {
-        try {
-            userService.save(user);
-            sessionService.openSession(session, user);
-            final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.id));
-            return ResponseEntity.created(location).body(user);
-        } catch (URISyntaxException error) {
-            return ResponseEntity.ok().body(new ApiMessage(
-                    "User has been created successfully, no resource URI available"
-            ));
-        }
+                                     HttpSession session) throws URISyntaxException {
+        userService.save(user);
+        sessionService.openSession(session, user);
+        final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.id));
+        return ResponseEntity.created(location).body(user);
     }
 
     @GetMapping(path = "/{userId}")
@@ -82,7 +69,7 @@ public class UsersController {
         return ResponseEntity.ok().body(userService.findById(userId.longValue()));
     }
 
-    @SuppressWarnings("PublicField")
+    @SuppressWarnings({"PublicField", "unused"})
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public static final class Scoreboard {
 
@@ -96,6 +83,9 @@ public class UsersController {
         @Nullable
         @JsonProperty(value = "nextPage")
         public String nextPageLink;
+
+        public Scoreboard() {
+        }
 
         public Scoreboard(@NotNull List<User> users, String prevPageLink, String nextPageLink) {
             this.users = users;
