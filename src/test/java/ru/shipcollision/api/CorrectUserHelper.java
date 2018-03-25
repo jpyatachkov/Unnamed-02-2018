@@ -8,6 +8,8 @@ import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.UserServiceImpl;
 
+import java.util.Random;
+
 @SuppressWarnings("PublicField")
 public class CorrectUserHelper {
 
@@ -43,11 +45,13 @@ public class CorrectUserHelper {
 
     public static User getRandomCorrectUser() {
         final Faker faker = new Faker();
+        final Random random = new Random();
 
         final User user = new User();
         user.username = faker.name().username();
         user.email = faker.internet().emailAddress();
-        user.rank = faker.random().nextInt(1);
+        final int bound = 100500;
+        user.rank = random.nextInt(bound);
         user.password = faker.internet().password();
         return user;
     }

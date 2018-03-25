@@ -62,24 +62,24 @@ public class PaginationServiceImplTest {
                         2,
                         1,
                         "base",
-                        String.format("base/?offset=%d&limit=%d", 1, 1),
-                        String.format("base/?offset=%d&limit=%d", 3, 1)
+                        String.format("/?offset=%d&limit=%d", 1, 1),
+                        String.format("/?offset=%d&limit=%d", 3, 1)
                 ),
                 Arguments.of(
                         List.of(1, 2, 3, 4, 5),
                         2,
                         1,
                         "base/",
-                        String.format("base/?offset=%d&limit=%d", 1, 1),
-                        String.format("base/?offset=%d&limit=%d", 3, 1)
+                        String.format("/?offset=%d&limit=%d", 1, 1),
+                        String.format("/?offset=%d&limit=%d", 3, 1)
                 ),
                 Arguments.of(
                         List.of(1, 2, 3, 4, 5),
                         2,
                         1,
                         "",
-                        String.format("?offset=%d&limit=%d", 1, 1),
-                        String.format("?offset=%d&limit=%d", 3, 1)
+                        String.format("/?offset=%d&limit=%d", 1, 1),
+                        String.format("/?offset=%d&limit=%d", 3, 1)
                 ),
                 Arguments.of(
                         List.of(1, 2, 3, 4, 5),
@@ -87,14 +87,14 @@ public class PaginationServiceImplTest {
                         1,
                         "",
                         null,
-                        String.format("?offset=%d&limit=%d", 2, 1)
+                        String.format("/?offset=%d&limit=%d", 2, 1)
                 ),
                 Arguments.of(
                         List.of(1, 2, 3, 4, 5),
                         5,
                         1,
                         "",
-                        String.format("?offset=%d&limit=%d", 4, 1),
+                        String.format("/?offset=%d&limit=%d", 4, 1),
                         null
                 ),
                 Arguments.of(
