@@ -35,11 +35,11 @@ public class CorrectUserHelper {
 
     public static User getCorrectUser() {
         final User correctUser = new User();
-        correctUser.id = id;
-        correctUser.username = username;
-        correctUser.email = email;
-        correctUser.rank = rank;
-        correctUser.password = password;
+        correctUser.setId(id);
+        correctUser.setUsername(username);
+        correctUser.setEmail(email);
+        correctUser.setRank(rank);
+        correctUser.setPassword(password);
         return correctUser;
     }
 
@@ -48,11 +48,11 @@ public class CorrectUserHelper {
         final Random random = new Random();
 
         final User user = new User();
-        user.username = faker.name().username();
-        user.email = faker.internet().emailAddress();
+        user.setUsername(faker.name().username());
+        user.setEmail(faker.internet().emailAddress());
         final int bound = 100500;
-        user.rank = random.nextInt(bound);
-        user.password = faker.internet().password();
+        user.setRank(random.nextInt(bound));
+        user.setPassword(faker.internet().password());
         return user;
     }
 
@@ -61,14 +61,14 @@ public class CorrectUserHelper {
 
         // UserService будет отвечать успешно, только если кидать ему на вход
         // correctUser'a или его атрибуты. В остальных случаях будет исключение.
-        Mockito.when(userService.hasEmail(correctUser.email))
+        Mockito.when(userService.hasEmail(correctUser.getEmail()))
                 .thenReturn(true);
-        Mockito.when(userService.hasEmail(AdditionalMatchers.not(Mockito.eq(correctUser.email))))
+        Mockito.when(userService.hasEmail(AdditionalMatchers.not(Mockito.eq(correctUser.getEmail()))))
                 .thenThrow(InvalidCredentialsException.class);
 
-        Mockito.when(userService.hasId(correctUser.id))
+        Mockito.when(userService.hasId(correctUser.getId()))
                 .thenReturn(true);
-        Mockito.when(userService.hasId(AdditionalMatchers.not(Mockito.eq(correctUser.id))))
+        Mockito.when(userService.hasId(AdditionalMatchers.not(Mockito.eq(correctUser.getId()))))
                 .thenThrow(InvalidCredentialsException.class);
 
         Mockito.when(userService.hasUser(correctUser))
@@ -76,19 +76,19 @@ public class CorrectUserHelper {
         Mockito.when(userService.hasUser(AdditionalMatchers.not(Mockito.eq(correctUser))))
                 .thenThrow(InvalidCredentialsException.class);
 
-        Mockito.when(userService.hasUsername(correctUser.username))
+        Mockito.when(userService.hasUsername(correctUser.getUsername()))
                 .thenReturn(true);
-        Mockito.when(userService.hasUsername(AdditionalMatchers.not(Mockito.eq(correctUser.username))))
+        Mockito.when(userService.hasUsername(AdditionalMatchers.not(Mockito.eq(correctUser.getUsername()))))
                 .thenThrow(InvalidCredentialsException.class);
 
-        Mockito.when(userService.findById(correctUser.id))
+        Mockito.when(userService.findById(correctUser.getId()))
                 .thenReturn(correctUser);
-        Mockito.when(userService.findById(AdditionalMatchers.not(Mockito.eq(correctUser.id))))
+        Mockito.when(userService.findById(AdditionalMatchers.not(Mockito.eq(correctUser.getId()))))
                 .thenThrow(NotFoundException.class);
 
-        Mockito.when(userService.findByEmail(correctUser.email))
+        Mockito.when(userService.findByEmail(correctUser.getEmail()))
                 .thenReturn(correctUser);
-        Mockito.when(userService.findByEmail(AdditionalMatchers.not(Mockito.eq(correctUser.email))))
+        Mockito.when(userService.findByEmail(AdditionalMatchers.not(Mockito.eq(correctUser.getEmail()))))
                 .thenThrow(NotFoundException.class);
     }
 
@@ -111,7 +111,7 @@ public class CorrectUserHelper {
         }
 
         public static ProxyUser fromUser(User user) {
-            return new ProxyUser(user.username, user.email, user.password);
+            return new ProxyUser(user.getUsername(), user.getEmail(), user.getPassword());
         }
     }
 }

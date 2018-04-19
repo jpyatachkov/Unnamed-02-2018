@@ -69,9 +69,9 @@ class UserTest {
         final User u1 = new User();
         final User u2 = new User();
 
-        Assertions.assertNotEquals(u1.id, u2.id);
+        Assertions.assertNotEquals(u1.getId(), u2.getId());
         Assertions.assertTrue(
-                u1.id < u2.id,
+                u1.getId() < u2.getId(),
                 "id пользователя, созданного позже, меньше, чем id пользователя, созданного раньше"
         );
     }
@@ -88,23 +88,23 @@ class UserTest {
         Assertions.assertTrue(validator.validate(user).isEmpty());
 
         Assertions.assertNotNull(user);
-        Assertions.assertNull(user.avatarLink);
-        Assertions.assertTrue(user.id >= 0, "id должно быть неотрицательным");
-        Assertions.assertEquals(username, user.username);
-        Assertions.assertEquals(email, user.email);
-        Assertions.assertEquals(password, user.password);
-        Assertions.assertNotEquals(rank, user.rank);
+        Assertions.assertNull(user.getAvatarLink());
+        Assertions.assertTrue(user.getId() >= 0, "id должно быть неотрицательным");
+        Assertions.assertEquals(username, user.getUsername());
+        Assertions.assertEquals(email, user.getEmail());
+        Assertions.assertEquals(password, user.getPassword());
+        Assertions.assertNotEquals(rank, user.getRank());
 
         user = new User(username, email, rank, password);
 
         Assertions.assertTrue(validator.validate(user).isEmpty());
 
-        Assertions.assertNull(user.avatarLink);
-        Assertions.assertTrue(user.id >= 0, "id должно быть неотрицательным");
-        Assertions.assertEquals(username, user.username);
-        Assertions.assertEquals(email, user.email);
-        Assertions.assertEquals(password, user.password);
-        Assertions.assertEquals(rank, user.rank);
+        Assertions.assertNull(user.getAvatarLink());
+        Assertions.assertTrue(user.getId() >= 0, "id должно быть неотрицательным");
+        Assertions.assertEquals(username, user.getUsername());
+        Assertions.assertEquals(email, user.getEmail());
+        Assertions.assertEquals(password, user.getPassword());
+        Assertions.assertEquals(rank, user.getRank());
     }
 
     @ParameterizedTest
@@ -127,6 +127,6 @@ class UserTest {
     @DisplayName("хэш-код объекта соответствует ожидаемому")
     public void testHashCode() {
         final User user = new User();
-        Assertions.assertEquals(user.id.intValue(), user.hashCode());
+        Assertions.assertEquals(user.getId().intValue(), user.hashCode());
     }
 }

@@ -86,7 +86,7 @@ public class SessionsControllerTest {
 
         final User user = CorrectUserHelper.getCorrectUser();
         final SessionsController.SigninRequest signinRequest =
-                new SessionsController.SigninRequest(user.email, user.password);
+                new SessionsController.SigninRequest(user.getEmail(), user.getPassword());
         final ResponseEntity<User> response = testRestTemplate.postForEntity(SIGNIN_ROUTE, signinRequest, User.class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -100,9 +100,9 @@ public class SessionsControllerTest {
         Assertions.assertFalse(cookies.isEmpty());
 
         Assertions.assertNotNull(responseUser);
-        Assertions.assertEquals(user.email, responseUser.email);
-        Assertions.assertEquals(user.username, responseUser.username);
-        Assertions.assertNull(responseUser.password);
+        Assertions.assertEquals(user.getEmail(), responseUser.getEmail());
+        Assertions.assertEquals(user.getUsername(), responseUser.getUsername());
+        Assertions.assertNull(responseUser.getPassword());
     }
 
     @ParameterizedTest

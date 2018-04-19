@@ -83,14 +83,14 @@ public class MeController {
 
         final User currentUser = sessionService.getCurrentUser(session);
 
-        if (fileIOService.fileExists(currentUser.avatarLink)) {
-            fileIOService.deleteFile(currentUser.avatarLink);
+        if (fileIOService.fileExists(currentUser.getAvatarLink())) {
+            fileIOService.deleteFile(currentUser.getAvatarLink());
         }
 
-        currentUser.avatarLink = fileIOService.saveFileAndGetResourcePath(avatar);
+        currentUser.setAvatarLink(fileIOService.saveFileAndGetResourcePath(avatar));
 
         try {
-            final URI avatarURI = new URI(currentUser.avatarLink);
+            final URI avatarURI = new URI(currentUser.getAvatarLink());
             return ResponseEntity.created(avatarURI).body(currentUser);
         } catch (URISyntaxException e) {
             return ResponseEntity.ok().body(new ApiMessage(
@@ -103,9 +103,9 @@ public class MeController {
     public ResponseEntity<?> doDeleteAvatar(HttpSession session) {
         final User currentUser = sessionService.getCurrentUser(session);
 
-        if (fileIOService.fileExists(currentUser.avatarLink)) {
-            fileIOService.deleteFile(currentUser.avatarLink);
-            currentUser.avatarLink = null;
+        if (fileIOService.fileExists(currentUser.getAvatarLink())) {
+            fileIOService.deleteFile(currentUser.getAvatarLink());
+            currentUser.setAvatarLink(null);
         }
 
         return ResponseEntity.ok().body(currentUser);

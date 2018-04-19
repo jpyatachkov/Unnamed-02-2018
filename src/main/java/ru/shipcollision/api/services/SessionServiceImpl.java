@@ -51,7 +51,7 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void openSession(HttpSession session, User user) {
-        session.setAttribute(ATTRIBUTE_NAME, user.id);
+        session.setAttribute(ATTRIBUTE_NAME, user.getId());
     }
 
     /**

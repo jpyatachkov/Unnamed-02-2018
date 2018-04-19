@@ -59,7 +59,7 @@ public class SessionServiceImplTest {
         sessionService.openSession(sessionWithoutUser, correctUser);
 
         Assertions.assertNotNull(sessionWithoutUser.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME));
-        Assertions.assertEquals(correctUser.id, sessionWithoutUser.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME));
+        Assertions.assertEquals(correctUser.getId(), sessionWithoutUser.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME));
     }
 
     @Test

@@ -88,8 +88,8 @@ public class MeControllerTest {
         final User user = response.getBody();
 
         Assertions.assertNotNull(user);
-        Assertions.assertEquals(request.username, user.username);
-        Assertions.assertEquals(request.email, user.email);
+        Assertions.assertEquals(request.username, user.getUsername());
+        Assertions.assertEquals(request.email, user.getPassword());
     }
 
     @Test

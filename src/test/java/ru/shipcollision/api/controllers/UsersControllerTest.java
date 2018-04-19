@@ -54,14 +54,14 @@ public class UsersControllerTest {
         for (int i = 0; i < 10; i++) {
             final User user = new User();
 
-            user.id = (long) i;
-            user.username = faker.name().username();
-            user.email = faker.internet().emailAddress();
-            user.rank = 10 - i;
+            user.setId((long) i);
+            user.setUsername(faker.name().username());
+            user.setEmail(faker.internet().emailAddress());
+            user.setRank(10 - i);
             // Линки на аватар есть не у всех, чтобы проверить, что в случае отсутствия линка
             // такого поля в ответе сервера не будет.
-            user.avatarLink = (i % 2 == 0) ? faker.internet().url() : null;
-            user.password = faker.internet().password();
+            user.setAvatarLink((i % 2 == 0) ? faker.internet().url() : null);
+            user.setPassword(faker.internet().password());
 
             users.add(user);
         }

@@ -60,7 +60,7 @@ public class UsersController {
                                      HttpSession session) throws URISyntaxException {
         userService.save(user);
         sessionService.openSession(session, user);
-        final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.id));
+        final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.getId()));
         return ResponseEntity.created(location).body(user);
     }
 

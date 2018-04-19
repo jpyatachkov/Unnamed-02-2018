@@ -44,7 +44,7 @@ public class SessionsController {
             throw new InvalidCredentialsException(error);
         }
 
-        if (user.password.equals(signinRequest.password)) {
+        if (user.getPassword().equals(signinRequest.password)) {
             sessionService.openSession(session, user);
             return ResponseEntity.ok().body(user);
         }
