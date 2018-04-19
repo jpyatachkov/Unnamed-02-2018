@@ -7,11 +7,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.SessionService;
-import ru.shipcollision.api.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -26,11 +26,11 @@ public class SessionsController {
 
     private final SessionService sessionService;
 
-    private final UserService userService;
+    private final UserDAO userDAO;
 
-    public SessionsController(SessionService sessionService, UserService userService) {
+    public SessionsController(SessionService sessionService, UserDAO userDAO) {
         this.sessionService = sessionService;
-        this.userService = userService;
+        this.userDAO = userDAO;
     }
 
     @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -39,12 +39,12 @@ public class SessionsController {
         final User user;
 
         try {
-            user = userService.findByEmail(signinRequest.email);
+            user = userDAO.findByEmail(signinRequest.email);
         } catch (NotFoundException error) {
             throw new InvalidCredentialsException(error);
         }
 
-        if (user.getPassword().equals(signinRequest.password)) {
+        if (user.password.equals(signinRequest.password)) {
             sessionService.openSession(session, user);
             return ResponseEntity.ok().body(user);
         }
