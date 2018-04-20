@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.shipcollision.api.controllers.MeController;
+import ru.shipcollision.api.controllers.SessionsController;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
@@ -65,6 +66,16 @@ public class UserDAO {
             throw  new NotFoundException(String.format("User with email %s not found", email));
         }
     }
+
+    public User authenticate(String email, String password) {
+        final User user = findByEmail(email);
+
+        if (BCrypt.checkpw(password, user.password)) {
+            return user;
+        } else {
+            throw new InvalidCredentialsException();
+        }
+    }
     
     public User save(User user) {
         if (user.id != null) {
@@ -74,7 +85,7 @@ public class UserDAO {
                     user.email,
                     user.rank,
                     user.avatarLink,
-                    user.password,
+                    BCrypt.hashpw(user.password, BCrypt.gensalt()),
                     user.id);
 
             return  user;
@@ -84,7 +95,7 @@ public class UserDAO {
 
             try {
                 List<User> query = jdbcTemplate.query(sqlQuery, new Object[]{user.username,
-                        user.email, user.rank, user.avatarLink, user.password}, USER_ROW_MAPPER);
+                        user.email, user.rank, user.avatarLink, BCrypt.hashpw(user.password, BCrypt.gensalt())}, USER_ROW_MAPPER);
                 return query.get(0);
             } catch (Throwable e) {
                 throw new InvalidCredentialsException();

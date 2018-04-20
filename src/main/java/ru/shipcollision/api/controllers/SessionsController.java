@@ -36,20 +36,9 @@ public class SessionsController {
     @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity doSignin(@RequestBody @Valid SigninRequest signinRequest,
                                    HttpSession session) {
-        final User user;
-
-        try {
-            user = userDAO.findByEmail(signinRequest.email);
-        } catch (NotFoundException error) {
-            throw new InvalidCredentialsException(error);
-        }
-
-        if (user.password.equals(signinRequest.password)) {
-            sessionService.openSession(session, user);
-            return ResponseEntity.ok().body(user);
-        }
-
-        throw new InvalidCredentialsException();
+        final User user = userDAO.authenticate(signinRequest.email, signinRequest.password);
+        sessionService.openSession(session, user);
+        return ResponseEntity.ok().body(user);
     }
 
     @DeleteMapping(path = "/signout")
