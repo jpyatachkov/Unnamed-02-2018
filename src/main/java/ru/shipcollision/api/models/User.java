@@ -85,7 +85,18 @@ public class User {
             return false;
         }
         final User other = (User) object;
-        return Objects.equals(id, other.id);
+
+        if (id != null && other.id != null) {
+            return Objects.equals(id, other.id);
+        } else if (hashCode != null && other.hashCode != null) {
+            return Objects.equals(hashCode, other.hashCode);
+        } else {
+            return rank == other.rank &&
+                    Objects.equals(username, other.username) &&
+                    Objects.equals(email, other.email) &&
+                    Objects.equals(password, other.password) &&
+                    Objects.equals(avatarLink, other.avatarLink);
+        }
     }
 
     @Override
