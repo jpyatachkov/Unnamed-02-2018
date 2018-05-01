@@ -35,12 +35,10 @@ public class UserDAO {
     }
 
     public List<User> getByRating(boolean ascending) {
-        final String order = (ascending) ? "ASC" : "DESC";
         final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users ORDER BY rank " +
-                order;
+                ((ascending) ? "ASC" : "DESC");
 
-        List<User> query = jdbcTemplate.query(sqlQuery, new Object[]{}, USER_ROW_MAPPER);
-        return query;
+        return jdbcTemplate.query(sqlQuery, new Object[]{}, USER_ROW_MAPPER);
     }
     
     public User findById(Long id) {
@@ -103,6 +101,7 @@ public class UserDAO {
         }
     }
     
+    @SuppressWarnings("UnusedReturnValue")
     public User partialUpdate(Long id, MeController.PartialUpdateRequest updateRequest) {
         final String sqlQuery = "UPDATE users SET " +
                 "username = coalesce(coalesce(nullif(?, \"\"), username))," +

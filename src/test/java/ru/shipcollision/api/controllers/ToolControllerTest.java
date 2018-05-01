@@ -16,16 +16,16 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayName("Тест контроллера проверки доступности API")
-public class ToolControllerTest {
+class ToolControllerTest {
 
-    public static final String PING_ROUTE = "/ping";
+    private static final String PING_ROUTE = "/ping";
 
     @Autowired
     private TestRestTemplate testRestTemplate;
 
     @Test
     @DisplayName("API доступно")
-    public void testAPIAccessible() {
+    void testAPIAccessible() {
         final ResponseEntity<Object> response =
                 testRestTemplate.exchange(PING_ROUTE, HttpMethod.HEAD, null, Object.class);
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
