@@ -17,7 +17,6 @@ import ru.shipcollision.api.services.SessionService;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.net.URISyntaxException;
 

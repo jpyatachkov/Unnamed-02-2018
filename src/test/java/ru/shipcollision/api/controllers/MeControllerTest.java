@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.shipcollision.api.UserTestFactory;
-import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.SessionServiceImpl;
