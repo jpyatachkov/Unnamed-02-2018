@@ -7,11 +7,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mindrot.jbcrypt.BCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Description;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.shaded.com.google.common.collect.Ordering;
+import ru.shipcollision.api.UserTestFactory;
 import ru.shipcollision.api.controllers.MeController;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
@@ -37,23 +37,9 @@ class UserDAOTest {
     @Autowired
     private UserDAO userDAO;
 
-    private static User getRandomUser() {
-        final Faker faker = new Faker();
-
-        final User user = new User();
-        user.username = faker.name().username();
-        user.email = faker.internet().emailAddress();
-        user.rank = (int) faker.number().randomNumber();
-        user.avatarLink = faker.internet().url();
-        user.password = faker.internet().url();
-
-        return user;
-    }
-
     @BeforeAll
     static void setupCorrectUser() {
-        correctUser = getRandomUser();
-        correctUser.id = (long) 0;
+        correctUser = UserTestFactory.createRandomUserWithId((long) 0);
     }
 
     private void insertIntoUsers(User user) {
@@ -71,7 +57,7 @@ class UserDAOTest {
 
         // Для скорборда.
         for (int i = 0; i < 5; i++) {
-            insertIntoUsers(getRandomUser());
+            insertIntoUsers(UserTestFactory.createRandomUser());
         }
     }
 
@@ -117,7 +103,7 @@ class UserDAOTest {
     @Test
     @DisplayName("пользователь с неверным логином и паролем не будет авторизован")
     void testAuthenticateInvalidCredentials() {
-        final User correctUserCandidate = getRandomUser();
+        final User correctUserCandidate = UserTestFactory.createRandomUser();
         Assertions.assertNotEquals(correctUser, correctUserCandidate);
         Assertions.assertThrows(
                 InvalidCredentialsException.class,
@@ -146,7 +132,7 @@ class UserDAOTest {
     @Test
     @DisplayName("создание ранее не существовавшего пользователя работает корректно")
     void testCreateUserValidCredentials() {
-        final User user = getRandomUser();
+        final User user = UserTestFactory.createRandomUser();
 
         final List<User> foundBeforeSave = jdbcTemplate.query(
                 "SELECT * FROM users WHERE email = ?",
@@ -169,7 +155,7 @@ class UserDAOTest {
     @Test
     @DisplayName("при создании ранее не существовавшего пользователя учитывается переданный id")
     void testCreateUserValidCredentialsAndId() {
-        final User user = getRandomUser();
+        final User user = UserTestFactory.createRandomUser();
 
         final List<User> foundBeforeSave = jdbcTemplate.query(
                 "SELECT * FROM users WHERE email = ?",
@@ -195,7 +181,7 @@ class UserDAOTest {
     @Test
     @DisplayName("при попытке создания пользователя с неверными полями выбрасывается ошибка")
     void testCreateUserInvalidCredentials() {
-        final User user = getRandomUser();
+        final User user = UserTestFactory.createRandomUser();
         user.email = correctUser.email;
 
         Assertions.assertThrows(
@@ -207,7 +193,7 @@ class UserDAOTest {
     @Test
     @DisplayName("частичное обновление пользователя работает корректно")
     void testPartialUpdate() {
-        final User user = getRandomUser();
+        final User user = UserTestFactory.createRandomUser();
         User saved = userDAO.save(user);
 
         final Faker faker = new Faker();

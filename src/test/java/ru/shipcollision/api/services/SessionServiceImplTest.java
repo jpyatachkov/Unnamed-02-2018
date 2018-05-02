@@ -1,6 +1,5 @@
 package ru.shipcollision.api.services;
 
-import com.github.javafaker.Faker;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
@@ -9,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.mock.web.MockHttpSession;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ru.shipcollision.api.UserTestFactory;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.NotFoundException;
@@ -36,15 +36,7 @@ class SessionServiceImplTest {
 
     @BeforeAll
     static void setupUserDAO() {
-        Faker faker = new Faker();
-
-        correctUser = new User();
-        correctUser.id = (long) 1;
-        correctUser.email = faker.internet().emailAddress();
-        correctUser.username = faker.name().username();
-        correctUser.password = faker.internet().password();
-        correctUser.rank = (int) faker.number().randomNumber();
-        correctUser.avatarLink = faker.internet().url();
+        correctUser = UserTestFactory.createRandomUserWithId((long) 0);
     }
 
     @BeforeEach
