@@ -94,11 +94,11 @@ public class User {
         final User other = (User) object;
 
         //noinspection OverlyComplexBooleanExpression
-        return Objects.equals(id, other.id) &&
-                Objects.equals(username, other.username) &&
-                Objects.equals(email, other.email) &&
-                Objects.equals(rank, other.rank) &&
-                Objects.equals(avatarLink, other.avatarLink);
+        return Objects.equals(id, other.id)
+                && Objects.equals(username, other.username)
+                && Objects.equals(email, other.email)
+                && Objects.equals(rank, other.rank)
+                && Objects.equals(avatarLink, other.avatarLink);
     }
 
     @Override

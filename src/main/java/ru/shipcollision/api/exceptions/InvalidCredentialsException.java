@@ -13,7 +13,7 @@ public class InvalidCredentialsException extends ApiException {
         super(error);
     }
 
-    public InvalidCredentialsException(Throwable e) {
-        super(e.getMessage());
+    public InvalidCredentialsException(Throwable throwable) {
+        super(throwable.getMessage());
     }
 }

@@ -34,8 +34,8 @@ public class UserDAO {
     }
 
     public List<User> getByRating(boolean ascending) {
-        final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users ORDER BY rank " +
-                ((ascending) ? "ASC" : "DESC");
+        final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users ORDER BY rank "
+                + ((ascending) ? "ASC" : "DESC");
 
         return jdbcTemplate.query(sqlQuery, new Object[]{}, USER_ROW_MAPPER);
     }
@@ -79,8 +79,8 @@ public class UserDAO {
         final Object[] queryParams;
 
         if (user.id != null) {
-            sqlQuery = "INSERT INTO users(id, username, email, rank, avatar_link, password) " +
-                    "values(?, ?, ?, ?, ?, ?) RETURNING id, username, email, rank, avatar_link, password";
+            sqlQuery = "INSERT INTO users(id, username, email, rank, avatar_link, password) "
+                    + "values(?, ?, ?, ?, ?, ?) RETURNING id, username, email, rank, avatar_link, password";
             queryParams = new Object[]{
                     user.id,
                     user.username,
@@ -90,8 +90,8 @@ public class UserDAO {
                     BCrypt.hashpw(user.password, BCrypt.gensalt())
             };
         } else {
-            sqlQuery = "INSERT INTO users(username, email, rank, avatar_link, password) " +
-                    "values(?, ?, ?, ?, ?) RETURNING id, username, email, rank, avatar_link, password";
+            sqlQuery = "INSERT INTO users(username, email, rank, avatar_link, password) "
+                    + "values(?, ?, ?, ?, ?) RETURNING id, username, email, rank, avatar_link, password";
             queryParams = new Object[]{
                     user.username,
                     user.email,
@@ -116,12 +116,12 @@ public class UserDAO {
             encodedPassword = BCrypt.hashpw(updateRequest.password, BCrypt.gensalt());
         }
 
-        final String sqlQuery = "UPDATE users SET " +
-                "username = coalesce(?, username)," +
-                "email = coalesce(?, email)," +
-                "password = coalesce(?, password)" +
-                "WHERE id = ? " +
-                "RETURNING id, username, email, rank, avatar_link, password";
+        final String sqlQuery = "UPDATE users SET "
+                + "username = coalesce(?, username),"
+                + "email = coalesce(?, email),"
+                + "password = coalesce(?, password)"
+                + "WHERE id = ? "
+                + "RETURNING id, username, email, rank, avatar_link, password";
         return jdbcTemplate.queryForObject(
                 sqlQuery,
                 new Object[]{
