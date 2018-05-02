@@ -126,4 +126,8 @@ public class UserDAO {
                 },
                 USER_ROW_MAPPER);
     }
+
+    public void clearTable() {
+        jdbcTemplate.execute("TRUNCATE users");
+    }
 }
