@@ -94,20 +94,6 @@ public class MeController {
         return ResponseEntity.ok().body(currentUser);
     }
 
-
-    @SuppressWarnings("PublicField")
-    public static final class CreateOrFullUpdateRequest {
-
-        @JsonProperty("nickname")
-        public @NotEmpty String username;
-
-        @JsonProperty("email")
-        public @Email @NotEmpty String email;
-
-        @JsonProperty("password")
-        public @Length(min = 6, message = "Password must be at least 6 characters") @NotEmpty String password;
-    }
-
     @SuppressWarnings("PublicField")
     public static final class PartialUpdateRequest {
 
