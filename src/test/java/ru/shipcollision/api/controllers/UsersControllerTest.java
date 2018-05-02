@@ -2,7 +2,6 @@ package ru.shipcollision.api.controllers;
 
 import com.github.javafaker.Faker;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,10 +17,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ru.shipcollision.api.CorrectUserHelper;
+import ru.shipcollision.api.UserTestFactory;
+import ru.shipcollision.api.dao.UserDAO;
+import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.PaginationServiceImpl;
-import ru.shipcollision.api.services.UserServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +42,7 @@ public class UsersControllerTest {
     private PaginationServiceImpl paginationService;
 
     @MockBean
-    private UserServiceImpl userService;
+    private UserDAO userDAO;
 
     @Autowired
     private TestRestTemplate testRestTemplate;
@@ -78,11 +78,6 @@ public class UsersControllerTest {
         );
     }
 
-    @BeforeEach
-    public void mockUserService() {
-        CorrectUserHelper.mockUserService(userService);
-    }
-
     @ParameterizedTest
     @MethodSource("provideUserPages")
     @DisplayName("пагинация работает")
@@ -111,8 +106,13 @@ public class UsersControllerTest {
     @Test
     @DisplayName("пользователь с корректным id найден")
     public void testGetUserWithCorrectId() {
+        final User user = UserTestFactory.createRandomUser();
+
+        Mockito.when(userDAO.findById(Mockito.anyLong()))
+                .thenReturn(user);
+
         final ResponseEntity<User> response =
-                testRestTemplate.getForEntity(USERS_ROUTE + String.format("/%d", CorrectUserHelper.id), User.class);
+                testRestTemplate.getForEntity(USERS_ROUTE + String.format("/%d", 0), User.class);
 
         Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
         Assertions.assertNotNull(response.getBody());
@@ -121,8 +121,11 @@ public class UsersControllerTest {
     @Test
     @DisplayName("при запросе пользователя с некорректным id возвращается 404")
     public void testGetUserWithincorrectId() {
+        Mockito.when(userDAO.findById(Mockito.anyLong()))
+                .thenThrow(NotFoundException.class);
+
         final ResponseEntity<User> response =
-                testRestTemplate.getForEntity(USERS_ROUTE + String.format("/%d", CorrectUserHelper.id + 1), User.class);
+                testRestTemplate.getForEntity(USERS_ROUTE + String.format("/%d", 0), User.class);
 
         Assertions.assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
     }
@@ -130,14 +133,16 @@ public class UsersControllerTest {
     @Test
     @DisplayName("новый пользователь создается")
     public void testPostUser() {
-        final User correctUser = CorrectUserHelper.getRandomCorrectUser();
+        final User correctUser = UserTestFactory.createRandomUser();
+
+        Mockito.when(userDAO.save(Mockito.any(User.class)))
+                .thenReturn(correctUser);
 
         final ResponseEntity<User> response =
                 testRestTemplate.postForEntity(
                         USERS_ROUTE,
-                        CorrectUserHelper.ProxyUser.fromUser(correctUser),
-                        User.class
-                );
+                        UserTestFactory.ProxyUser.fromUser(correctUser),
+                        User.class);
 
         Assertions.assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -145,7 +150,12 @@ public class UsersControllerTest {
 
         Assertions.assertNotNull(headers);
         Assertions.assertFalse(headers.isEmpty());
-        Assertions.assertNotNull(headers.get("Location").get(0));
+
+        final List<String> location = headers.get("Location");
+
+        Assertions.assertNotNull(location);
+        Assertions.assertNotNull(location.get(0));
+
         Assertions.assertNotNull(response.getBody());
     }
 }

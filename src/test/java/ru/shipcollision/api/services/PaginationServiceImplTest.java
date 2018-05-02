@@ -22,7 +22,7 @@ import java.util.stream.Stream;
         classes = PaginationServiceImpl.class
 )
 @DisplayName("Тест сервиса пагинации")
-public class PaginationServiceImplTest {
+class PaginationServiceImplTest {
 
     @Autowired
     private PaginationServiceImpl<Object> paginationService;
@@ -110,7 +110,7 @@ public class PaginationServiceImplTest {
 
     @Test
     @DisplayName("пагинация пустого массива даст пустой массив")
-    public void testEmptyListPagination() {
+    void testEmptyListPagination() {
         paginationService.setObjects(new ArrayList<>());
         paginationService.setOffset(PaginationServiceImpl.DEFAULT_OFFSET);
         paginationService.setLimit(PaginationServiceImpl.DEFAULT_LIMIT);
@@ -121,7 +121,7 @@ public class PaginationServiceImplTest {
     @ParameterizedTest
     @MethodSource("provideCorrectPaginationData")
     @DisplayName("пагинация на корректных данных корректна")
-    public void testPaginates(List<Object> objects, int offset, int limit, List<Object> expected) {
+    void testPaginates(List<Object> objects, int offset, int limit, List<Object> expected) {
         paginationService.setObjects(objects);
         paginationService.setOffset(offset);
         paginationService.setLimit(limit);
@@ -132,7 +132,7 @@ public class PaginationServiceImplTest {
     @ParameterizedTest
     @MethodSource("provideIncorrectPaginationData")
     @DisplayName("на некорректных данных бросается исключение")
-    public void testThrowsExceptionOnIncorrectData(List<Object> objects, int offset, int limit) {
+    void testThrowsExceptionOnIncorrectData(List<Object> objects, int offset, int limit) {
         paginationService.setObjects(objects);
         paginationService.setOffset(offset);
         paginationService.setLimit(limit);
@@ -143,7 +143,7 @@ public class PaginationServiceImplTest {
     @ParameterizedTest
     @MethodSource("provideLongListSizes")
     @DisplayName("пагинация на длинной последовательности корректна")
-    public void testPaginatesLongList(int longListSize) {
+    void testPaginatesLongList(int longListSize) {
         final List<Object> longList = new ArrayList<>();
 
         for (int i = 0; i < longListSize; i++) {
@@ -176,12 +176,12 @@ public class PaginationServiceImplTest {
     @ParameterizedTest
     @MethodSource("provideDataForLinkResolving")
     @DisplayName("ссылки на предыдущую и следующую страницу корректны")
-    public void testResolvtPageLinks(List<Object> objects,
-                                     int offset,
-                                     int limit,
-                                     String basePath,
-                                     String expectedPrev,
-                                     String expectedNext) {
+    void testResolvePageLinks(List<Object> objects,
+                              int offset,
+                              int limit,
+                              String basePath,
+                              String expectedPrev,
+                              String expectedNext) {
         paginationService.setObjects(objects);
         paginationService.setOffset(offset);
         paginationService.setLimit(limit);

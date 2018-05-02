@@ -83,7 +83,7 @@ fabric.properties
 .project
 
 #Idea
-.idea
+.idea/
 *.iml
 #Gedit
 *~

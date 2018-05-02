@@ -9,9 +9,7 @@ import org.springframework.lang.Nullable;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 import java.util.Objects;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Модель пользователя (игрока).
@@ -20,10 +18,9 @@ import java.util.concurrent.atomic.AtomicLong;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
-    private static final AtomicLong ID_GENERATOR = new AtomicLong();
-
+    @Nullable
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public @NotNull Long id;
+    public Long id;
 
     @JsonProperty("username")
     public @Length(min = 6) @NotEmpty String username;
@@ -42,13 +39,12 @@ public class User {
     public @Length(min = 6) @NotEmpty String password;
 
     public User() {
-        this.id = ID_GENERATOR.getAndIncrement();
+
     }
 
     public User(@Length(min = 6) @NotEmpty String username,
                 @Email @NotEmpty String email,
                 @Length(min = 6) @NotEmpty String password) {
-        this.id = ID_GENERATOR.getAndIncrement();
         this.username = username;
         this.email = email;
         this.password = password;
@@ -58,11 +54,33 @@ public class User {
                 @Email @NotEmpty String email,
                 @Range(min = 0) int rank,
                 @Length(min = 6) @NotEmpty String password) {
-        this.id = ID_GENERATOR.getAndIncrement();
         this.username = username;
         this.email = email;
         this.rank = rank;
         this.password = password;
+    }
+
+    public User(@Nullable Long id,
+                @Length(min = 6) @NotEmpty String username,
+                @Email @NotEmpty String email,
+                @Range(min = 0) int rank,
+                @URL String avatarLink,
+                @Length(min = 6) @NotEmpty String password) {
+        this.id = id;
+        this.username = username;
+        this.email = email;
+        this.rank = rank;
+        this.avatarLink = avatarLink;
+        this.password = password;
+    }
+
+    public User(User other) {
+        this.id = other.id;
+        this.username = other.username;
+        this.email = other.email;
+        this.rank = other.rank;
+        this.avatarLink = other.avatarLink;
+        this.password = other.password;
     }
 
     @Override
@@ -74,11 +92,24 @@ public class User {
             return false;
         }
         final User other = (User) object;
-        return Objects.equals(id, other.id);
+
+        //noinspection OverlyComplexBooleanExpression
+        return Objects.equals(id, other.id)
+                && Objects.equals(username, other.username)
+                && Objects.equals(email, other.email)
+                && Objects.equals(rank, other.rank)
+                && Objects.equals(avatarLink, other.avatarLink);
     }
 
     @Override
     public int hashCode() {
-        return id.intValue();
+        final int prime = 13;
+
+        int result = 1;
+        result = prime * result + ((username == null) ? 0 : username.hashCode());
+        result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = prime * result + ((avatarLink == null) ? 0 : avatarLink.hashCode());
+        result = prime * result + rank ^ (rank >>> 28);
+        return result;
     }
 }

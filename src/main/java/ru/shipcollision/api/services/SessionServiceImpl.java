@@ -1,6 +1,7 @@
 package ru.shipcollision.api.services;
 
 import org.springframework.stereotype.Service;
+import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
@@ -18,10 +19,10 @@ public class SessionServiceImpl implements SessionService {
      */
     public static final String ATTRIBUTE_NAME = "JSESSIONID";
 
-    private final UserService userService;
+    private final UserDAO userDAO;
 
-    public SessionServiceImpl(UserService userService) {
-        this.userService = userService;
+    public SessionServiceImpl(UserDAO userDAO) {
+        this.userDAO = userDAO;
     }
 
     /**
@@ -37,7 +38,7 @@ public class SessionServiceImpl implements SessionService {
         }
 
         try {
-            return userService.findById((Long) userId);
+            return userDAO.findById((Long) userId);
         } catch (NotFoundException e) {
             session.removeAttribute(ATTRIBUTE_NAME);
             throw new ForbiddenException();

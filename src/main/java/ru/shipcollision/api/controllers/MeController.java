@@ -8,16 +8,15 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.UnsupportedMediaTypeStatusException;
+import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.models.ApiMessage;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.FileIOService;
 import ru.shipcollision.api.services.SessionService;
-import ru.shipcollision.api.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -34,14 +33,14 @@ public class MeController {
 
     private final SessionService sessionService;
 
-    private final UserService userService;
+    private final UserDAO userDAO;
 
     public MeController(FileIOService fileIOService,
                         SessionService sessionService,
-                        UserService userService) {
+                        UserDAO userDAO) {
         this.fileIOService = fileIOService;
         this.sessionService = sessionService;
-        this.userService = userService;
+        this.userDAO = userDAO;
     }
 
     @GetMapping
@@ -52,25 +51,8 @@ public class MeController {
     @PatchMapping
     public ResponseEntity doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
                                     HttpSession session) {
-        userService.partialUpdate(sessionService.getCurrentUser(session), updateRequest);
+        userDAO.partialUpdate(sessionService.getCurrentUser(session).id, updateRequest);
         return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
-    }
-
-    @PutMapping
-    public ResponseEntity doPutMe(@RequestBody @Valid CreateOrFullUpdateRequest updateRequest,
-                                  HttpSession session) {
-        userService.update(sessionService.getCurrentUser(session), updateRequest);
-        return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
-    }
-
-    @DeleteMapping
-    public ResponseEntity doDeleteMe(HttpSession session) {
-        final User currentUser = sessionService.getCurrentUser(session);
-        sessionService.closeSession(session);
-        userService.delete(currentUser);
-        return ResponseEntity.ok().body(new ApiMessage(
-                "Your profile has been delete successfully. You are signed out"
-        ));
     }
 
     @PostMapping(path = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -109,20 +91,6 @@ public class MeController {
         }
 
         return ResponseEntity.ok().body(currentUser);
-    }
-
-
-    @SuppressWarnings("PublicField")
-    public static final class CreateOrFullUpdateRequest {
-
-        @JsonProperty("nickname")
-        public @NotEmpty String username;
-
-        @JsonProperty("email")
-        public @Email @NotEmpty String email;
-
-        @JsonProperty("password")
-        public @Length(min = 6, message = "Password must be at least 6 characters") @NotEmpty String password;
     }
 
     @SuppressWarnings("PublicField")

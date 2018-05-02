@@ -53,33 +53,20 @@ class UserTest {
         return Stream.of(
                 Arguments.of(new User(), null, false),
                 Arguments.of(new User(), "aaaa", false),
-                Arguments.of(new User(), new User(), false),
+                Arguments.of(new User(), new User(), true),
                 Arguments.of(
                         new User("username", "email@mail.ru", "password1"),
                         new User("username", "email@mail.ru", "password1"),
-                        false
+                        true
                 ),
                 Arguments.of(user, user, true)
-        );
-    }
-
-    @Test
-    @DisplayName("id увеличивается")
-    public void testIdIncrements() {
-        final User u1 = new User();
-        final User u2 = new User();
-
-        Assertions.assertNotEquals(u1.id, u2.id);
-        Assertions.assertTrue(
-                u1.id < u2.id,
-                "id пользователя, созданного позже, меньше, чем id пользователя, созданного раньше"
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideCorrectUserData")
     @DisplayName("можно создать пользователя с корректными данными")
-    public void testUserCreatedWithCorrectData(String username, String email, int rank, String password) {
+    void testUserCreatedWithCorrectData(String username, String email, int rank, String password) {
         final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         final Validator validator = validatorFactory.getValidator();
 
@@ -89,7 +76,7 @@ class UserTest {
 
         Assertions.assertNotNull(user);
         Assertions.assertNull(user.avatarLink);
-        Assertions.assertTrue(user.id >= 0, "id должно быть неотрицательным");
+        Assertions.assertNull(user.id);
         Assertions.assertEquals(username, user.username);
         Assertions.assertEquals(email, user.email);
         Assertions.assertEquals(password, user.password);
@@ -100,7 +87,7 @@ class UserTest {
         Assertions.assertTrue(validator.validate(user).isEmpty());
 
         Assertions.assertNull(user.avatarLink);
-        Assertions.assertTrue(user.id >= 0, "id должно быть неотрицательным");
+        Assertions.assertNull(user.id);
         Assertions.assertEquals(username, user.username);
         Assertions.assertEquals(email, user.email);
         Assertions.assertEquals(password, user.password);
@@ -110,7 +97,7 @@ class UserTest {
     @ParameterizedTest
     @MethodSource("provideIncorrectUserData")
     @DisplayName("валидации пользователя с некорректными данными не проходят")
-    public void testUserNotCreatedWithInvalidData(String username, String email, int rank, String password) {
+    void testUserNotCreatedWithInvalidData(String username, String email, int rank, String password) {
         final ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
         final User user = new User(username, email, rank, password);
         Assertions.assertFalse(validatorFactory.getValidator().validate(user).isEmpty());
@@ -119,14 +106,30 @@ class UserTest {
     @ParameterizedTest
     @MethodSource("provideObjectPairs")
     @DisplayName("проверка объектов на равенство дает корректные результаты")
-    public void testEquals(@NotNull Object user1, Object user2, boolean equals) {
+    void testEquals(@NotNull Object user1, Object user2, boolean equals) {
         Assertions.assertEquals(equals, user1.equals(user2));
     }
 
     @Test
-    @DisplayName("хэш-код объекта соответствует ожидаемому")
-    public void testHashCode() {
-        final User user = new User();
-        Assertions.assertEquals(user.id.intValue(), user.hashCode());
+    @DisplayName("сравнение учитывает изменения в объектах")
+    void testMutableEquals() {
+        final User user1 = new User("username", "email@mail.ru", "password1");
+
+        Assertions.assertEquals(user1, user1);
+
+        final User user2 = new User(user1);
+        user2.email = "lol@mail.ru";
+
+        Assertions.assertNotEquals(user1, user2);
+    }
+
+    @Test
+    @DisplayName("хэш-коды равных объектов равны")
+    void testHashCode() {
+        final User user1 = new User("username", "email@mail.ru", "password1");
+        final User user2 = new User("username", "email@mail.ru", "password1");
+
+        Assertions.assertEquals(user1, user2);
+        Assertions.assertEquals(user1.hashCode(), user2.hashCode());
     }
 }

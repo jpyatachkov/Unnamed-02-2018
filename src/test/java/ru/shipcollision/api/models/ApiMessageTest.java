@@ -21,7 +21,7 @@ class ApiMessageTest {
     @ParameterizedTest
     @MethodSource("provideMessageContent")
     @DisplayName("то, что мы записываем, совпадает с тем, что мы видим")
-    public void testActualContentEqualsExpected(String messageContent) {
+    void testActualContentEqualsExpected(String messageContent) {
         final ApiMessage message = new ApiMessage(messageContent);
         Assertions.assertEquals(messageContent, message.message);
     }

@@ -12,4 +12,8 @@ public class InvalidCredentialsException extends ApiException {
     public InvalidCredentialsException(ApiException error) {
         super(error);
     }
+
+    public InvalidCredentialsException(Throwable throwable) {
+        super(throwable.getMessage());
+    }
 }

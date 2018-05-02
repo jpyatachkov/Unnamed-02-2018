@@ -7,10 +7,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
+import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.PaginationService;
 import ru.shipcollision.api.services.SessionService;
-import ru.shipcollision.api.services.UserService;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -30,14 +30,14 @@ public class UsersController {
 
     private final SessionService sessionService;
 
-    private final UserService userService;
+    private final UserDAO userDAO;
 
     public UsersController(PaginationService<User> paginationService,
                            SessionService sessionService,
-                           UserService userService) {
+                           UserDAO userDAO) {
         this.paginationService = paginationService;
         this.sessionService = sessionService;
-        this.userService = userService;
+        this.userDAO = userDAO;
     }
 
     @GetMapping(path = "/scoreboard")
@@ -46,7 +46,7 @@ public class UsersController {
                                           HttpServletRequest request) {
         paginationService.setOffset(offset);
         paginationService.setLimit(limit);
-        paginationService.setObjects(userService.getByRating(false));
+        paginationService.setObjects(userDAO.getByRating(false));
         return ResponseEntity.ok().body(new Scoreboard(
                 paginationService.paginate(),
                 paginationService.resolvePrevPageLink(request.getRequestURI()),
@@ -58,15 +58,15 @@ public class UsersController {
     public ResponseEntity doPostUser(HttpServletRequest request,
                                      @RequestBody @Valid User user,
                                      HttpSession session) throws URISyntaxException {
-        userService.save(user);
-        sessionService.openSession(session, user);
-        final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), user.id));
-        return ResponseEntity.created(location).body(user);
+        final User savedUser = userDAO.save(user);
+        sessionService.openSession(session, savedUser);
+        final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), savedUser.id));
+        return ResponseEntity.created(location).body(savedUser);
     }
 
     @GetMapping(path = "/{userId}")
     public ResponseEntity doGetUser(@PathVariable Integer userId) {
-        return ResponseEntity.ok().body(userService.findById(userId.longValue()));
+        return ResponseEntity.ok().body(userDAO.findById(userId.longValue()));
     }
 
     @SuppressWarnings({"PublicField", "unused"})
