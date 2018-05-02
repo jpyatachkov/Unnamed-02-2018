@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.shipcollision.api.dao.UserDAO;
-import ru.shipcollision.api.exceptions.InvalidCredentialsException;
-import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.SessionService;
 
