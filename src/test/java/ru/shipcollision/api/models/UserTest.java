@@ -53,11 +53,11 @@ class UserTest {
         return Stream.of(
                 Arguments.of(new User(), null, false),
                 Arguments.of(new User(), "aaaa", false),
-                Arguments.of(new User(), new User(), false),
+                Arguments.of(new User(), new User(), true),
                 Arguments.of(
                         new User("username", "email@mail.ru", "password1"),
                         new User("username", "email@mail.ru", "password1"),
-                        false
+                        true
                 ),
                 Arguments.of(user, user, true)
         );
@@ -111,16 +111,25 @@ class UserTest {
     }
 
     @Test
-    @DisplayName("хэш-код объекта соответствует ожидаемому")
+    @DisplayName("сравнение учитывает изменения в объектах")
+    void testMutableEquals() {
+        final User user1 = new User("username", "email@mail.ru", "password1");
+
+        Assertions.assertEquals(user1, user1);
+
+        final User user2 = new User(user1);
+        user2.email = "lol@mail.ru";
+
+        Assertions.assertNotEquals(user1, user2);
+    }
+
+    @Test
+    @DisplayName("хэш-коды равных объектов равны")
     void testHashCode() {
-        final User userWithId = new User();
-        userWithId.id = (long) 1;
+        final User user1 = new User("username", "email@mail.ru", "password1");
+        final User user2 = new User("username", "email@mail.ru", "password1");
 
-        final User userWithoutId = new User();
-
-        Assertions.assertNotNull(userWithId.id);
-        Assertions.assertEquals(userWithId.id.intValue(), userWithId.hashCode());
-
-        Assertions.assertNull(userWithoutId.id);
+        Assertions.assertEquals(user1, user2);
+        Assertions.assertEquals(user1.hashCode(), user2.hashCode());
     }
 }

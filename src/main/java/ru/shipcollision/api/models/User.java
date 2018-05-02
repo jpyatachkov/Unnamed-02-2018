@@ -10,7 +10,6 @@ import org.springframework.lang.Nullable;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import java.util.Objects;
-import java.util.Random;
 
 /**
  * Модель пользователя (игрока).
@@ -19,8 +18,9 @@ import java.util.Random;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class User {
 
+    @Nullable
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    public @Nullable Long id;
+    public Long id;
 
     @JsonProperty("username")
     public @Length(min = 6) @NotEmpty String username;
@@ -37,8 +37,6 @@ public class User {
 
     @JsonProperty(value = "password", access = JsonProperty.Access.WRITE_ONLY)
     public @Length(min = 6) @NotEmpty String password;
-
-    private Long hashCode;
 
     public User() {
 
@@ -76,6 +74,15 @@ public class User {
         this.password = password;
     }
 
+    public User(User other) {
+        this.id = other.id;
+        this.username = other.username;
+        this.email = other.email;
+        this.rank = other.rank;
+        this.avatarLink = other.avatarLink;
+        this.password = other.password;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
@@ -86,29 +93,23 @@ public class User {
         }
         final User other = (User) object;
 
-        if (id != null && other.id != null) {
-            return Objects.equals(id, other.id);
-        } else if (hashCode != null && other.hashCode != null) {
-            return Objects.equals(hashCode, other.hashCode);
-        } else {
-            return rank == other.rank &&
-                    Objects.equals(username, other.username) &&
-                    Objects.equals(email, other.email) &&
-                    Objects.equals(password, other.password) &&
-                    Objects.equals(avatarLink, other.avatarLink);
-        }
+        //noinspection OverlyComplexBooleanExpression
+        return Objects.equals(id, other.id) &&
+                Objects.equals(username, other.username) &&
+                Objects.equals(email, other.email) &&
+                Objects.equals(rank, other.rank) &&
+                Objects.equals(avatarLink, other.avatarLink);
     }
 
     @Override
     public int hashCode() {
-        if (id != null) {
-            return id.intValue();
-        } else if (hashCode != null) {
-            return hashCode.intValue();
-        } else {
-            final Random random = new Random();
-            hashCode = random.nextLong();
-            return hashCode.intValue();
-        }
+        final int prime = 13;
+
+        int result = 1;
+        result = prime * result + ((username == null) ? 0 : username.hashCode());
+        result = prime * result + ((email == null) ? 0 : email.hashCode());
+        result = prime * result + ((avatarLink == null) ? 0 : avatarLink.hashCode());
+        result = prime * result + rank ^ (rank >>> 28);
+        return result;
     }
 }
