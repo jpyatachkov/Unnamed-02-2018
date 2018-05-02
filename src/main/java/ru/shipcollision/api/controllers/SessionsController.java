@@ -50,7 +50,7 @@ public class SessionsController {
      * Класс, представляющий запрос на аутентификацию.
      */
     @SuppressWarnings({"PublicField", "unused"})
-    protected static final class SigninRequest {
+    public static final class SigninRequest {
 
         @JsonProperty("email")
         public @Email @NotEmpty String email;

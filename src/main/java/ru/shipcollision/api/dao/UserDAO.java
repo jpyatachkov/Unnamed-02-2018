@@ -43,10 +43,7 @@ public class UserDAO {
     public User findById(Long id) {
         try {
             final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users WHERE id = ?";
-            return jdbcTemplate.queryForObject(sqlQuery, new Object[]{id}, (res, num) ->
-                    new User(res.getLong("id"), res.getString("username"), res.getString("email"),
-                            res.getInt("rank"), res.getString("avatar_link"),
-                            res.getString("password")));
+            return jdbcTemplate.queryForObject(sqlQuery, new Object[]{id}, USER_ROW_MAPPER);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("User with id %d not found", id));
         }
@@ -55,10 +52,7 @@ public class UserDAO {
     public User findByEmail(String email) {
         try {
             final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users WHERE email = ?";
-            return jdbcTemplate.queryForObject(sqlQuery, new Object[]{email}, (res, num) ->
-                    new User(res.getLong("id"), res.getString("username"), res.getString("email"),
-                            res.getInt("rank"), res.getString("avatar_link"),
-                            res.getString("password")));
+            return jdbcTemplate.queryForObject(sqlQuery, new Object[]{email}, USER_ROW_MAPPER);
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(String.format("User with email %s not found", email));
         }
