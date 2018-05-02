@@ -106,8 +106,7 @@ public class DatabaseSeeder {
     }
 
     private void insertIntoUsers(User user) {
-        jdbcTemplate.update("INSERT INTO users(username, email, rank, avatar_link, password) " +
-                        "VALUES(?, ?, ?, ?, ?)",
+        jdbcTemplate.update("INSERT INTO users(username, email, rank, avatar_link, password) VALUES(?, ?, ?, ?, ?)",
                 user.username, user.email, user.rank, user.avatarLink, BCrypt.hashpw(user.password, BCrypt.gensalt()));
     }
 }
