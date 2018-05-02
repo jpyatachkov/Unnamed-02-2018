@@ -22,4 +22,27 @@ public class UserTestFactory {
         user.id = id;
         return user;
     }
+
+    /**
+     * Класс для тестов, чтобы не ломать ограничения модели User.
+     */
+    @SuppressWarnings({"PublicField", "InnerClassFieldHidesOuterClassField"})
+    public static class ProxyUser {
+
+        public String username;
+
+        public String email;
+
+        public String password;
+
+        public ProxyUser(String username, String email, String password) {
+            this.username = username;
+            this.email = email;
+            this.password = password;
+        }
+
+        public static ProxyUser fromUser(User user) {
+            return new ProxyUser(user.username, user.email, user.password);
+        }
+    }
 }
