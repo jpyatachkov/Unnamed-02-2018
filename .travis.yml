@@ -6,9 +6,12 @@ branches:
   - master
   - dev
 
+sudo: required
+
 addons:
   postgresql: "9.6"
 services:
+  - docker
   - postgresql
 before_script:
   - psql -c "create user shipcollision with password '123456';" -U postgres
