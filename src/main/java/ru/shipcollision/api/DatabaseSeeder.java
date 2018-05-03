@@ -21,8 +21,11 @@ public class DatabaseSeeder {
     }
 
     private void seedUsers() {
-        // В тестовом контексте таблица отсюда недоступна.
+        // В тестовом контексте БД не должна заполняться.
+        // Т.к. в тестовом контексте БД недоступна для этого компонента,
+        // try-catch используется для определения контекста и прерывания операций заполнения.
         try {
+            jdbcTemplate.execute("ALTER SEQUENCE users_id_seq RESTART WITH 1");
             jdbcTemplate.execute("TRUNCATE users");
         } catch (DataAccessException e) {
             return;
