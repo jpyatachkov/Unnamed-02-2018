@@ -19,6 +19,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Optional;
 
 /**
  * Контроллер для доступа к методам текущего пользователя.
@@ -51,7 +52,16 @@ public class MeController {
     @PatchMapping
     public ResponseEntity doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
                                     HttpSession session) {
-        userDAO.partialUpdate(sessionService.getCurrentUser(session).id, updateRequest);
+        final User currentUser = sessionService.getCurrentUser(session);
+        currentUser.username = Optional.ofNullable(updateRequest.username).orElse(currentUser.username);
+        currentUser.email = Optional.ofNullable(updateRequest.email).orElse(currentUser.email);
+        userDAO.update(currentUser);
+
+        if (updateRequest.password != null) {
+            currentUser.password = updateRequest.password;
+            userDAO.updatePassword(currentUser);
+        }
+
         return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
     }
 
@@ -59,25 +69,27 @@ public class MeController {
     public ResponseEntity<?> doUploadAvatar(@RequestPart(value = "avatar") MultipartFile avatar, HttpSession session) {
         final String avatarContentType = avatar.getContentType();
 
-        if (!avatarContentType.matches(AVATAR_CONTENT_TYPE_PATTERN)) {
+        if (avatarContentType == null || !avatarContentType.matches(AVATAR_CONTENT_TYPE_PATTERN)) {
             throw new UnsupportedMediaTypeStatusException(avatarContentType);
         }
 
-        final User currentUser = sessionService.getCurrentUser(session);
+        User currentUser = sessionService.getCurrentUser(session);
 
         if (fileIOService.fileExists(currentUser.avatarLink)) {
             fileIOService.deleteFile(currentUser.avatarLink);
         }
 
         currentUser.avatarLink = fileIOService.saveFileAndGetResourcePath(avatar);
+        currentUser = userDAO.update(currentUser);
 
         try {
+            assert currentUser.avatarLink != null;
             final URI avatarURI = new URI(currentUser.avatarLink);
             return ResponseEntity.created(avatarURI).body(currentUser);
         } catch (URISyntaxException e) {
-            return ResponseEntity.ok().body(new ApiMessage(
-                    "User has been created successfully, no resource URI available"
-            ));
+            return ResponseEntity.ok().body(currentUser);
+        } catch (AssertionError e) {
+            return ResponseEntity.badRequest().body(new ApiMessage("Unable to upload avatar"));
         }
     }
 
@@ -87,6 +99,7 @@ public class MeController {
 
         if (fileIOService.fileExists(currentUser.avatarLink)) {
             fileIOService.deleteFile(currentUser.avatarLink);
+            userDAO.removeAvatar(currentUser);
             currentUser.avatarLink = null;
         }
 

@@ -7,7 +7,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.shipcollision.api.controllers.MeController;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
@@ -102,32 +101,64 @@ public class UserDAO {
         }
     }
 
-    public User partialUpdate(Long id, MeController.PartialUpdateRequest updateRequest) {
-
-        String encodedPassword = null;
-
-        if (updateRequest.password != null) {
-            encodedPassword = BCrypt.hashpw(updateRequest.password, BCrypt.gensalt());
+    public User update(User user) {
+        try {
+            final String sqlQuery = "UPDATE users SET "
+                    + "username = coalesce(?, username),"
+                    + "email = coalesce(?, email),"
+                    + "rank = coalesce(?, rank),"
+                    + "avatar_link = coalesce(?, avatar_link)"
+                    + "WHERE id = ? "
+                    + "RETURNING id, username, email, rank, avatar_link, password";
+            return jdbcTemplate.queryForObject(
+                    sqlQuery,
+                    new Object[]{
+                            user.username,
+                            user.email,
+                            user.rank,
+                            user.avatarLink,
+                            user.id
+                    },
+                    USER_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            throw new InvalidCredentialsException(e);
         }
-
-        final String sqlQuery = "UPDATE users SET "
-                + "username = coalesce(?, username),"
-                + "email = coalesce(?, email),"
-                + "password = coalesce(?, password)"
-                + "WHERE id = ? "
-                + "RETURNING id, username, email, rank, avatar_link, password";
-        return jdbcTemplate.queryForObject(
-                sqlQuery,
-                new Object[]{
-                        updateRequest.username,
-                        updateRequest.email,
-                        encodedPassword,
-                        id
-                },
-                USER_ROW_MAPPER);
     }
 
-    public void clearTable() {
-        jdbcTemplate.execute("TRUNCATE users");
+    public User updatePassword(User user) {
+        try {
+            final String sqlQuery = "UPDATE users SET "
+                    + "password = coalesce(?, password)"
+                    + "WHERE id = ? "
+                    + "RETURNING id, username, email, rank, avatar_link, password";
+            return jdbcTemplate.queryForObject(
+                    sqlQuery,
+                    new Object[]{
+                            BCrypt.hashpw(user.password, BCrypt.gensalt()),
+                            user.id
+                    },
+                    USER_ROW_MAPPER
+            );
+        } catch (DataAccessException e) {
+            throw new InvalidCredentialsException(e);
+        }
+    }
+
+    public User removeAvatar(User user) {
+        if (user.id == null) {
+            return user;
+        }
+
+        try {
+            final String sqlQuery = "UPDATE users SET "
+                    + "avatar_link = null WHERE id = ? "
+                    + "RETURNING id, username, email, rank, avatar_link, password";
+            return jdbcTemplate.queryForObject(
+                    sqlQuery,
+                    new Object[]{user.id},
+                    USER_ROW_MAPPER);
+        } catch (DataAccessException e) {
+            throw new InvalidCredentialsException(e);
+        }
     }
 }

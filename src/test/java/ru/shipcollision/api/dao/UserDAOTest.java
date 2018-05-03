@@ -12,7 +12,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.shaded.com.google.common.collect.Ordering;
 import ru.shipcollision.api.UserTestFactory;
-import ru.shipcollision.api.controllers.MeController;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
@@ -191,19 +190,18 @@ class UserDAOTest {
     }
 
     @Test
-    @DisplayName("частичное обновление пользователя работает корректно")
+    @DisplayName("обновление пользователя без пароля работает корректно")
     void testPartialUpdate() {
         final User user = UserTestFactory.createRandomUser();
         User saved = userDAO.save(user);
 
         final Faker faker = new Faker();
 
-        final MeController.PartialUpdateRequest partialUpdateRequest = new MeController.PartialUpdateRequest();
-        partialUpdateRequest.username = faker.name().username();
-        partialUpdateRequest.email = faker.internet().emailAddress();
-        partialUpdateRequest.password = faker.internet().password();
+        saved.username = faker.name().username();
+        saved.email = faker.internet().emailAddress();
+        saved.password = faker.internet().password();
 
-        saved = userDAO.partialUpdate(saved.id, partialUpdateRequest);
+        saved = userDAO.update(saved);
 
         final User foundAfterSave = jdbcTemplate.queryForObject(
                 "SELECT * FROM users WHERE email = ?",
@@ -211,6 +209,31 @@ class UserDAOTest {
                 UserDAO.USER_ROW_MAPPER);
 
         Assertions.assertEquals(saved, foundAfterSave);
-        Assertions.assertTrue(BCrypt.checkpw(partialUpdateRequest.password, saved.password));
+    }
+
+    @Test
+    @DisplayName("обновление пароля работает корректно")
+    void testUpdatePassword() {
+        final User user = UserTestFactory.createRandomUser();
+        User saved = userDAO.save(user);
+
+        final String newPassword = "newPassword";
+        Assertions.assertFalse(BCrypt.checkpw(newPassword, saved.password));
+
+        saved.password = newPassword;
+        saved = userDAO.updatePassword(saved);
+
+        Assertions.assertTrue(BCrypt.checkpw(newPassword, saved.password));
+    }
+
+    @Test
+    @DisplayName("метод удаления аватара пользователя работает корректно")
+    void testRemoveAvatar() {
+        User user = UserTestFactory.createRandomUser();
+        insertIntoUsers(user);
+
+        Assertions.assertNotNull(user.avatarLink);
+        user = userDAO.removeAvatar(user);
+        Assertions.assertNotNull(user);
     }
 }
