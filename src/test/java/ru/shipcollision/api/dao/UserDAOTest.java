@@ -24,10 +24,6 @@ import java.util.stream.Collectors;
 @DisplayName("Тест DAO пользователей")
 class UserDAOTest {
 
-    @SuppressWarnings("resource")
-    @Rule
-    private static PostgreSQLContainer postgres = new PostgreSQLContainer();
-
     private static User correctUser;
 
     @Autowired
