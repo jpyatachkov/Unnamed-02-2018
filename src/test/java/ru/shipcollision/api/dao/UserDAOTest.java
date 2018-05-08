@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DisplayName("Тест DAO пользователей")
 class UserDAOTest {
 
