@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -25,15 +26,17 @@ public class FileIOServiceImpl implements FileIOService {
 
     @Override
     public String saveFileAndGetResourcePath(MultipartFile file) {
-        final UploadResourceResolver resolver = new UploadResourceResolver(file.getOriginalFilename());
+        final UploadResourceResolver resolver = new UploadResourceResolver(
+                Objects.requireNonNull(file.getOriginalFilename())
+        );
 
-        try (FileOutputStream out = new FileOutputStream(resolver.getSaveFilePath())) {
+        //noinspection TryWithIdenticalCatches
+        try (final FileOutputStream out = new FileOutputStream(resolver.getSaveFilePath())) {
             out.write(file.getBytes());
-            out.close();
         } catch (FileNotFoundException e) {
-            throw new ApiException(String.format("File %s not found", resolver.getSaveFilePath()));
+            throw new ApiException(e);
         } catch (IOException e) {
-            throw new ApiException(String.format("Impossible to save to file %s", resolver.getSaveFilePath()));
+            throw new ApiException(e);
         }
 
         return resolver.getResoursePath();
@@ -44,7 +47,7 @@ public class FileIOServiceImpl implements FileIOService {
         try {
             Files.delete(UploadResourceResolver.toAbsolutePath(resoursePath));
         } catch (IOException e) {
-            throw new ApiException(String.format("Impossible to remove %s", resoursePath));
+            throw new ApiException(e);
         }
     }
 
@@ -78,7 +81,7 @@ public class FileIOServiceImpl implements FileIOService {
             try {
                 Files.createDirectories(uploadPath);
             } catch (IOException e) {
-                throw new ApiException(String.format("Impossible to create directory %s", uploadPath));
+                throw new ApiException(e);
             }
 
             resoursePath = '/' + Paths.get(BASE_PATH, resourseDirectoryPath, filename).toString();

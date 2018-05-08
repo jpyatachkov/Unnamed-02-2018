@@ -91,7 +91,7 @@ class SessionServiceImplTest {
                 .thenReturn(correctUser);
 
         sessionService.closeSession(session);
-        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.COOKIE_NAME));
+        Assertions.assertTrue(session.isInvalid());
     }
 
     @Test
