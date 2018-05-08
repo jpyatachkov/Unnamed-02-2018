@@ -12,6 +12,7 @@ import org.testcontainers.shaded.com.google.common.collect.Ordering;
 import ru.shipcollision.api.UserTestFactory;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
+import ru.shipcollision.api.exceptions.PaginationException;
 import ru.shipcollision.api.models.User;
 
 import java.util.List;
@@ -21,6 +22,8 @@ import java.util.stream.Collectors;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @DisplayName("Тест DAO пользователей")
 class UserDAOTest {
+
+    public static final int FAKE_USERS_COUNT = 5;
 
     private static User correctUser;
 
@@ -49,7 +52,7 @@ class UserDAOTest {
                 BCrypt.hashpw(correctUser.password, BCrypt.gensalt()));
 
         // Для скорборда.
-        for (int i = 0; i < 5; i++) {
+        for (int i = 0; i < FAKE_USERS_COUNT; i++) {
             insertIntoUsers(UserTestFactory.createRandomUser());
         }
     }
@@ -107,19 +110,34 @@ class UserDAOTest {
     @Test
     @DisplayName("сортировка пользователей по рейтингу работает корректно")
     void testGetByRating() {
-        final List<Integer> acsRanks = userDAO.getByRating(true)
+        final int defaultOffset = 0;
+        final int defaultLimit = 10;
+
+        final List<Integer> acsRanks = userDAO.getByRating(true, defaultOffset, defaultLimit)
                 .stream()
                 .map(el -> el.rank)
                 .collect(Collectors.toList());
-        final List<Integer> descRanks = userDAO.getByRating(false)
+        final List<Integer> descRanks = userDAO.getByRating(false, defaultOffset, defaultLimit)
                 .stream()
                 .map(el -> el.rank)
                 .collect(Collectors.toList());
 
-        Assertions.assertNotEquals(1, acsRanks.size());
-        Assertions.assertNotEquals(1, descRanks.size());
+        // +1 из-за "корректного" юзера, который добавляется к созданным FAKE_USERS_COUNT юзерам.
+        @SuppressWarnings("ConstantConditions")
+        final int expectedSize = (FAKE_USERS_COUNT + 1 > defaultLimit) ? defaultLimit : FAKE_USERS_COUNT + 1;
+
+        Assertions.assertEquals(expectedSize, acsRanks.size());
+        Assertions.assertEquals(expectedSize, descRanks.size());
         Assertions.assertTrue(Ordering.natural().isOrdered(acsRanks));
         Assertions.assertTrue(Ordering.natural().reverse().isOrdered(descRanks));
+    }
+
+    @Test
+    @DisplayName("Пагинация не работает с неверными значениями offset и limit")
+    void testGetByRatingWontWork() {
+        Assertions.assertThrows(PaginationException.class, () -> userDAO.getByRating(true, 10, -1));
+        Assertions.assertThrows(PaginationException.class, () -> userDAO.getByRating(true, -10, 1));
+        Assertions.assertThrows(PaginationException.class, () -> userDAO.getByRating(true, -10, -1));
     }
 
     @Test

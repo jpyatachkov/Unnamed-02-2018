@@ -9,7 +9,6 @@ import org.springframework.lang.Nullable;
 import org.springframework.web.bind.annotation.*;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.models.User;
-import ru.shipcollision.api.services.PaginationService;
 import ru.shipcollision.api.services.SessionService;
 
 import javax.servlet.http.HttpSession;
@@ -26,32 +25,37 @@ import java.util.List;
 @RequestMapping(path = "/users")
 public class UsersController {
 
-    private final PaginationService<User> paginationService;
+    public static final int DEFAULT_OFFSET = 0;
+
+    public static final int DEFAULT_LIMIT = 10;
 
     private final SessionService sessionService;
 
     private final UserDAO userDAO;
 
-    public UsersController(PaginationService<User> paginationService,
-                           SessionService sessionService,
+    public UsersController(SessionService sessionService,
                            UserDAO userDAO) {
-        this.paginationService = paginationService;
         this.sessionService = sessionService;
         this.userDAO = userDAO;
     }
 
     @GetMapping(path = "/scoreboard")
     public Scoreboard doGetScoreboard(@RequestParam(required = false) Integer offset,
-                                          @RequestParam(required = false) Integer limit,
-                                          HttpServletRequest request) {
-        paginationService.setOffset(offset);
-        paginationService.setLimit(limit);
-        paginationService.setObjects(userDAO.getByRating(false));
-        return new Scoreboard(
-                paginationService.paginate(),
-                paginationService.resolvePrevPageLink(request.getRequestURI()),
-                paginationService.resolveNextPageLink(request.getRequestURI())
-        );
+                                          @RequestParam(required = false) Integer limit) {
+        final int currentOffset = (offset == null) ? DEFAULT_OFFSET : offset;
+        final int currentLimit = (limit == null) ? DEFAULT_LIMIT : limit;
+
+        final List<User> users = userDAO.getByRating(false, currentOffset, currentLimit);
+
+        final String linkTemplate = "/?offset=%d&limit=%d";
+        final Integer usersCount = userDAO.getUsersCount();
+
+        final String prevPageParams = (currentOffset - currentLimit >= 0) ?
+                String.format(linkTemplate, currentOffset - currentLimit, currentLimit) : null;
+        final String nexPageParams = (currentOffset + currentLimit <= usersCount) ?
+                String.format(linkTemplate, currentLimit + currentLimit, currentLimit) : null;
+
+        return new Scoreboard(users, prevPageParams, nexPageParams);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

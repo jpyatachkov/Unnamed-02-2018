@@ -21,7 +21,6 @@ import ru.shipcollision.api.UserTestFactory;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
-import ru.shipcollision.api.services.PaginationServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,9 +36,6 @@ public class UsersControllerTest {
     public static final String SCOREBOARD_ROUTE = "/users/scoreboard";
 
     public static final String PAGE_LINK_FORMAT = "?offset=%d&limit=%d";
-
-    @MockBean
-    private PaginationServiceImpl paginationService;
 
     @MockBean
     private UserDAO userDAO;
@@ -76,31 +72,6 @@ public class UsersControllerTest {
         return Stream.of(
                 Arguments.of(generateUsersList(), prevPageLink, nextPageLink)
         );
-    }
-
-    @ParameterizedTest
-    @MethodSource("provideUserPages")
-    @DisplayName("пагинация работает")
-    public void testUsersPagination(List<User> scoreboard, String prevPageLink, String nextPageLink) {
-        Mockito.when(paginationService.paginate()).thenReturn(scoreboard);
-        Mockito.when(paginationService.resolvePrevPageLink(Mockito.anyString())).thenReturn(prevPageLink);
-        Mockito.when(paginationService.resolveNextPageLink(Mockito.anyString())).thenReturn(nextPageLink);
-
-        final ResponseEntity<UsersController.Scoreboard> response =
-                testRestTemplate.getForEntity(SCOREBOARD_ROUTE, UsersController.Scoreboard.class);
-
-        Assertions.assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        final UsersController.Scoreboard body = response.getBody();
-
-        Assertions.assertNotNull(body);
-
-        Assertions.assertNotNull(body.prevPageLink);
-        Assertions.assertEquals(prevPageLink, body.prevPageLink);
-        Assertions.assertNotNull(body.nextPageLink);
-        Assertions.assertEquals(nextPageLink, body.nextPageLink);
-        Assertions.assertNotNull(body.users);
-        Assertions.assertFalse(body.users.isEmpty());
     }
 
     @Test

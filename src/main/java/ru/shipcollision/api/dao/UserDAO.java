@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;
 import ru.shipcollision.api.exceptions.NotFoundException;
+import ru.shipcollision.api.exceptions.PaginationException;
 import ru.shipcollision.api.models.User;
 
 import java.util.List;
@@ -32,11 +33,21 @@ public class UserDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    public List<User> getByRating(boolean ascending) {
-        final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users ORDER BY rank "
-                + ((ascending) ? "ASC" : "DESC");
+    public Integer getUsersCount() {
+        return jdbcTemplate.queryForObject("SELECT count(*) FROM users", Integer.class);
+    }
 
-        return jdbcTemplate.query(sqlQuery, new Object[]{}, USER_ROW_MAPPER);
+    public List<User> getByRating(boolean ascending, int offset, int limit) {
+        final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users ORDER BY rank "
+                + ((ascending) ? " ASC " : " DESC ") + " OFFSET ? LIMIT ?";
+
+        if (offset < 0) {
+            throw new PaginationException("Offset must not be negative");
+        } else if (limit < 0) {
+            throw new PaginationException("Limit must not be negative");
+        } else {
+            return jdbcTemplate.query(sqlQuery, new Object[] {offset, limit}, USER_ROW_MAPPER);
+        }
     }
 
     public User findById(Long id) {
