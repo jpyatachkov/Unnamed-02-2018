@@ -71,7 +71,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public void closeSession(HttpSession session) {
         if (getUserFromSession(session) != null) {
-            session.removeAttribute(COOKIE_NAME);
+            session.invalidate();
         }
     }
 }
