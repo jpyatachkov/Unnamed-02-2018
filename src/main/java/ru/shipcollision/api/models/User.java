@@ -106,10 +106,11 @@ public class User {
         final int prime = 13;
 
         int result = 1;
+        result = prime * result + ((id == null) ? 0 : id.hashCode());
         result = prime * result + ((username == null) ? 0 : username.hashCode());
         result = prime * result + ((email == null) ? 0 : email.hashCode());
-        result = prime * result + ((avatarLink == null) ? 0 : avatarLink.hashCode());
         result = prime * result + rank ^ (rank >>> 28);
+        result = prime * result + ((avatarLink == null) ? 0 : avatarLink.hashCode());
         return result;
     }
 }
