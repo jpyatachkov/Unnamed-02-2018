@@ -1,7 +1,6 @@
 package ru.shipcollision.api.dao;
 
 import com.github.javafaker.Faker;
-import org.junit.Rule;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mindrot.jbcrypt.BCrypt;
@@ -9,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.shaded.com.google.common.collect.Ordering;
 import ru.shipcollision.api.UserTestFactory;
 import ru.shipcollision.api.exceptions.InvalidCredentialsException;

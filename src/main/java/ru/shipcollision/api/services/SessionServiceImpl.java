@@ -17,7 +17,7 @@ public class SessionServiceImpl implements SessionService {
     /**
      * Имя куки, в которую будет записан идентификатор сессии.
      */
-    public static final String ATTRIBUTE_NAME = "JSESSIONID";
+    public static final String COOKIE_NAME = "JSESSIONID";
 
     private final UserDAO userDAO;
 
@@ -31,7 +31,7 @@ public class SessionServiceImpl implements SessionService {
      * @return Проверяет, установлена ли кука.
      */
     private User getUserFromSession(HttpSession session) {
-        final Object userId = session.getAttribute(ATTRIBUTE_NAME);
+        final Object userId = session.getAttribute(COOKIE_NAME);
 
         if (userId == null) {
             throw new ForbiddenException();
@@ -40,8 +40,8 @@ public class SessionServiceImpl implements SessionService {
         try {
             return userDAO.findById((Long) userId);
         } catch (NotFoundException e) {
-            session.removeAttribute(ATTRIBUTE_NAME);
-            throw new ForbiddenException();
+            session.removeAttribute(COOKIE_NAME);
+            throw new ForbiddenException(e);
         }
     }
 
@@ -52,7 +52,7 @@ public class SessionServiceImpl implements SessionService {
      */
     @Override
     public void openSession(HttpSession session, User user) {
-        session.setAttribute(ATTRIBUTE_NAME, user.id);
+        session.setAttribute(COOKIE_NAME, user.id);
     }
 
     /**
@@ -71,7 +71,7 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public void closeSession(HttpSession session) {
         if (getUserFromSession(session) != null) {
-            session.removeAttribute(ATTRIBUTE_NAME);
+            session.removeAttribute(COOKIE_NAME);
         }
     }
 }

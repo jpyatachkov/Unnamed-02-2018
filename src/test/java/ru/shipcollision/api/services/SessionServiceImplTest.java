@@ -42,7 +42,7 @@ class SessionServiceImplTest {
     @BeforeEach
     void setupSession() {
         session = new MockHttpSession();
-        session.setAttribute(SessionServiceImpl.ATTRIBUTE_NAME, correctUser.id);
+        session.setAttribute(SessionServiceImpl.COOKIE_NAME, correctUser.id);
     }
 
     @Test
@@ -50,8 +50,8 @@ class SessionServiceImplTest {
     void testCanOpenSession() {
         sessionService.openSession(session, correctUser);
 
-        Assertions.assertNotNull(session.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME));
-        Assertions.assertEquals(correctUser.id, session.getAttribute(SessionServiceImpl.ATTRIBUTE_NAME));
+        Assertions.assertNotNull(session.getAttribute(SessionServiceImpl.COOKIE_NAME));
+        Assertions.assertEquals(correctUser.id, session.getAttribute(SessionServiceImpl.COOKIE_NAME));
     }
 
     @Test
@@ -81,7 +81,7 @@ class SessionServiceImplTest {
                 ForbiddenException.class,
                 () -> sessionService.getCurrentUser(session)
         );
-        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.ATTRIBUTE_NAME));
+        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.COOKIE_NAME));
     }
 
     @Test
@@ -91,7 +91,7 @@ class SessionServiceImplTest {
                 .thenReturn(correctUser);
 
         sessionService.closeSession(session);
-        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.ATTRIBUTE_NAME));
+        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.COOKIE_NAME));
     }
 
     @Test
@@ -113,6 +113,6 @@ class SessionServiceImplTest {
                 ForbiddenException.class,
                 () -> sessionService.closeSession(session)
         );
-        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.ATTRIBUTE_NAME));
+        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.COOKIE_NAME));
     }
 }

@@ -12,4 +12,8 @@ public class ForbiddenException extends ApiException {
     public ForbiddenException() {
         super("Forbidden");
     }
+
+    public ForbiddenException(ApiException error) {
+        super(error);
+    }
 }
