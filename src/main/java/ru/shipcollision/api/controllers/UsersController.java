@@ -41,7 +41,7 @@ public class UsersController {
 
     @GetMapping(path = "/scoreboard")
     public Scoreboard doGetScoreboard(@RequestParam(required = false) Integer offset,
-                                          @RequestParam(required = false) Integer limit) {
+                                      @RequestParam(required = false) Integer limit) {
         final int currentOffset = (offset == null) ? DEFAULT_OFFSET : offset;
         final int currentLimit = (limit == null) ? DEFAULT_LIMIT : limit;
 
@@ -50,18 +50,18 @@ public class UsersController {
         final String linkTemplate = "/?offset=%d&limit=%d";
         final Integer usersCount = userDAO.getUsersCount();
 
-        final String prevPageParams = (currentOffset - currentLimit >= 0) ?
-                String.format(linkTemplate, currentOffset - currentLimit, currentLimit) : null;
-        final String nexPageParams = (currentOffset + currentLimit <= usersCount) ?
-                String.format(linkTemplate, currentLimit + currentLimit, currentLimit) : null;
+        final String prevPageParams = (currentOffset - currentLimit >= 0)
+                ? String.format(linkTemplate, currentOffset - currentLimit, currentLimit) : null;
+        final String nexPageParams = (currentOffset + currentLimit <= usersCount)
+                ? String.format(linkTemplate, currentLimit + currentLimit, currentLimit) : null;
 
         return new Scoreboard(users, prevPageParams, nexPageParams);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<?> doPostUser(HttpServletRequest request,
-                                     @RequestBody @Valid User user,
-                                     HttpSession session) throws URISyntaxException {
+                                        @RequestBody @Valid User user,
+                                        HttpSession session) throws URISyntaxException {
         final User savedUser = userDAO.save(user);
         sessionService.openSession(session, savedUser);
         final URI location = new URI(String.format("%s/%d/", request.getRequestURI(), savedUser.id));

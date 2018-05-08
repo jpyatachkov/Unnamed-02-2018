@@ -30,8 +30,8 @@ public class FileIOServiceImpl implements FileIOService {
                 Objects.requireNonNull(file.getOriginalFilename())
         );
 
-        //noinspection TryWithIdenticalCatches
-        try (final FileOutputStream out = new FileOutputStream(resolver.getSaveFilePath())) {
+        //noinspection TryWithIdenticalCatches,LocalCanBeFinal
+        try (FileOutputStream out = new FileOutputStream(resolver.getSaveFilePath())) {
             out.write(file.getBytes());
         } catch (FileNotFoundException e) {
             throw new ApiException(e);

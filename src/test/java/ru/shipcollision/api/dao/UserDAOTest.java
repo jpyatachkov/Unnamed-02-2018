@@ -123,8 +123,7 @@ class UserDAOTest {
                 .collect(Collectors.toList());
 
         // +1 из-за "корректного" юзера, который добавляется к созданным FAKE_USERS_COUNT юзерам.
-        @SuppressWarnings("ConstantConditions")
-        final int expectedSize = (FAKE_USERS_COUNT + 1 > defaultLimit) ? defaultLimit : FAKE_USERS_COUNT + 1;
+        @SuppressWarnings("ConstantConditions") final int expectedSize = (FAKE_USERS_COUNT + 1 > defaultLimit) ? defaultLimit : FAKE_USERS_COUNT + 1;
 
         Assertions.assertEquals(expectedSize, acsRanks.size());
         Assertions.assertEquals(expectedSize, descRanks.size());

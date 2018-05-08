@@ -46,7 +46,7 @@ public class UserDAO {
         } else if (limit < 0) {
             throw new PaginationException("Limit must not be negative");
         } else {
-            return jdbcTemplate.query(sqlQuery, new Object[] {offset, limit}, USER_ROW_MAPPER);
+            return jdbcTemplate.query(sqlQuery, new Object[]{offset, limit}, USER_ROW_MAPPER);
         }
     }
 

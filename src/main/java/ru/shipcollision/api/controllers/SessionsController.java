@@ -2,7 +2,6 @@ package ru.shipcollision.api.controllers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,7 +32,7 @@ public class SessionsController {
 
     @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public User doSignin(@RequestBody @Valid SigninRequest signinRequest,
-                                   HttpSession session) {
+                         HttpSession session) {
         final User user = userDAO.authenticate(signinRequest.email, signinRequest.password);
         sessionService.openSession(session, user);
         return user;

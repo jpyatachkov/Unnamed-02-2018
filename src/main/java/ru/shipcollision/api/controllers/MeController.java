@@ -51,7 +51,7 @@ public class MeController {
 
     @PatchMapping
     public User doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
-                                    HttpSession session) {
+                          HttpSession session) {
         final User currentUser = sessionService.getCurrentUser(session);
         currentUser.username = Optional.ofNullable(updateRequest.username).orElse(currentUser.username);
         currentUser.email = Optional.ofNullable(updateRequest.email).orElse(currentUser.email);
