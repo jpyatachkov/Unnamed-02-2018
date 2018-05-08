@@ -45,12 +45,12 @@ public class MeController {
     }
 
     @GetMapping
-    public ResponseEntity doGetMe(HttpSession session) {
-        return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
+    public User doGetMe(HttpSession session) {
+        return sessionService.getCurrentUser(session);
     }
 
     @PatchMapping
-    public ResponseEntity doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
+    public User doPatchMe(@RequestBody @Valid PartialUpdateRequest updateRequest,
                                     HttpSession session) {
         final User currentUser = sessionService.getCurrentUser(session);
         currentUser.username = Optional.ofNullable(updateRequest.username).orElse(currentUser.username);
@@ -62,7 +62,7 @@ public class MeController {
             userDAO.updatePassword(currentUser);
         }
 
-        return ResponseEntity.ok().body(sessionService.getCurrentUser(session));
+        return sessionService.getCurrentUser(session);
     }
 
     @PostMapping(path = "/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -94,7 +94,7 @@ public class MeController {
     }
 
     @DeleteMapping(path = "/avatar")
-    public ResponseEntity<?> doDeleteAvatar(HttpSession session) {
+    public User doDeleteAvatar(HttpSession session) {
         final User currentUser = sessionService.getCurrentUser(session);
 
         if (fileIOService.fileExists(currentUser.avatarLink)) {
@@ -103,7 +103,7 @@ public class MeController {
             currentUser.avatarLink = null;
         }
 
-        return ResponseEntity.ok().body(currentUser);
+        return currentUser;
     }
 
     @SuppressWarnings("PublicField")

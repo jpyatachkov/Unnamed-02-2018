@@ -32,18 +32,18 @@ public class SessionsController {
     }
 
     @PostMapping(path = "/signin", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity doSignin(@RequestBody @Valid SigninRequest signinRequest,
+    public User doSignin(@RequestBody @Valid SigninRequest signinRequest,
                                    HttpSession session) {
         final User user = userDAO.authenticate(signinRequest.email, signinRequest.password);
         sessionService.openSession(session, user);
-        return ResponseEntity.ok().body(user);
+        return user;
     }
 
     @DeleteMapping(path = "/signout")
-    public ResponseEntity doSignout(HttpSession session) {
+    public User doSignout(HttpSession session) {
         final User currentUser = sessionService.getCurrentUser(session);
         sessionService.closeSession(session);
-        return ResponseEntity.ok().body(currentUser);
+        return currentUser;
     }
 
     /**
