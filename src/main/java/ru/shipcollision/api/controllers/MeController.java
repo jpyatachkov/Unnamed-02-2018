@@ -87,7 +87,7 @@ public class MeController {
             final URI avatarURI = new URI(currentUser.avatarLink);
             return ResponseEntity.created(avatarURI).body(currentUser);
         } catch (URISyntaxException e) {
-            return ResponseEntity.ok().body(currentUser);
+            return ResponseEntity.badRequest().body(new ApiMessage("Avatar has been uploaded incorrectly"));
         } catch (AssertionError e) {
             return ResponseEntity.badRequest().body(new ApiMessage("Unable to upload avatar"));
         }
