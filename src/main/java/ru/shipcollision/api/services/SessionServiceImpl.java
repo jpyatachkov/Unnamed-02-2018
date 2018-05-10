@@ -1,6 +1,7 @@
 package ru.shipcollision.api.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.NotFoundException;
@@ -55,6 +56,10 @@ public class SessionServiceImpl implements SessionService {
         session.setAttribute(COOKIE_NAME, user.id);
     }
 
+    public void openSession(WebSocketSession webSocketSession, User user) {
+        webSocketSession.getAttributes().put(COOKIE_NAME, user.id);
+    }
+
     /**
      * Возвращает текущего пользователя.
      *
@@ -63,6 +68,10 @@ public class SessionServiceImpl implements SessionService {
     @Override
     public User getCurrentUser(HttpSession session) {
         return getUserFromSession(session);
+    }
+
+    public Long wsGetCurrentUserId(WebSocketSession webSocketSession) {
+        return (long) 1;
     }
 
     /**
