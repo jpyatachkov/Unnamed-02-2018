@@ -132,7 +132,7 @@ class UserDAOTest {
     }
 
     @Test
-    @DisplayName("Пагинация не работает с неверными значениями offset и limit")
+    @DisplayName("пагинация не работает с неверными значениями offset и limit")
     void testGetByRatingWontWork() {
         Assertions.assertThrows(PaginationException.class, () -> userDAO.getByRating(true, 10, -1));
         Assertions.assertThrows(PaginationException.class, () -> userDAO.getByRating(true, -10, 1));

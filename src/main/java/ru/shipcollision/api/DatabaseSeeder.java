@@ -2,6 +2,7 @@ package ru.shipcollision.api;
 
 import com.github.javafaker.Faker;
 import org.mindrot.jbcrypt.BCrypt;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
@@ -11,6 +12,7 @@ import java.util.Random;
 
 @SuppressWarnings("QuestionableName")
 @Component
+@ConditionalOnWebApplication
 public class DatabaseSeeder {
 
     private JdbcTemplate jdbcTemplate;
