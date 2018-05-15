@@ -31,8 +31,6 @@ public class UsersControllerTest {
 
     public static final String USERS_ROUTE = "/users";
 
-    public static final String SCOREBOARD_ROUTE = "/users/scoreboard";
-
     public static final String PAGE_LINK_FORMAT = "?offset=%d&limit=%d";
 
     @MockBean

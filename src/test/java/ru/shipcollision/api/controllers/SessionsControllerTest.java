@@ -19,7 +19,7 @@ import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
-import ru.shipcollision.api.services.SessionServiceImpl;
+import ru.shipcollision.api.services.SessionService;
 
 import javax.servlet.http.HttpSession;
 import java.util.List;
@@ -37,7 +37,7 @@ public class SessionsControllerTest {
     public static final String SIGNOUT_ROUTE = "/signout";
 
     @MockBean
-    private SessionServiceImpl sessionService;
+    private SessionService sessionService;
 
     @MockBean
     private UserDAO userDAO;

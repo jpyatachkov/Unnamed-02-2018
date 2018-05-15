@@ -15,7 +15,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import ru.shipcollision.api.UserTestFactory;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.models.User;
-import ru.shipcollision.api.services.SessionServiceImpl;
+import ru.shipcollision.api.services.SessionService;
 
 import javax.servlet.http.HttpSession;
 
@@ -27,7 +27,7 @@ public class MeControllerTest {
     public static final String ME_ROUTE = "/me";
 
     @MockBean
-    private SessionServiceImpl sessionService;
+    private SessionService sessionService;
 
     @Autowired
     private TestRestTemplate testRestTemplate;

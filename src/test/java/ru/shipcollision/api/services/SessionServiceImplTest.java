@@ -19,7 +19,7 @@ import java.util.Arrays;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.NONE,
-        classes = {SessionServiceImpl.class, UserDAO.class}
+        classes = {SessionService.class, UserDAO.class}
 )
 @DisplayName("Тест cервиса сессий")
 class SessionServiceImplTest {
@@ -32,7 +32,7 @@ class SessionServiceImplTest {
     private UserDAO userDAO;
 
     @Autowired
-    private SessionServiceImpl sessionService;
+    private SessionService sessionService;
 
     @BeforeAll
     static void setupUserDAO() {
@@ -42,7 +42,7 @@ class SessionServiceImplTest {
     @BeforeEach
     void setupSession() {
         session = new MockHttpSession();
-        session.setAttribute(SessionServiceImpl.COOKIE_NAME, correctUser.id);
+        session.setAttribute(SessionService.COOKIE_NAME, correctUser.id);
     }
 
     @Test
@@ -50,8 +50,8 @@ class SessionServiceImplTest {
     void testCanOpenSession() {
         sessionService.openSession(session, correctUser);
 
-        Assertions.assertNotNull(session.getAttribute(SessionServiceImpl.COOKIE_NAME));
-        Assertions.assertEquals(correctUser.id, session.getAttribute(SessionServiceImpl.COOKIE_NAME));
+        Assertions.assertNotNull(session.getAttribute(SessionService.COOKIE_NAME));
+        Assertions.assertEquals(correctUser.id, session.getAttribute(SessionService.COOKIE_NAME));
     }
 
     @Test
@@ -81,7 +81,7 @@ class SessionServiceImplTest {
                 ForbiddenException.class,
                 () -> sessionService.getCurrentUser(session)
         );
-        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.COOKIE_NAME));
+        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionService.COOKIE_NAME));
     }
 
     @Test
@@ -113,6 +113,6 @@ class SessionServiceImplTest {
                 ForbiddenException.class,
                 () -> sessionService.closeSession(session)
         );
-        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionServiceImpl.COOKIE_NAME));
+        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionService.COOKIE_NAME));
     }
 }
