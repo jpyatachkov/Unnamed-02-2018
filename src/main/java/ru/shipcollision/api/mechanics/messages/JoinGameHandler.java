@@ -10,7 +10,7 @@ import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
 @Component
-public class JoinGameHandler extends MessageHandler<JoinGame.Request> {
+public class JoinGameHandler extends MessageHandler<JoinGame> {
 //    @NotNull
 //    private final GameMechanics gameMechanics;
 
@@ -19,19 +19,19 @@ public class JoinGameHandler extends MessageHandler<JoinGame.Request> {
     private final MessageHandlerContainer messageHandlerContainer;
 
     public JoinGameHandler(@NotNull MessageHandlerContainer messageHandlerContainer) {
-        super(JoinGame.Request.class);
+        super(JoinGame.class);
 //        this.gameMechanics = gameMechanics;
         this.messageHandlerContainer = messageHandlerContainer;
     }
 
     @PostConstruct
     private void init() {
-        messageHandlerContainer.registerHandler(JoinGame.Request.class, this);
+        messageHandlerContainer.registerHandler(JoinGame.class, this);
     }
 
     @Override
-    public void handle(@NotNull JoinGame.Request message, @NotNull Long forUser) {
+    public void handle(@NotNull JoinGame message, @NotNull Long forUser) {
 //        gameMechanics.addUser(forUser);
-        LOGGER.info("СООБЩЕНИЕ ПРИШЛО УРАААА!");
+        LOGGER.info("Присоединение к игре");
     }
 }

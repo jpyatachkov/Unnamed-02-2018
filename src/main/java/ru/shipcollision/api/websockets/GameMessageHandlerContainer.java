@@ -18,6 +18,7 @@ public class GameMessageHandlerContainer implements MessageHandlerContainer {
     @Override
     public void handle(@NotNull Message message, @NotNull Long id) {
 
+        System.out.println(message);
         final MessageHandler<?> messageHandler = handlerMap.get(message.getClass());
         if (messageHandler == null) {
             throw new ApiException("no handler for message of " + message.getClass().getName() + " type");
