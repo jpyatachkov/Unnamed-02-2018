@@ -79,7 +79,7 @@ public class SessionServiceImpl implements SessionService {
                 return (long) ++id;
             default:
                 id += 1;
-                return (long) id % 2;
+                return (long) id % 10;
         }
     }
 

@@ -47,7 +47,7 @@ public class JoinGameHandler extends MessageHandler<JoinGame> {
 //        gameMechanics.addUser(forUser);
         LOGGER.info("Присоединение к игре");
         User user = userDAO.findById(forUser);
-        GamePlayer player = new GamePlayer(user, message.field);
+        GamePlayer player = new GamePlayer(user, message);
         gameMechanics.addWaiter(player);
     }
 }

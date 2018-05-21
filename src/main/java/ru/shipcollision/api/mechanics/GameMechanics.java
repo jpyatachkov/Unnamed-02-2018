@@ -5,13 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
+import ru.shipcollision.api.mechanics.services.GameSessionService;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.websockets.RemotePointService;
 
 import javax.validation.constraints.NotNull;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 @Component
@@ -27,31 +27,54 @@ public class GameMechanics {
     private final RemotePointService remotePointService;
 
     @NotNull
+    private final GameSessionService gameSessionService;
+
+    @NotNull
     private ConcurrentLinkedQueue<GamePlayer> waiters;
+
+    public final ConcurrentHashMap<Long, ConcurrentLinkedQueue<GamePlayer>> matchedUsers;
 
     public void addWaiter(GamePlayer waiter) {
         this.waiters.add(waiter);
     }
 
-    public GameMechanics(@NotNull UserDAO userDAO, @NotNull RemotePointService remotePointService) {
+    public GameMechanics(@NotNull UserDAO userDAO,
+                         @NotNull RemotePointService remotePointService,
+                         @NotNull GameSessionService gameSessionService) {
         this.userDAO = userDAO;
         this.remotePointService = remotePointService;
         this.waiters = new ConcurrentLinkedQueue<>();
+        this.matchedUsers = new ConcurrentHashMap<>();
+        this.gameSessionService = gameSessionService;
     }
 
     private void tryStartGame() {
-        final Set<GamePlayer> matchedUsers = new LinkedHashSet<>();
 
         while (waiters.size() >= 2 || waiters.size() >= 1 && matchedUsers.size() >= 1) {
             final GamePlayer candidate = waiters.poll();
 
-            matchedUsers.add(candidate);
-            if (matchedUsers.size() == 2) {
-                LOGGER.info("start game for 2 users");
-                final Iterator<GamePlayer> iterator = matchedUsers.iterator();
+            if (candidate == null) {
+                break;
+            }
 
+            matchedUsers.computeIfAbsent(candidate.room, user -> new ConcurrentLinkedQueue<>());
+            matchedUsers.get(candidate.room).add(candidate);
+
+
+            for (Map.Entry<Long, ConcurrentLinkedQueue<GamePlayer>> entry : matchedUsers.entrySet()) {
+//                ConcurrentLinkedQueue<GamePlayer> queue = entry.getValue();
+                while (entry.getValue().size() >= entry.getKey()) {
+                    List<GamePlayer> queue = new ArrayList<>();
+                    for (int i = 0; i < entry.getKey(); i++) {
+                        queue.add(entry.getValue().poll());
+                    }
+                    LOGGER.info("Игра началась!!!");
+                    gameSessionService.StartGame(entry.getKey(), queue);
+
+                }
             }
         }
+
     }
 
     public void gmStep() {
