@@ -53,7 +53,7 @@ public class UsersController {
         final String prevPageParams = (currentOffset - currentLimit >= 0)
                 ? String.format(linkTemplate, currentOffset - currentLimit, currentLimit) : null;
         final String nexPageParams = (currentOffset + currentLimit <= usersCount)
-                ? String.format(linkTemplate, currentLimit + currentLimit, currentLimit) : null;
+                ? String.format(linkTemplate, currentOffset + currentLimit, currentLimit) : null;
 
         return new Scoreboard(users, prevPageParams, nexPageParams);
     }
