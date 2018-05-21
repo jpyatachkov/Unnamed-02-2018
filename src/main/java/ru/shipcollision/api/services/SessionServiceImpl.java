@@ -15,6 +15,8 @@ import javax.servlet.http.HttpSession;
 @Service
 public class SessionServiceImpl implements SessionService {
 
+    private static int id = 0;
+
     /**
      * Имя куки, в которую будет записан идентификатор сессии.
      */
@@ -71,7 +73,14 @@ public class SessionServiceImpl implements SessionService {
     }
 
     public Long wsGetCurrentUserId(WebSocketSession webSocketSession) {
-        return (long) 1;
+        switch (id) {
+            case 0:
+            case 1:
+                return (long) ++id;
+            default:
+                id += 1;
+                return (long) id % 2;
+        }
     }
 
     /**
