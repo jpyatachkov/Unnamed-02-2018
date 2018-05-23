@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.shipcollision.api.dao.UserDAO;
+import ru.shipcollision.api.mechanics.base.Coordinates;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
 import ru.shipcollision.api.mechanics.services.GameSessionService;
 import ru.shipcollision.api.models.User;
@@ -48,6 +49,15 @@ public class GameMechanics {
         this.gameSessionService = gameSessionService;
     }
 
+    public void makeMove(@NotNull Coordinates coord,@NotNull Long playerId) {
+        //TODO: обработка исключения NotFoundException
+        //User user = userDAO.findById(playerId);
+        GameSession session = gameSessionService.getPlayerSession(playerId);
+        if (session.checkCoords(coord)) {
+            session.makeMove(playerId, coord);
+        }
+    }
+
     private void tryStartGame() {
 
         while (waiters.size() >= 2 || waiters.size() >= 1 && matchedUsers.size() >= 1) {
@@ -69,15 +79,17 @@ public class GameMechanics {
                         queue.add(entry.getValue().poll());
                     }
                     LOGGER.info("Игра началась!!!");
-                    gameSessionService.StartGame(entry.getKey(), queue);
+                    gameSessionService.startGame(entry.getKey(), queue);
 
                 }
             }
         }
-
     }
 
     public void gmStep() {
+
+        gameSessionService.checkInitGames();
+
         tryStartGame();
     }
 }

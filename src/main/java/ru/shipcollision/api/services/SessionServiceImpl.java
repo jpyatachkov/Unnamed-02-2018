@@ -1,5 +1,6 @@
 package ru.shipcollision.api.services;
 
+import com.sun.jdi.LongValue;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import ru.shipcollision.api.dao.UserDAO;
@@ -72,14 +73,16 @@ public class SessionServiceImpl implements SessionService {
         return getUserFromSession(session);
     }
 
+
     public Long wsGetCurrentUserId(WebSocketSession webSocketSession) {
         switch (id) {
             case 0:
+                return Long.valueOf(1);
             case 1:
                 return (long) ++id;
             default:
                 id += 1;
-                return (long) id % 10;
+                return (long) id % 2;
         }
     }
 
