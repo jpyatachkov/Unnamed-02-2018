@@ -15,6 +15,8 @@ public class CorsConfiguration implements WebMvcConfigurer {
                 .allowCredentials(true)
                 .allowedMethods("GET", "HEAD", "POST", "PUT", "DELETE", "PATCH")
                 .allowedOrigins(
+                        "http://shipcollision.me",
+                        "https://shipcollision.me",
                         "http://shipcollision.herokuapp.com",
                         "https://shipcollision.herokuapp.com",
                         "http://dev-shipcollision.herokuapp.com",
