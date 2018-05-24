@@ -12,14 +12,13 @@ import ru.shipcollision.api.websockets.MessageHandlerContainer;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Component
 public class JoinGameHandler extends MessageHandler<JoinGame> {
 //    @NotNull
 //    private final GameMechanics gameMechanics;
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(JoinGameHandler.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JoinGameHandler.class);
     @NotNull
     private final MessageHandlerContainer messageHandlerContainer;
     @NotNull

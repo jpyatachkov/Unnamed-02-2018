@@ -11,12 +11,10 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.models.User;
-import ru.shipcollision.api.services.SessionService;
 import ru.shipcollision.api.services.SessionServiceImpl;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Map;
 
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 

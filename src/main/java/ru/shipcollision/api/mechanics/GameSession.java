@@ -9,6 +9,7 @@ import ru.shipcollision.api.mechanics.messages.MoveDone;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
 import ru.shipcollision.api.websockets.Message;
 import ru.shipcollision.api.websockets.RemotePointService;
+
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -31,7 +32,7 @@ public class GameSession {
 
     private boolean isFinished;
 
-    private int  currentPlayerIdx;
+    private int currentPlayerIdx;
 
     @NotNull
     private Timestamp endMoveTime;
@@ -48,7 +49,7 @@ public class GameSession {
         this.remotePointService = remotePointService;
     }
 
-    public int checkDimension(int count) {
+    private int checkDimension(int count) {
         switch (count) {
             case 2:
                 return 10;
@@ -66,10 +67,14 @@ public class GameSession {
     }
 
     @NotNull
-    public Long getSessionId() { return sessionId; }
+    public Long getSessionId() {
+        return sessionId;
+    }
 
     @NotNull
-    public int getCountPlayers() { return countPlayers; }
+    public int getCountPlayers() {
+        return countPlayers;
+    }
 
     public boolean isFinished() {
         return isFinished;
@@ -86,7 +91,7 @@ public class GameSession {
         }
     }
 
-    public void nextPlayer() {
+    private void nextPlayer() {
         currentPlayerIdx = currentPlayerIdx + 1 % countPlayers;
         startTime();
         try {
@@ -97,20 +102,20 @@ public class GameSession {
         }
     }
 
-    public GamePlayer getCurrentPlayer() {
+    private GamePlayer getCurrentPlayer() {
         return players.get(currentPlayerIdx);
     }
 
-    public boolean checkCoords(Coordinates coord) {
+    boolean checkCoords(Coordinates coord) {
         int dimension = checkDimension(countPlayers);
-        return  (coord.getI() <= dimension && coord.getJ() <= dimension);
+        return (coord.getI() <= dimension && coord.getJ() <= dimension);
     }
 
-    public boolean checkCurrentPlayer(@NotNull Long playerId) {
+    private boolean checkCurrentPlayer(@NotNull Long playerId) {
         return (playerId.equals(getCurrentPlayer().id));
     }
 
-    public void makeMove(Long playerId, Coordinates coord) {
+    void makeMove(Long playerId, Coordinates coord) {
         if (checkCurrentPlayer(playerId)) {
             //стреляем в поле игрока
             MoveResult result = new MoveResult();
@@ -127,14 +132,14 @@ public class GameSession {
                     //попал по себе и по другим
                     currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED_OTHER);
                     result.messages.get(currentPlayer.id).add(new MoveDone("Попадание", coord,
-                                                                        Cell.DESTROYED_OTHER, currentPlayer.score));
+                            Cell.DESTROYED_OTHER, currentPlayer.score));
                 }
 
                 if (!result.isDestroyedSelf && result.destroyedShipCount == 0) {
                     //не попал никуда
                     currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.MISSED);
                     result.messages.get(currentPlayer.id).add(new MoveDone("Промах", coord,
-                                                                        Cell.MISSED, currentPlayer.score));
+                            Cell.MISSED, currentPlayer.score));
                 }
             } else {
                 result.messages.get(currentPlayer.id).add(InfoMessage.createErrorMessage("Сюда нельзя ходить"));
@@ -157,8 +162,8 @@ public class GameSession {
     }
 
     private static class MoveResult {
-        public boolean isDestroyedSelf = false;
-        public int destroyedShipCount = 0;
-        public Map<Long, List<Message>> messages = new ConcurrentHashMap<>();
+        boolean isDestroyedSelf = false;
+        int destroyedShipCount = 0;
+        Map<Long, List<Message>> messages = new ConcurrentHashMap<>();
     }
 }

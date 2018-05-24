@@ -7,11 +7,12 @@ import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.mechanics.base.Coordinates;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
 import ru.shipcollision.api.mechanics.services.GameSessionService;
-import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.websockets.RemotePointService;
 
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -20,24 +21,15 @@ public class GameMechanics {
 
     @NotNull
     private static final Logger LOGGER = LoggerFactory.getLogger(GameMechanics.class);
-
+    private final ConcurrentHashMap<Long, ConcurrentLinkedQueue<GamePlayer>> matchedUsers;
     @NotNull
     private final UserDAO userDAO;
-
     @NotNull
     private final RemotePointService remotePointService;
-
     @NotNull
     private final GameSessionService gameSessionService;
-
     @NotNull
     private ConcurrentLinkedQueue<GamePlayer> waiters;
-
-    public final ConcurrentHashMap<Long, ConcurrentLinkedQueue<GamePlayer>> matchedUsers;
-
-    public void addWaiter(GamePlayer waiter) {
-        this.waiters.add(waiter);
-    }
 
     public GameMechanics(@NotNull UserDAO userDAO,
                          @NotNull RemotePointService remotePointService,
@@ -49,7 +41,11 @@ public class GameMechanics {
         this.gameSessionService = gameSessionService;
     }
 
-    public void makeMove(@NotNull Coordinates coord,@NotNull Long playerId) {
+    public void addWaiter(GamePlayer waiter) {
+        this.waiters.add(waiter);
+    }
+
+    public void makeMove(@NotNull Coordinates coord, @NotNull Long playerId) {
         //TODO: обработка исключения NotFoundException
         //User user = userDAO.findById(playerId);
         GameSession session = gameSessionService.getPlayerSession(playerId);
@@ -86,7 +82,7 @@ public class GameMechanics {
         }
     }
 
-    public void gmStep() {
+    void gmStep() {
 
         gameSessionService.checkInitGames();
 

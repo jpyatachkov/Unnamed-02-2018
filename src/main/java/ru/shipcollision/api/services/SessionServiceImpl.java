@@ -1,6 +1,5 @@
 package ru.shipcollision.api.services;
 
-import com.sun.jdi.LongValue;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.WebSocketSession;
 import ru.shipcollision.api.dao.UserDAO;
@@ -13,16 +12,15 @@ import javax.servlet.http.HttpSession;
 /**
  * Сервис для работы с сессиями.
  */
+@SuppressWarnings("WeakerAccess")
 @Service
 public class SessionServiceImpl implements SessionService {
-
-    private static int id = 0;
 
     /**
      * Имя куки, в которую будет записан идентификатор сессии.
      */
     public static final String COOKIE_NAME = "JSESSIONID";
-
+    private static int id = 0;
     private final UserDAO userDAO;
 
     public SessionServiceImpl(UserDAO userDAO) {
@@ -77,7 +75,7 @@ public class SessionServiceImpl implements SessionService {
     public Long wsGetCurrentUserId(WebSocketSession webSocketSession) {
         switch (id) {
             case 0:
-                return Long.valueOf(1);
+                return 1L;
             case 1:
                 return (long) ++id;
             default:

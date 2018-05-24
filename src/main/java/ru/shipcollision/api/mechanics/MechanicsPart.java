@@ -1,6 +1,5 @@
 package ru.shipcollision.api.mechanics;
 
-import ru.shipcollision.api.mechanics.base.Cell;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
 
 import javax.validation.constraints.NotNull;

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.util.Map;
@@ -20,7 +21,7 @@ public class RemotePointService {
         this.objectMapper = objectMapper;
     }
 
-    public void registerUser(@NotNull Long userId, @NotNull WebSocketSession webSocketSession) {
+    void registerUser(@NotNull Long userId, @NotNull WebSocketSession webSocketSession) {
         sessions.put(userId, webSocketSession);
     }
 
@@ -28,7 +29,7 @@ public class RemotePointService {
         return sessions.containsKey(userId) && sessions.get(userId).isOpen();
     }
 
-    public void removeUser(@NotNull Long userId) {
+    void removeUser(@NotNull Long userId) {
         sessions.remove(userId);
     }
 

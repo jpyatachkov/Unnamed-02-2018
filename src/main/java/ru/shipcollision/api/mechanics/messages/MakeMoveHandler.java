@@ -7,13 +7,16 @@ import ru.shipcollision.api.mechanics.GameMechanics;
 import ru.shipcollision.api.websockets.MessageHandler;
 import ru.shipcollision.api.websockets.MessageHandlerContainer;
 import ru.shipcollision.api.websockets.RemotePointService;
+
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
 
+@SuppressWarnings("WeakerAccess")
 @Component
 public class MakeMoveHandler extends MessageHandler<MakeMove> {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(MakeMove.class);
+
     @NotNull
     public final RemotePointService remotePointService;
 

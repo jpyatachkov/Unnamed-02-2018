@@ -10,8 +10,8 @@ import ru.shipcollision.api.mechanics.messages.MoveDone;
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.PROPERTY, property = "class")
 @JsonSubTypes({@JsonSubTypes.Type(MakeMove.class),
-                @JsonSubTypes.Type(JoinGame.class),
-                @JsonSubTypes.Type(MoveDone.class),
-                @JsonSubTypes.Type(InfoMessage.class)})
+        @JsonSubTypes.Type(JoinGame.class),
+        @JsonSubTypes.Type(MoveDone.class),
+        @JsonSubTypes.Type(InfoMessage.class)})
 public abstract class Message {
 }

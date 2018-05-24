@@ -4,15 +4,12 @@ package ru.shipcollision.api.mechanics.services;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.mechanics.GameSession;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
-import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.websockets.RemotePointService;
 
 import javax.validation.constraints.NotNull;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 public class GameSessionService {
