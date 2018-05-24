@@ -4,17 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.shipcollision.api.mechanics.base.Cell;
 import ru.shipcollision.api.mechanics.base.Coordinates;
+import ru.shipcollision.api.mechanics.messages.InfoMessage;
 import ru.shipcollision.api.mechanics.messages.MoveDone;
-import ru.shipcollision.api.mechanics.messages.StartMove;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
 import ru.shipcollision.api.websockets.Message;
 import ru.shipcollision.api.websockets.RemotePointService;
-
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class GameSession {
@@ -89,7 +90,8 @@ public class GameSession {
         currentPlayerIdx = currentPlayerIdx + 1 % countPlayers;
         startTime();
         try {
-            remotePointService.sendMessageToUser(players.get(currentPlayerIdx).id, new StartMove("Твой ход"));
+            //TODO: переделать сообщение, включить сцену.
+            remotePointService.sendMessageToUser(players.get(currentPlayerIdx).id, InfoMessage.createInfoMessage("Твой ход"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -111,28 +113,45 @@ public class GameSession {
     public void makeMove(Long playerId, Coordinates coord) {
         if (checkCurrentPlayer(playerId)) {
             //стреляем в поле игрока
+            MoveResult result = new MoveResult();
             GamePlayer currentPlayer = getCurrentPlayer();
             Cell cell = currentPlayer.field.get(coord.getI()).get(coord.getJ());
             if (cell == Cell.EMPTY || cell == Cell.BYSY) {
                 for (GamePlayer player : players) {
-                    makeShot(player, coord);
+                    result.messages.computeIfAbsent(player.id, messages -> new ArrayList<>());
+                    makeShot(player, coord, result);
                 }
+                currentPlayer.score += result.destroyedShipCount;
+
+                if (result.isDestroyedSelf && result.destroyedShipCount != 0) {
+                    //попал по себе и по другим
+                    currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED_OTHER);
+                    result.messages.get(currentPlayer.id).add(new MoveDone("Попадание", coord,
+                                                                        Cell.DESTROYED_OTHER, currentPlayer.score));
+                }
+
+                if (!result.isDestroyedSelf && result.destroyedShipCount == 0) {
+                    //не попал никуда
+                    currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.MISSED);
+                    result.messages.get(currentPlayer.id).add(new MoveDone("Промах", coord,
+                                                                        Cell.MISSED, currentPlayer.score));
+                }
+            } else {
+                result.messages.get(currentPlayer.id).add(InfoMessage.createErrorMessage("Сюда нельзя ходить"));
             }
         }
     }
 
-    private void makeShot(GamePlayer player, Coordinates coord) {
-        MoveResult result = new MoveResult();
+    private void makeShot(GamePlayer player, Coordinates coord, MoveResult result) {
         Cell currentCell = player.field.get(coord.getI()).get(coord.getJ());
         switch (currentCell) {
             case BYSY:
-                result.destroyedShipCount++;
                 player.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED);
                 if (player.equals(getCurrentPlayer())) {
                     result.isDestroyedSelf = true;
-                    //TODO: попал по себе, записать это сообщение в массив сообщений
                 } else {
-                    //TODO: попал по чужому кораблю, записать сообщение об этом тому игроку, по которому попали
+                    result.messages.get(player.id).add(InfoMessage.createInfoMessage("По вам попали"));
+                    result.destroyedShipCount++;
                 }
         }
     }
@@ -140,6 +159,6 @@ public class GameSession {
     private static class MoveResult {
         public boolean isDestroyedSelf = false;
         public int destroyedShipCount = 0;
-        public List<Message> messages = new ArrayList<>();
+        public Map<Long, List<Message>> messages = new ConcurrentHashMap<>();
     }
 }

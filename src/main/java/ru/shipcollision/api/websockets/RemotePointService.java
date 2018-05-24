@@ -48,14 +48,14 @@ public class RemotePointService {
             throw new IOException("no game websocket for user " + userId);
         }
         if (!webSocketSession.isOpen()) {
-            throw new IOException("session is closed or not exsists");
+            throw new IOException("session is closed or not exists");
         }
         //noinspection OverlyBroadCatchBlock
         try {
             //noinspection ConstantConditions
             webSocketSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
         } catch (IOException e) {
-            throw new IOException("Unnable to send message", e);
+            throw new IOException("Unable to send message", e);
         }
     }
 }

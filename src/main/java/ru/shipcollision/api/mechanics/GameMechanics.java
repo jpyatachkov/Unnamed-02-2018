@@ -92,4 +92,17 @@ public class GameMechanics {
 
         tryStartGame();
     }
+
+    public int getShipsCount(int count) {
+        switch (count) {
+            case 2:
+                return 10;
+            case 3:
+                return 15;
+            case 4:
+                return 20;
+            default:
+                return 0;
+        }
+    }
 }

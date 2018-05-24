@@ -18,20 +18,23 @@ public class GamePlayer {
     public int score;
     public List<List<Cell>> field;
     public @NotNull Long room;
+    public int shipCount;
 
-    public GamePlayer(Long id, String nickName, JoinGame message) {
+    public GamePlayer(Long id, String nickName, JoinGame message, int shipCount) {
         this.id = id;
         this.nickName = nickName;
         this.score = 0;
         this.field = message.field;
         this.room = message.count;
+        this.shipCount = shipCount;
     }
 
-    public GamePlayer(User user, JoinGame message) {
+    public GamePlayer(User user, JoinGame message, int shipCount) {
         this.id = user.id;
         this.nickName = user.username;
         this.score = 0;
         this.field = message.field;
         this.room = message.count;
+        this.shipCount = shipCount;
     }
 }

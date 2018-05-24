@@ -5,7 +5,7 @@ import ru.shipcollision.api.websockets.Message;
 
 import javax.validation.constraints.NotNull;
 
-public class MakeMoove extends Message {
+public class MakeMove extends Message {
 
     @NotNull
     public Coordinates coords;
