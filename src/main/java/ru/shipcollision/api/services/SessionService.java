@@ -67,8 +67,6 @@ public class SessionService {
      * Закрывает сессию для текущего пользователя.
      */
     public void closeSession(HttpSession session) {
-        if (getUserFromSession(session) != null) {
-            session.invalidate();
-        }
+        session.invalidate();
     }
 }
