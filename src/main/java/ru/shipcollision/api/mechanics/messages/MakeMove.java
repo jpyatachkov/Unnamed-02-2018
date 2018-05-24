@@ -5,6 +5,7 @@ import ru.shipcollision.api.websockets.Message;
 
 import javax.validation.constraints.NotNull;
 
+@SuppressWarnings("WeakerAccess")
 public class MakeMove extends Message {
 
     @NotNull

@@ -43,7 +43,6 @@ public class MechanicsExecutor implements Runnable {
     }
 
     private void mainCycle() {
-//        long lastFrameMillis = STEP_TIME;
         while (true) {
             try {
                 gameMechanics.gmStep();
@@ -55,12 +54,12 @@ public class MechanicsExecutor implements Runnable {
                 }
 
                 if (Thread.currentThread().isInterrupted()) {
-//                    gameMechanics.reset();
+                    // TODO: gameMechanics.reset().
                     return;
                 }
             } catch (RuntimeException e) {
                 LOGGER.error("Mechanics executor was reseted due to exception", e);
-//                gameMechanics.reset();
+                // TODO: gameMechanics.reset().
             }
         }
     }

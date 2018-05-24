@@ -149,15 +149,14 @@ public class GameSession {
 
     private void makeShot(GamePlayer player, Coordinates coord, MoveResult result) {
         Cell currentCell = player.field.get(coord.getI()).get(coord.getJ());
-        switch (currentCell) {
-            case BYSY:
-                player.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED);
-                if (player.equals(getCurrentPlayer())) {
-                    result.isDestroyedSelf = true;
-                } else {
-                    result.messages.get(player.id).add(InfoMessage.createInfoMessage("По вам попали"));
-                    result.destroyedShipCount++;
-                }
+        if (currentCell == Cell.BYSY) {
+            player.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED);
+            if (player.equals(getCurrentPlayer())) {
+                result.isDestroyedSelf = true;
+            } else {
+                result.messages.get(player.id).add(InfoMessage.createInfoMessage("По вам попали"));
+                result.destroyedShipCount++;
+            }
         }
     }
 

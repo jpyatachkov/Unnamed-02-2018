@@ -3,7 +3,6 @@ package ru.shipcollision.api.websockets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 
@@ -33,15 +32,16 @@ public class RemotePointService {
         sessions.remove(userId);
     }
 
-    public void cutDownConnection(@NotNull Long userId, @NotNull CloseStatus closeStatus) {
-        final WebSocketSession webSocketSession = sessions.get(userId);
-        if (webSocketSession != null && webSocketSession.isOpen()) {
-            try {
-                webSocketSession.close(closeStatus);
-            } catch (IOException ignore) {
-            }
-        }
-    }
+//    public void cutDownConnection(@NotNull Long userId, @NotNull CloseStatus closeStatus) {
+//        final WebSocketSession webSocketSession = sessions.get(userId);
+//        if (webSocketSession != null && webSocketSession.isOpen()) {
+//            try {
+//                webSocketSession.close(closeStatus);
+//            } catch (IOException ignore) {
+//
+//            }
+//        }
+//    }
 
     public void sendMessageToUser(@NotNull Long userId, @NotNull Message message) throws IOException {
         final WebSocketSession webSocketSession = sessions.get(userId);
@@ -51,9 +51,8 @@ public class RemotePointService {
         if (!webSocketSession.isOpen()) {
             throw new IOException("session is closed or not exists");
         }
-        //noinspection OverlyBroadCatchBlock
+
         try {
-            //noinspection ConstantConditions
             webSocketSession.sendMessage(new TextMessage(objectMapper.writeValueAsString(message)));
         } catch (IOException e) {
             throw new IOException("Unable to send message", e);

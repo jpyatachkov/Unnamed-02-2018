@@ -44,14 +44,14 @@ public class GameSessionService {
                 session.sync();
                 LOGGER.info("Проверяем состояние игры");
             } else {
-                //TODO: завершаем данную сессию.
+                // TODO: завершаем данную сессию.
                 LOGGER.info("Игра закончена");
             }
         }
     }
 
     public GameSession getPlayerSession(Long userId) {
-        //TODO: обработать исключение, если данного пользователя нет в мапе, т.е. он не состоит в игровой сессии
+        // TODO: обработать исключение, если данного пользователя нет в мапе, т.е. он не состоит в игровой сессии.
         return usersMap.get(userId);
     }
 }

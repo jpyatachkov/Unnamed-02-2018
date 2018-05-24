@@ -5,7 +5,7 @@ import ru.shipcollision.api.websockets.Message;
 import javax.validation.constraints.NotNull;
 
 @SuppressWarnings("WeakerAccess")
-public class InfoMessage extends Message {
+public final class InfoMessage extends Message {
 
     @NotNull
     public final String type;

@@ -46,8 +46,7 @@ public class GameMechanics {
     }
 
     public void makeMove(@NotNull Coordinates coord, @NotNull Long playerId) {
-        //TODO: обработка исключения NotFoundException
-        //User user = userDAO.findById(playerId);
+        // TODO: обработка исключения NotFoundException
         GameSession session = gameSessionService.getPlayerSession(playerId);
         if (session.checkCoords(coord)) {
             session.makeMove(playerId, coord);
@@ -68,7 +67,6 @@ public class GameMechanics {
 
 
             for (Map.Entry<Long, ConcurrentLinkedQueue<GamePlayer>> entry : matchedUsers.entrySet()) {
-//                ConcurrentLinkedQueue<GamePlayer> queue = entry.getValue();
                 while (entry.getValue().size() >= entry.getKey()) {
                     List<GamePlayer> queue = new ArrayList<>();
                     for (int i = 0; i < entry.getKey(); i++) {

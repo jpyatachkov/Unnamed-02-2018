@@ -6,9 +6,17 @@
 
 <!--Подавляет испекции для контейнеров запроса и ответа, т.к. использование  открытых полей в них оправданно-->
 <suppressions>
+    <suppress checks="MemberName" files="Coordinates.java"/>
+    <suppress checks="ParameterName" files="Coordinates.java"/>
     <suppress checks="VisibilityModifier" files="MeController.java"/>
     <suppress checks="VisibilityModifier" files="SessionsController.java"/>
     <suppress checks="VisibilityModifier" files="UsersController.java"/>
     <suppress checks="VisibilityModifier" files="ApiMessage.java"/>
     <suppress checks="VisibilityModifier" files="User.java"/>
+    <suppress checks="VisibilityModifier" files="MakeMove.java"/>
+    <suppress checks="VisibilityModifier" files="MoveDone.java"/>
+    <suppress checks="VisibilityModifier" files="JoinGame.java"/>
+    <suppress checks="VisibilityModifier" files="InfoMessage.java"/>
+    <suppress checks="VisibilityModifier" files="GamePlayer.java"/>
+    <suppress checks="VisibilityModifier" files="GameSession.java"/>
 </suppressions>

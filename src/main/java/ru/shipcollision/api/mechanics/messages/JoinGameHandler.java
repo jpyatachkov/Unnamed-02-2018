@@ -15,8 +15,6 @@ import javax.validation.constraints.NotNull;
 
 @Component
 public class JoinGameHandler extends MessageHandler<JoinGame> {
-//    @NotNull
-//    private final GameMechanics gameMechanics;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(JoinGameHandler.class);
     @NotNull
@@ -30,7 +28,6 @@ public class JoinGameHandler extends MessageHandler<JoinGame> {
                            @NotNull UserDAO userDAO,
                            @NotNull GameMechanics gameMechanics) {
         super(JoinGame.class);
-//        this.gameMechanics = gameMechanics;
         this.messageHandlerContainer = messageHandlerContainer;
         this.userDAO = userDAO;
         this.gameMechanics = gameMechanics;
@@ -43,7 +40,6 @@ public class JoinGameHandler extends MessageHandler<JoinGame> {
 
     @Override
     public void handle(@NotNull JoinGame message, @NotNull Long forUser) {
-//        gameMechanics.addUser(forUser);
         LOGGER.info("Присоединение к игре");
         User user = userDAO.findById(forUser);
         GamePlayer player = new GamePlayer(user, message, gameMechanics.getShipsCount(message.count.intValue()));
