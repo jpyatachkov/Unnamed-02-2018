@@ -4,9 +4,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.shipcollision.api.mechanics.base.Cell;
 import ru.shipcollision.api.mechanics.base.Coordinates;
+import ru.shipcollision.api.mechanics.messages.EnableScene;
+import ru.shipcollision.api.mechanics.messages.GameOver;
 import ru.shipcollision.api.mechanics.messages.InfoMessage;
 import ru.shipcollision.api.mechanics.messages.MoveDone;
 import ru.shipcollision.api.mechanics.models.GamePlayer;
+import ru.shipcollision.api.mechanics.services.GameSessionService;
 import ru.shipcollision.api.websockets.Message;
 import ru.shipcollision.api.websockets.RemotePointService;
 
@@ -40,13 +43,23 @@ public class GameSession {
     @NotNull
     private RemotePointService remotePointService;
 
-    public GameSession(int countPlayers, List<GamePlayer> array, RemotePointService remotePointService) {
+    @NotNull
+    private final GameSessionService gameSessionService;
+
+    public GameSession(int countPlayers, List<GamePlayer> array,
+                        RemotePointService remotePointService,
+                        GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
         this.countPlayers = countPlayers;
         this.players = array;
         this.isFinished = false;
         this.currentPlayerIdx = 0;
         this.remotePointService = remotePointService;
+        this.gameSessionService = gameSessionService;
+    }
+
+    public void decrementCountPlayers() {
+        this.countPlayers--;
     }
 
     private int checkDimension(int count) {
@@ -64,6 +77,11 @@ public class GameSession {
 
     public void startTime() {
         this.endMoveTime = new Timestamp(System.currentTimeMillis() + 20);
+        try {
+            remotePointService.sendMessageToUser((long) currentPlayerIdx, new EnableScene());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @NotNull
@@ -80,8 +98,8 @@ public class GameSession {
         return isFinished;
     }
 
-    public void setEndMoveTime(Timestamp endMoveTime) {
-        this.endMoveTime = endMoveTime;
+    public void finishSession(boolean finished) {
+        isFinished = finished;
     }
 
     public void sync() {
@@ -95,7 +113,6 @@ public class GameSession {
         currentPlayerIdx = currentPlayerIdx + 1 % countPlayers;
         startTime();
         try {
-            //TODO: переделать сообщение, включить сцену.
             remotePointService.sendMessageToUser(players.get(currentPlayerIdx).id, InfoMessage.createInfoMessage("Твой ход"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -115,32 +132,43 @@ public class GameSession {
         return (playerId.equals(getCurrentPlayer().id));
     }
 
+    void finishGameForPlayer(GamePlayer player, MoveResult result) {
+        players.remove(player);
+        decrementCountPlayers();
+        // удаление пользовательской сессии из мапы в GameSessionService
+        gameSessionService.deleteUserSession(player.id);
+        result.messages.get(player.id).add(new GameOver(false, result.destroyedShipCount));
+    }
+
     void makeMove(Long playerId, Coordinates coord) {
         if (checkCurrentPlayer(playerId)) {
-            //стреляем в поле игрока
+            // стреляем в поле игрока
             MoveResult result = new MoveResult();
             GamePlayer currentPlayer = getCurrentPlayer();
             Cell cell = currentPlayer.field.get(coord.getI()).get(coord.getJ());
             if (cell == Cell.EMPTY || cell == Cell.BYSY) {
                 for (GamePlayer player : players) {
+                    if (player.getShipCount() == 0) { finishGameForPlayer(player, result); continue; }
                     result.messages.computeIfAbsent(player.id, messages -> new ArrayList<>());
                     makeShot(player, coord, result);
                 }
                 currentPlayer.score += result.destroyedShipCount;
 
                 if (result.isDestroyedSelf && result.destroyedShipCount != 0) {
-                    //попал по себе и по другим
+                    // попал по себе и по другим
                     currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED_OTHER);
                     result.messages.get(currentPlayer.id).add(new MoveDone("Попадание", coord,
                             Cell.DESTROYED_OTHER, currentPlayer.score));
                 }
 
                 if (!result.isDestroyedSelf && result.destroyedShipCount == 0) {
-                    //не попал никуда
+                    // не попал никуда
                     currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.MISSED);
                     result.messages.get(currentPlayer.id).add(new MoveDone("Промах", coord,
                             Cell.MISSED, currentPlayer.score));
                 }
+
+                nextPlayer();
             } else {
                 result.messages.get(currentPlayer.id).add(InfoMessage.createErrorMessage("Сюда нельзя ходить"));
             }
@@ -150,6 +178,7 @@ public class GameSession {
     private void makeShot(GamePlayer player, Coordinates coord, MoveResult result) {
         Cell currentCell = player.field.get(coord.getI()).get(coord.getJ());
         if (currentCell == Cell.BYSY) {
+            player.decrementShipCount();
             player.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED);
             if (player.equals(getCurrentPlayer())) {
                 result.isDestroyedSelf = true;

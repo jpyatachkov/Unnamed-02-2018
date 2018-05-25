@@ -83,7 +83,6 @@ public class GameMechanics {
     void gmStep() {
 
         gameSessionService.checkInitGames();
-
         tryStartGame();
     }
 

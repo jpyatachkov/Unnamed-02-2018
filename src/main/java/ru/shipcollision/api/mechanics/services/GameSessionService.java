@@ -18,6 +18,7 @@ public class GameSessionService {
     @NotNull
     private final Set<GameSession> gameSessions = new LinkedHashSet<>();
 
+    // key = player-id, value = session
     @NotNull
     private final Map<Long, GameSession> usersMap = new HashMap<>();
 
@@ -28,8 +29,13 @@ public class GameSessionService {
         this.remotePointService = remotePointService;
     }
 
+    public void deleteUserSession(Long playerId) {
+        usersMap.remove(playerId);
+    }
+
+    // start new game
     public void startGame(@NotNull Long count, @NotNull List<GamePlayer> players) {
-        final GameSession session = new GameSession(count.intValue(), players, remotePointService);
+        final GameSession session = new GameSession(count.intValue(), players, remotePointService, this);
         for (GamePlayer player : players) {
             usersMap.put(player.id, session);
         }
@@ -37,6 +43,16 @@ public class GameSessionService {
         session.startTime();
     }
 
+    // end session, delete session from list
+    public void endSession() {
+        for (GameSession session : gameSessions) {
+            if (session.isFinished()) {
+                gameSessions.remove(session);
+            }
+        }
+    }
+
+    // check running games
     public void checkInitGames() {
 
         for (GameSession session : gameSessions) {
@@ -44,7 +60,7 @@ public class GameSessionService {
                 session.sync();
                 LOGGER.info("Проверяем состояние игры");
             } else {
-                // TODO: завершаем данную сессию.
+                endSession();
                 LOGGER.info("Игра закончена");
             }
         }
