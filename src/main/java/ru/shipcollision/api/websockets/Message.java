@@ -1,6 +1,5 @@
 package ru.shipcollision.api.websockets;
 
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import ru.shipcollision.api.mechanics.messages.*;

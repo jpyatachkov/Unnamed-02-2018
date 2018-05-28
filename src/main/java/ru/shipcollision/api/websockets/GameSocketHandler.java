@@ -21,16 +21,16 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 @Component
 public class GameSocketHandler extends TextWebSocketHandler {
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
+
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
 
-    @NotNull
-    private final UserDAO userDAO;
-    @NotNull
-    private final MessageHandlerContainer messageHandlerContainer;
-    @NotNull
-    private final RemotePointService remotePointService;
-    @NotNull
-    private final SessionServiceImpl sessionService;
+    private final @NotNull UserDAO userDAO;
+
+    private final @NotNull MessageHandlerContainer messageHandlerContainer;
+
+    private final @NotNull RemotePointService remotePointService;
+
+    private final @NotNull SessionServiceImpl sessionService;
 
     private final ObjectMapper objectMapper;
 
@@ -47,7 +47,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
 
-        final Long id = sessionService.wsGetCurrentUserId(webSocketSession); // (Long) webSocketSession.getAttributes().get("userId");
+        final Long id = sessionService.wsGetCurrentUserId(webSocketSession);
         LOGGER.info("USER - ", id);
         if (id == null || userDAO.findById(id) == null) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
@@ -63,7 +63,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
         if (!webSocketSession.isOpen()) {
             return;
         }
-        final Long id = sessionService.wsGetCurrentUserId(webSocketSession); //(Long) webSocketSession.getAttributes().get("userId");
+        final Long id = sessionService.wsGetCurrentUserId(webSocketSession);
         final User user;
         if (id == null || (user = userDAO.findById(id)) == null) {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
@@ -108,10 +108,11 @@ public class GameSocketHandler extends TextWebSocketHandler {
         final CloseStatus status = closeStatus == null ? SERVER_ERROR : closeStatus;
         try {
             session.close(status);
-        } catch (Exception ignore) {
-            LOGGER.info("close session");
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            LOGGER.warn("Session terminated");
         }
-
     }
 
     @Override

@@ -1,6 +1,5 @@
 package ru.shipcollision.api;
 
-
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
@@ -10,13 +9,11 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 
 import javax.validation.constraints.NotNull;
 
-
 @EnableWebSocket
 @Configuration
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    @NotNull
-    private final WebSocketHandler webSocketHandler;
+    private final @NotNull WebSocketHandler webSocketHandler;
 
     public WebSocketConfig(@NotNull WebSocketHandler webSocketHandler) {
         this.webSocketHandler = webSocketHandler;
