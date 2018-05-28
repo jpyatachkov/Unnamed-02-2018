@@ -11,12 +11,10 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.models.User;
-import ru.shipcollision.api.services.SessionService;
 import ru.shipcollision.api.services.SessionServiceImpl;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
-import java.util.Map;
 
 import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 
@@ -48,9 +46,8 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
-//        Map<String, Object> attributes = webSocketSession.getAttributes();
 
-        final Long id = sessionService.wsGetCurrentUserId(webSocketSession); //(Long) webSocketSession.getAttributes().get("userId");
+        final Long id = sessionService.wsGetCurrentUserId(webSocketSession); // (Long) webSocketSession.getAttributes().get("userId");
         LOGGER.info("USER - ", id);
         if (id == null || userDAO.findById(id) == null) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
@@ -85,7 +82,6 @@ public class GameSocketHandler extends TextWebSocketHandler {
             return;
         }
         try {
-            //noinspection ConstantConditions
             messageHandlerContainer.handle(message, userProfile.id);
         } catch (Throwable e) {
             LOGGER.error("Can't handle message of type " + message.getClass().getName() + " with content: " + text, e);
@@ -110,10 +106,10 @@ public class GameSocketHandler extends TextWebSocketHandler {
     @SuppressWarnings("SameParameterValue")
     private void closeSessionSilently(@NotNull WebSocketSession session, @Nullable CloseStatus closeStatus) {
         final CloseStatus status = closeStatus == null ? SERVER_ERROR : closeStatus;
-        //noinspection OverlyBroadCatchBlock
         try {
             session.close(status);
         } catch (Exception ignore) {
+            LOGGER.info("close session");
         }
 
     }

@@ -10,4 +10,6 @@ public class JoinGame extends Message {
 
     @NotNull
     public List<List<Cell>> field;
+    @NotNull
+    public Long count;
 }

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpSession;
 /**
  * Сервис для работы с сессиями.
  */
+@SuppressWarnings("WeakerAccess")
 @Service
 public class SessionServiceImpl implements SessionService {
 
@@ -19,7 +20,7 @@ public class SessionServiceImpl implements SessionService {
      * Имя куки, в которую будет записан идентификатор сессии.
      */
     public static final String COOKIE_NAME = "JSESSIONID";
-
+    private static int id = 0;
     private final UserDAO userDAO;
 
     public SessionServiceImpl(UserDAO userDAO) {
@@ -70,8 +71,17 @@ public class SessionServiceImpl implements SessionService {
         return getUserFromSession(session);
     }
 
+
     public Long wsGetCurrentUserId(WebSocketSession webSocketSession) {
-        return (long) 1;
+        switch (id) {
+            case 0:
+                return 1L;
+            case 1:
+                return (long) ++id;
+            default:
+                id += 1;
+                return (long) id % 2;
+        }
     }
 
     /**
