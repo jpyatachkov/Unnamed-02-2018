@@ -1,24 +1,26 @@
 package ru.shipcollision.api.mechanics.messages;
 
-import ru.shipcollision.api.mechanics.base.Cell;
+import ru.shipcollision.api.mechanics.base.CellStatus;
 import ru.shipcollision.api.mechanics.base.Coordinates;
 import ru.shipcollision.api.websockets.Message;
 
 import javax.validation.constraints.NotNull;
 
-@SuppressWarnings("WeakerAccess")
+/**
+ * Результат хода.
+ */
+@SuppressWarnings("PublicField")
 public class MoveDone extends Message {
 
-    @NotNull
-    public String message;
+    public @NotNull String message;
 
     public Coordinates coord;
 
-    public Cell cell;
+    public CellStatus cell;
 
     public int score;
 
-    public MoveDone(String message, Coordinates coord, Cell cell, int score) {
+    public MoveDone(String message, Coordinates coord, CellStatus cell, int score) {
         this.message = message;
         this.coord = coord;
         this.cell = cell;

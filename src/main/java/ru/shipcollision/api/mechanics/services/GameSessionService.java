@@ -5,7 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.shipcollision.api.mechanics.GameSession;
-import ru.shipcollision.api.mechanics.models.GamePlayer;
+import ru.shipcollision.api.mechanics.models.Player;
 import ru.shipcollision.api.websockets.RemotePointService;
 
 import javax.validation.constraints.NotNull;
@@ -13,17 +13,15 @@ import java.util.*;
 
 @Service
 public class GameSessionService {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSessionService.class);
 
-    @NotNull
-    private final Set<GameSession> gameSessions = new LinkedHashSet<>();
+    private final @NotNull Set<GameSession> gameSessions = new LinkedHashSet<>();
 
     // key = player-id, value = session
-    @NotNull
-    private final Map<Long, GameSession> usersMap = new HashMap<>();
+    private final @NotNull Map<Long, GameSession> usersMap = new HashMap<>();
 
-    @NotNull
-    private final RemotePointService remotePointService;
+    private final @NotNull RemotePointService remotePointService;
 
     public GameSessionService(@NotNull RemotePointService remotePointService) {
         this.remotePointService = remotePointService;
@@ -33,41 +31,35 @@ public class GameSessionService {
         usersMap.remove(playerId);
     }
 
-    // start new game
-    public void startGame(@NotNull Long count, @NotNull List<GamePlayer> players) {
-        final GameSession session = new GameSession(count.intValue(), players, remotePointService, this);
-        for (GamePlayer player : players) {
-            usersMap.put(player.id, session);
+    public void startGame(@NotNull Long count, @NotNull List<Player> players) {
+        if (count.intValue() != players.size()) {
+            LOGGER.error("Количество игроков в сессии не соответствует ожидаемому");
+            return;
         }
+
+        final GameSession session = new GameSession(players, remotePointService, this);
+
+        for (Player player : players) {
+            usersMap.put(player.getUserId(), session);
+        }
+
         gameSessions.add(session);
         session.startTime();
     }
 
-    // end session, delete session from list
-    public void endSession() {
+    public void syncSessions() {
         for (GameSession session : gameSessions) {
             if (session.isFinished()) {
+                LOGGER.info("Сессия удалена ", session.getSessionId());
                 gameSessions.remove(session);
-            }
-        }
-    }
-
-    // check running games
-    public void checkInitGames() {
-
-        for (GameSession session : gameSessions) {
-            if (!session.isFinished()) {
-                session.sync();
-                LOGGER.info("Проверяем состояние игры");
             } else {
-                endSession();
-                LOGGER.info("Игра закончена");
+                LOGGER.info("Состояние сессии обновлено ", session.getSessionId());
+                session.sync();
             }
         }
     }
 
     public GameSession getPlayerSession(Long userId) {
-        // TODO: обработать исключение, если данного пользователя нет в мапе, т.е. он не состоит в игровой сессии.
         return usersMap.get(userId);
     }
 }

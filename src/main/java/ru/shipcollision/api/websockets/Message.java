@@ -9,7 +9,7 @@ import ru.shipcollision.api.mechanics.messages.*;
 @JsonSubTypes({@JsonSubTypes.Type(MakeMove.class),
         @JsonSubTypes.Type(JoinGame.class),
         @JsonSubTypes.Type(MoveDone.class),
-        @JsonSubTypes.Type(InfoMessage.class),
+        @JsonSubTypes.Type(GameMessage.class),
         @JsonSubTypes.Type(GameOver.class),
         @JsonSubTypes.Type(EnableScene.class)})
 public abstract class Message {

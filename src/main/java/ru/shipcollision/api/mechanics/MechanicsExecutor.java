@@ -6,21 +6,17 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
-import java.time.Clock;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 @Service
 public class MechanicsExecutor implements Runnable {
-    @NotNull
-    private static final Logger LOGGER = LoggerFactory.getLogger(MechanicsExecutor.class);
-    private static final long STEP_TIME = 50;
 
-    @NotNull
-    private final GameMechanics gameMechanics;
+    private static final @NotNull Logger LOGGER = LoggerFactory.getLogger(MechanicsExecutor.class);
 
-    @NotNull
-    private final Clock clock = Clock.systemDefaultZone();
+    private static final long GM_STEP_TIME = 50;
+
+    private final @NotNull GameMechanics gameMechanics;
 
     private final Executor tickExecutor = Executors.newSingleThreadExecutor();
 
@@ -38,7 +34,7 @@ public class MechanicsExecutor implements Runnable {
         try {
             mainCycle();
         } finally {
-            LOGGER.warn("Mechanic executor terminated");
+            LOGGER.warn("Выполнение механики было прервано");
         }
     }
 
@@ -48,7 +44,7 @@ public class MechanicsExecutor implements Runnable {
                 gameMechanics.gmStep();
 
                 try {
-                    Thread.sleep(STEP_TIME);
+                    Thread.sleep(GM_STEP_TIME);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -58,7 +54,7 @@ public class MechanicsExecutor implements Runnable {
                     return;
                 }
             } catch (RuntimeException e) {
-                LOGGER.error("Mechanics executor was reseted due to exception", e);
+                LOGGER.error("Исключение", e);
                 // TODO: gameMechanics.reset().
             }
         }

@@ -16,7 +16,8 @@
     <suppress checks="VisibilityModifier" files="MakeMove.java"/>
     <suppress checks="VisibilityModifier" files="MoveDone.java"/>
     <suppress checks="VisibilityModifier" files="JoinGame.java"/>
-    <suppress checks="VisibilityModifier" files="InfoMessage.java"/>
-    <suppress checks="VisibilityModifier" files="GamePlayer.java"/>
+    <suppress checks="VisibilityModifier" files="GameMessage.java"/>
+    <suppress checks="VisibilityModifier" files="Player.java"/>
+    <suppress checks="VisibilityModifier" files="GameOver.java"/>
     <suppress checks="VisibilityModifier" files="GameSession.java"/>
 </suppressions>

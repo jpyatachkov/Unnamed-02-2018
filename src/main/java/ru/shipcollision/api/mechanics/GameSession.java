@@ -2,13 +2,13 @@ package ru.shipcollision.api.mechanics;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.shipcollision.api.mechanics.base.Cell;
+import ru.shipcollision.api.mechanics.base.CellStatus;
 import ru.shipcollision.api.mechanics.base.Coordinates;
 import ru.shipcollision.api.mechanics.messages.EnableScene;
+import ru.shipcollision.api.mechanics.messages.GameMessage;
 import ru.shipcollision.api.mechanics.messages.GameOver;
-import ru.shipcollision.api.mechanics.messages.InfoMessage;
 import ru.shipcollision.api.mechanics.messages.MoveDone;
-import ru.shipcollision.api.mechanics.models.GamePlayer;
+import ru.shipcollision.api.mechanics.models.Player;
 import ru.shipcollision.api.mechanics.services.GameSessionService;
 import ru.shipcollision.api.websockets.Message;
 import ru.shipcollision.api.websockets.RemotePointService;
@@ -23,175 +23,175 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class GameSession {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSession.class);
+
     private static final AtomicLong ID_GENERATOR = new AtomicLong(0);
 
-    @NotNull
-    private final Long sessionId;
-
-    private List<GamePlayer> players;
-
-    private int countPlayers;
-
+    private final @NotNull Long sessionId;
+    private final @NotNull RemotePointService remotePointService;
+    private final @NotNull GameSessionService gameSessionService;
+    private List<Player> players;
+    private int playersCount;
+    private int fieldDim;
     private boolean isFinished;
-
     private int currentPlayerIdx;
+    private @NotNull Timestamp endMoveTime;
 
-    @NotNull
-    private Timestamp endMoveTime;
-
-    @NotNull
-    private RemotePointService remotePointService;
-
-    @NotNull
-    private final GameSessionService gameSessionService;
-
-    public GameSession(int countPlayers, List<GamePlayer> array,
-                        RemotePointService remotePointService,
-                        GameSessionService gameSessionService) {
+    public GameSession(List<Player> players,
+                       RemotePointService remotePointService,
+                       GameSessionService gameSessionService) {
         this.sessionId = ID_GENERATOR.getAndIncrement();
-        this.countPlayers = countPlayers;
-        this.players = array;
+        this.players = players;
+        this.playersCount = players.size();
+        this.fieldDim = GameRulesHelper.getFieldDimForPlayers(this.playersCount);
         this.isFinished = false;
         this.currentPlayerIdx = 0;
         this.remotePointService = remotePointService;
         this.gameSessionService = gameSessionService;
     }
 
-    public void decrementCountPlayers() {
-        this.countPlayers--;
-    }
-
-    private int checkDimension(int count) {
-        switch (count) {
-            case 2:
-                return 10;
-            case 3:
-                return 15;
-            case 4:
-                return 20;
-            default:
-                return 0;
-        }
-    }
-
     public void startTime() {
-        this.endMoveTime = new Timestamp(System.currentTimeMillis() + 20);
+        this.endMoveTime = new Timestamp(System.currentTimeMillis() + GameRulesHelper.MAX_SECONDS_TO_MOVE);
         try {
             remotePointService.sendMessageToUser((long) currentPlayerIdx, new EnableScene());
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         }
-    }
-
-    @NotNull
-    public Long getSessionId() {
-        return sessionId;
-    }
-
-    @NotNull
-    public int getCountPlayers() {
-        return countPlayers;
     }
 
     public boolean isFinished() {
         return isFinished;
     }
 
-    public void finishSession(boolean finished) {
-        isFinished = finished;
+    public Long getSessionId() {
+        return sessionId;
     }
 
     public void sync() {
-        Timestamp currentTime = new Timestamp(System.currentTimeMillis());
+        final Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         if (endMoveTime.before(currentTime)) {
             nextPlayer();
         }
     }
 
+    void finishGameForPlayer(Player player, MoveResult result) {
+        players.remove(player);
+        this.playersCount--;
+
+        gameSessionService.deleteUserSession(player.user.id);
+
+        final GameOver gameOver = new GameOver(false, result.destroyedShipCount);
+        result.addMessageFor(player, gameOver);
+    }
+
+    void makeMove(Long playerId, Coordinates coords) {
+        if (isCurrentPlayer(playerId)) {
+            final MoveResult result = new MoveResult();
+            final Player currentPlayer = getCurrentPlayer();
+            final CellStatus cell = currentPlayer.getCellStatus(coords);
+
+            if (cell == CellStatus.EMPTY || cell == CellStatus.BUSY) {
+                for (Player player : players) {
+                    if (player.shipsCount == 0) {
+                        finishGameForPlayer(player, result);
+                        continue;
+                    }
+                    result.messages.computeIfAbsent(player.getUserId(), messages -> new ArrayList<>());
+                    makeShot(player, coords, result);
+                }
+                currentPlayer.score += result.destroyedShipCount;
+
+                if (result.isDestroyedSelf && result.destroyedShipCount != 0) {
+                    // попал по себе и по другим.
+                    currentPlayer.setCellStatus(coords, CellStatus.DESTROYED_OTHER);
+
+                    final MoveDone moveDone = new MoveDone(
+                            "Попадание",
+                            coords,
+                            CellStatus.DESTROYED_OTHER,
+                            currentPlayer.score
+                    );
+                    result.addMessageFor(currentPlayer, moveDone);
+                }
+
+                if (!result.isDestroyedSelf && result.destroyedShipCount == 0) {
+                    // не попал никуда
+                    currentPlayer.setCellStatus(coords, CellStatus.MISSED);
+
+                    final MoveDone moveDone = new MoveDone(
+                            "Промах",
+                            coords,
+                            CellStatus.MISSED,
+                            currentPlayer.score
+                    );
+                    result.addMessageFor(currentPlayer, moveDone);
+                }
+
+                nextPlayer();
+            } else {
+                result.addMessageFor(currentPlayer, GameMessage.createErrorMessage("Сюда нельзя ходить"));
+            }
+        }
+    }
+
+    boolean checkCoords(Coordinates coord) {
+        return (coord.getI() <= fieldDim && coord.getJ() <= fieldDim);
+    }
+
     private void nextPlayer() {
-        currentPlayerIdx = currentPlayerIdx + 1 % countPlayers;
+        currentPlayerIdx = (currentPlayerIdx + 1) % playersCount;
         startTime();
         try {
-            remotePointService.sendMessageToUser(players.get(currentPlayerIdx).id, InfoMessage.createInfoMessage("Твой ход"));
+            remotePointService.sendMessageToUser(getCurrentPlayer(), new EnableScene());
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private GamePlayer getCurrentPlayer() {
+    private Player getCurrentPlayer() {
         return players.get(currentPlayerIdx);
     }
 
-    boolean checkCoords(Coordinates coord) {
-        int dimension = checkDimension(countPlayers);
-        return (coord.getI() <= dimension && coord.getJ() <= dimension);
+    private boolean isCurrentPlayer(@NotNull Player player) {
+        final Player currentPlayer = getCurrentPlayer();
+        return player.getUserId().equals(currentPlayer.getUserId());
     }
 
-    private boolean checkCurrentPlayer(@NotNull Long playerId) {
-        return (playerId.equals(getCurrentPlayer().id));
+    private boolean isCurrentPlayer(@NotNull Long playerId) {
+        final Player currentPlayer = getCurrentPlayer();
+        return playerId.equals(currentPlayer.getUserId());
     }
 
-    void finishGameForPlayer(GamePlayer player, MoveResult result) {
-        players.remove(player);
-        decrementCountPlayers();
-        // удаление пользовательской сессии из мапы в GameSessionService
-        gameSessionService.deleteUserSession(player.id);
-        result.messages.get(player.id).add(new GameOver(false, result.destroyedShipCount));
-    }
+    private void makeShot(Player player, Coordinates coords, MoveResult result) {
+        final CellStatus currentCell = player.getCellStatus(coords);
+        if (currentCell == CellStatus.BUSY) {
+            player.shipsCount--;
+            player.setCellStatus(coords, CellStatus.DESTROYED);
 
-    void makeMove(Long playerId, Coordinates coord) {
-        if (checkCurrentPlayer(playerId)) {
-            // стреляем в поле игрока
-            MoveResult result = new MoveResult();
-            GamePlayer currentPlayer = getCurrentPlayer();
-            Cell cell = currentPlayer.field.get(coord.getI()).get(coord.getJ());
-            if (cell == Cell.EMPTY || cell == Cell.BYSY) {
-                for (GamePlayer player : players) {
-                    if (player.getShipCount() == 0) { finishGameForPlayer(player, result); continue; }
-                    result.messages.computeIfAbsent(player.id, messages -> new ArrayList<>());
-                    makeShot(player, coord, result);
-                }
-                currentPlayer.score += result.destroyedShipCount;
-
-                if (result.isDestroyedSelf && result.destroyedShipCount != 0) {
-                    // попал по себе и по другим
-                    currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED_OTHER);
-                    result.messages.get(currentPlayer.id).add(new MoveDone("Попадание", coord,
-                            Cell.DESTROYED_OTHER, currentPlayer.score));
-                }
-
-                if (!result.isDestroyedSelf && result.destroyedShipCount == 0) {
-                    // не попал никуда
-                    currentPlayer.field.get(coord.getI()).set(coord.getJ(), Cell.MISSED);
-                    result.messages.get(currentPlayer.id).add(new MoveDone("Промах", coord,
-                            Cell.MISSED, currentPlayer.score));
-                }
-
-                nextPlayer();
-            } else {
-                result.messages.get(currentPlayer.id).add(InfoMessage.createErrorMessage("Сюда нельзя ходить"));
-            }
-        }
-    }
-
-    private void makeShot(GamePlayer player, Coordinates coord, MoveResult result) {
-        Cell currentCell = player.field.get(coord.getI()).get(coord.getJ());
-        if (currentCell == Cell.BYSY) {
-            player.decrementShipCount();
-            player.field.get(coord.getI()).set(coord.getJ(), Cell.DESTROYED);
-            if (player.equals(getCurrentPlayer())) {
+            if (isCurrentPlayer(player)) {
                 result.isDestroyedSelf = true;
             } else {
-                result.messages.get(player.id).add(InfoMessage.createInfoMessage("По вам попали"));
+                result.addMessageFor(player, GameMessage.createInfoMessage("По вам попали"));
                 result.destroyedShipCount++;
             }
         }
     }
 
     private static class MoveResult {
+
         boolean isDestroyedSelf = false;
+
         int destroyedShipCount = 0;
+
         Map<Long, List<Message>> messages = new ConcurrentHashMap<>();
+
+        void addMessageFor(Long userId, Message message) {
+            messages.get(userId).add(message);
+        }
+
+        void addMessageFor(Player player, Message message) {
+            addMessageFor(player.getUserId(), message);
+        }
     }
 }

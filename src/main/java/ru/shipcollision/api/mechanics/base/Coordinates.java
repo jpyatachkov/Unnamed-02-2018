@@ -1,5 +1,11 @@
 package ru.shipcollision.api.mechanics.base;
 
+/**
+ * Координаты выстрела:
+ * i - номер строки на поле,
+ * j - номер столбца.
+ */
+@SuppressWarnings("FieldNamingConvention")
 public class Coordinates {
 
     private int i;
@@ -18,15 +24,7 @@ public class Coordinates {
         return i;
     }
 
-    public void setI(int i) {
-        this.i = i;
-    }
-
     public int getJ() {
         return j;
-    }
-
-    public void setJ(int j) {
-        this.j = j;
     }
 }
