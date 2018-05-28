@@ -24,6 +24,12 @@ public class WebSocketConfig implements WebSocketConfigurer {
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(webSocketHandler, "/game")
                 .addInterceptors(new HttpSessionHandshakeInterceptor())
-                .setAllowedOrigins("*");
+                .setAllowedOrigins(
+                        "http://shipcollision.herokuapp.com",
+                        "https://shipcollision.herokuapp.com",
+                        "http://dev-shipcollision.herokuapp.com",
+                        "https://dev-shipcollision.herokuapp.com",
+                        "http://localhost:5000"
+                );
     }
 }
