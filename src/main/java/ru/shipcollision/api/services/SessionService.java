@@ -1,12 +1,14 @@
 package ru.shipcollision.api.services;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.socket.WebSocketSession;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.exceptions.ForbiddenException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * Сервис для работы с сессиями.
@@ -42,6 +44,15 @@ public class SessionService {
         } catch (NotFoundException e) {
             session.removeAttribute(COOKIE_NAME);
             throw new ForbiddenException(e);
+        }
+    }
+
+    public User wsGetUserFromSession(WebSocketSession webSocketSession) {
+        final Map<String, Object> attributes = webSocketSession.getAttributes();
+        if (attributes.containsKey(COOKIE_NAME)) {
+            return userDAO.findById((Long) attributes.get(COOKIE_NAME));
+        } else {
+            throw new NotFoundException("Пользователь не найден");
         }
     }
 

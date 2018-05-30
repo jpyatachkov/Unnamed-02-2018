@@ -12,7 +12,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ru.shipcollision.api.exceptions.ApiException;
 import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
-import ru.shipcollision.api.services.SessionServiceImpl;
+import ru.shipcollision.api.services.SessionService;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;
@@ -30,14 +30,14 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     private final @NotNull RemotePointService remotePointService;
 
-    private final @NotNull SessionServiceImpl sessionService;
+    private final @NotNull SessionService sessionService;
 
     private final ObjectMapper objectMapper;
 
     public GameSocketHandler(@NotNull MessageHandlerContainer messageHandlerContainer,
                              @NotNull RemotePointService remotePointService,
                              ObjectMapper objectMapper,
-                             @NotNull SessionServiceImpl sessionService) {
+                             @NotNull SessionService sessionService) {
         this.messageHandlerContainer = messageHandlerContainer;
         this.remotePointService = remotePointService;
         this.objectMapper = objectMapper;
@@ -47,7 +47,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
         try {
-            final User user = sessionService.wsGetUser(webSocketSession);
+            final User user = sessionService.wsGetUserFromSession(webSocketSession);
             remotePointService.registerUser(user.id, webSocketSession);
         } catch (NotFoundException e) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
@@ -65,7 +65,7 @@ public class GameSocketHandler extends TextWebSocketHandler {
         }
 
         try {
-            final User user = sessionService.wsGetUser(webSocketSession);
+            final User user = sessionService.wsGetUserFromSession(webSocketSession);
             handleMessage(user, message);
         } catch (NotFoundException e) {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
