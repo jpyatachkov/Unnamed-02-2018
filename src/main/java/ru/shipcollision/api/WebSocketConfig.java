@@ -9,7 +9,6 @@ import org.springframework.web.socket.server.support.HttpSessionHandshakeInterce
 
 import javax.validation.constraints.NotNull;
 
-@EnableWebSocket
 @Configuration
 public class WebSocketConfig implements WebSocketConfigurer {
 

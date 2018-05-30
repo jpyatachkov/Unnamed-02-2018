@@ -14,7 +14,6 @@ import java.nio.file.Paths;
  */
 @Configuration
 @ConditionalOnWebApplication
-@EnableWebMvc
 public class StaticResourcesConfiguration implements WebMvcConfigurer {
 
     public static final int CACHE_PERIOD = 3600;
