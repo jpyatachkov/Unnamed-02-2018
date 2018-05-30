@@ -9,7 +9,8 @@ import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-import ru.shipcollision.api.dao.UserDAO;
+import ru.shipcollision.api.exceptions.ApiException;
+import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.SessionServiceImpl;
 
@@ -20,11 +21,10 @@ import static org.springframework.web.socket.CloseStatus.SERVER_ERROR;
 
 @Component
 public class GameSocketHandler extends TextWebSocketHandler {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(GameSocketHandler.class);
 
     private static final CloseStatus ACCESS_DENIED = new CloseStatus(4500, "Not logged in. Access denied");
-
-    private final @NotNull UserDAO userDAO;
 
     private final @NotNull MessageHandlerContainer messageHandlerContainer;
 
@@ -34,10 +34,10 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper;
 
-    public GameSocketHandler(@NotNull UserDAO userService, @NotNull MessageHandlerContainer messageHandlerContainer,
-                             @NotNull RemotePointService remotePointService, ObjectMapper objectMapper,
+    public GameSocketHandler(@NotNull MessageHandlerContainer messageHandlerContainer,
+                             @NotNull RemotePointService remotePointService,
+                             ObjectMapper objectMapper,
                              @NotNull SessionServiceImpl sessionService) {
-        this.userDAO = userService;
         this.messageHandlerContainer = messageHandlerContainer;
         this.remotePointService = remotePointService;
         this.objectMapper = objectMapper;
@@ -46,16 +46,16 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession webSocketSession) {
-
-        final Long id = sessionService.wsGetCurrentUserId(webSocketSession);
-        LOGGER.info("USER - ", id);
-        if (id == null || userDAO.findById(id) == null) {
+        try {
+            final User user = sessionService.wsGetUser(webSocketSession);
+            remotePointService.registerUser(user.id, webSocketSession);
+        } catch (NotFoundException e) {
             LOGGER.warn("User requested websocket is not registred or not logged in. Openning websocket session is denied.");
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
-            return;
+        } catch (ApiException e) {
+            LOGGER.warn("User already plays");
+            closeSessionSilently(webSocketSession, ACCESS_DENIED);
         }
-
-        remotePointService.registerUser(id, webSocketSession);
     }
 
     @Override
@@ -63,13 +63,13 @@ public class GameSocketHandler extends TextWebSocketHandler {
         if (!webSocketSession.isOpen()) {
             return;
         }
-        final Long id = sessionService.wsGetCurrentUserId(webSocketSession);
-        final User user;
-        if (id == null || (user = userDAO.findById(id)) == null) {
+
+        try {
+            final User user = sessionService.wsGetUser(webSocketSession);
+            handleMessage(user, message);
+        } catch (NotFoundException e) {
             closeSessionSilently(webSocketSession, ACCESS_DENIED);
-            return;
         }
-        handleMessage(user, message);
     }
 
     @SuppressWarnings("OverlyBroadCatchBlock")

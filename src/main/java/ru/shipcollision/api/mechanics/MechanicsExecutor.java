@@ -50,12 +50,10 @@ public class MechanicsExecutor implements Runnable {
                 }
 
                 if (Thread.currentThread().isInterrupted()) {
-                    // TODO: gameMechanics.reset().
                     return;
                 }
             } catch (RuntimeException e) {
                 LOGGER.error("Исключение", e);
-                // TODO: gameMechanics.reset().
             }
         }
     }

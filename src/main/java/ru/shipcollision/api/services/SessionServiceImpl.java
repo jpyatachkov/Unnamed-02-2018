@@ -8,6 +8,7 @@ import ru.shipcollision.api.exceptions.NotFoundException;
 import ru.shipcollision.api.models.User;
 
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 /**
  * Сервис для работы с сессиями.
@@ -20,7 +21,7 @@ public class SessionServiceImpl implements SessionService {
      * Имя куки, в которую будет записан идентификатор сессии.
      */
     public static final String COOKIE_NAME = "JSESSIONID";
-    private static int id = 0;
+
     private final UserDAO userDAO;
 
     public SessionServiceImpl(UserDAO userDAO) {
@@ -72,15 +73,12 @@ public class SessionServiceImpl implements SessionService {
     }
 
 
-    public Long wsGetCurrentUserId(WebSocketSession webSocketSession) {
-        switch (id) {
-            case 0:
-                return 1L;
-            case 1:
-                return (long) ++id;
-            default:
-                id += 1;
-                return (long) id % 2;
+    public User wsGetUser(WebSocketSession webSocketSession) {
+        final Map<String, Object> attributes = webSocketSession.getAttributes();
+        if (attributes.containsKey(COOKIE_NAME)) {
+            return userDAO.findById((Long) attributes.get(COOKIE_NAME));
+        } else {
+            throw new NotFoundException("Пользователь не найден");
         }
     }
 

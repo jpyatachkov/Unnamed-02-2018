@@ -3,7 +3,6 @@ package ru.shipcollision.api.websockets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.shipcollision.api.exceptions.ApiException;
 
 import javax.validation.constraints.NotNull;
 import java.util.HashMap;
@@ -20,7 +19,8 @@ public class GameMessageHandlerContainer implements MessageHandlerContainer {
     public void handle(@NotNull Message message, @NotNull Long id) {
         final MessageHandler<?> messageHandler = handlerMap.get(message.getClass());
         if (messageHandler == null) {
-            throw new ApiException("no handler for message of " + message.getClass().getName() + " type");
+            LOGGER.info(String.format("No handler for message of %s type", message.getClass().getName()));
+            return;
         }
         messageHandler.handleMessage(message, id);
         LOGGER.trace("message handled: type =[" + message.getClass().getName() + ']');

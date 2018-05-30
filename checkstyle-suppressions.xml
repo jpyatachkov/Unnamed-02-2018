@@ -20,4 +20,6 @@
     <suppress checks="VisibilityModifier" files="Player.java"/>
     <suppress checks="VisibilityModifier" files="GameOver.java"/>
     <suppress checks="VisibilityModifier" files="GameSession.java"/>
+    <suppress checks="VisibilityModifier" files="ErrorMessage.java"/>
+    <suppress checks="VisibilityModifier" files="GameStarted.java"/>
 </suppressions>

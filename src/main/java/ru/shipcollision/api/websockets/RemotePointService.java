@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
+import ru.shipcollision.api.exceptions.ApiException;
 import ru.shipcollision.api.mechanics.models.Player;
 
 import javax.validation.constraints.NotNull;
@@ -22,6 +23,10 @@ public class RemotePointService {
     }
 
     void registerUser(@NotNull Long userId, @NotNull WebSocketSession webSocketSession) {
+        if (sessions.containsKey(userId)) {
+            throw new ApiException("Пользователь уже играет");
+        }
+
         sessions.put(userId, webSocketSession);
     }
 
