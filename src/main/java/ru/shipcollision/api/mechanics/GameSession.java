@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.shipcollision.api.mechanics.base.CellStatus;
 import ru.shipcollision.api.mechanics.base.Coordinates;
-import ru.shipcollision.api.mechanics.messages.EnableScene;
-import ru.shipcollision.api.mechanics.messages.GameMessage;
-import ru.shipcollision.api.mechanics.messages.GameOver;
-import ru.shipcollision.api.mechanics.messages.MoveDone;
+import ru.shipcollision.api.mechanics.messages.*;
 import ru.shipcollision.api.mechanics.models.Player;
 import ru.shipcollision.api.mechanics.services.GameSessionService;
 import ru.shipcollision.api.websockets.Message;
@@ -49,6 +46,12 @@ public class GameSession {
         this.currentPlayerIdx = 0;
         this.remotePointService = remotePointService;
         this.gameSessionService = gameSessionService;
+    }
+
+    public void notifyUsersOnStarted() throws IOException {
+        for (Player player : players) {
+            remotePointService.sendMessageToUser(player.getUserId(), new GameStarted());
+        }
     }
 
     public void startTime() {

@@ -11,7 +11,7 @@ import ru.shipcollision.api.mechanics.messages.*;
         @JsonSubTypes.Type(GameMessage.class),
         @JsonSubTypes.Type(GameOver.class),
         @JsonSubTypes.Type(JoinGame.class),
-        @JsonSubTypes.Type(MakeMove.class),
+        @JsonSubTypes.Type(RequestGamePermission.class),
         @JsonSubTypes.Type(MoveDone.class)})
 public abstract class Message {
 }

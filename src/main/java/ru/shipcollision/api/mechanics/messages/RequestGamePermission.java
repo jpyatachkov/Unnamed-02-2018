@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  * Запрос на ход.
  */
 @SuppressWarnings("PublicField")
-public class MakeMove extends Message {
+public class RequestGamePermission extends Message {
 
     public @NotNull Coordinates coords;
 }

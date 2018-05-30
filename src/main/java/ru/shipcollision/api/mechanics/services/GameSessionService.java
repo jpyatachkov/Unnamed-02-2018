@@ -9,6 +9,7 @@ import ru.shipcollision.api.mechanics.models.Player;
 import ru.shipcollision.api.websockets.RemotePointService;
 
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.*;
 
 @Service
@@ -44,6 +45,17 @@ public class GameSessionService {
         }
 
         gameSessions.add(session);
+
+        try {
+            session.notifyUsersOnStarted();
+        } catch (IOException e) {
+            for (Player player : players) {
+                usersMap.remove(player.getUserId());
+            }
+            gameSessions.remove(session);
+            return;
+        }
+
         session.startTime();
     }
 
