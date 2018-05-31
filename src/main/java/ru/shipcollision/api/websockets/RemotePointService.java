@@ -6,7 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import ru.shipcollision.api.exceptions.ApiException;
+import ru.shipcollision.api.mechanics.GameSession;
 import ru.shipcollision.api.mechanics.models.Player;
+import ru.shipcollision.api.mechanics.services.GameSessionService;
 
 import javax.validation.constraints.NotNull;
 import java.io.IOException;

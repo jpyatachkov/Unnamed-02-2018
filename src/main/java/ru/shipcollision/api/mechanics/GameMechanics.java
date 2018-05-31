@@ -35,10 +35,16 @@ public class GameMechanics {
         this.waiters.add(waiter);
     }
 
+    public boolean checkWaiter(Player waiter) {
+        return this.waiters.contains(waiter);
+    }
+
     public void makeMove(@NotNull Coordinates coord, @NotNull Long playerId) {
         final GameSession session = gameSessionService.getPlayerSession(playerId);
         if (session != null && session.checkCoords(coord)) {
             session.makeMove(playerId, coord);
+        } else {
+            LOGGER.info("Not allowed move, not found session");
         }
     }
 

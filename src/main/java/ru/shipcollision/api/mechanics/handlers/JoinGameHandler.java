@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.shipcollision.api.dao.UserDAO;
 import ru.shipcollision.api.mechanics.GameMechanics;
 import ru.shipcollision.api.mechanics.GameRulesHelper;
+import ru.shipcollision.api.mechanics.messages.ErrorMessage;
 import ru.shipcollision.api.mechanics.messages.JoinGame;
 import ru.shipcollision.api.mechanics.models.Player;
 import ru.shipcollision.api.models.User;
@@ -15,6 +16,7 @@ import ru.shipcollision.api.websockets.RemotePointService;
 
 import javax.annotation.PostConstruct;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 
 @Component
 public class JoinGameHandler extends MessageHandler<JoinGame> {
@@ -55,6 +57,7 @@ public class JoinGameHandler extends MessageHandler<JoinGame> {
         LOGGER.info(loggerMessage);
 
         final User user = userDAO.findById(forUser);
+
         final Player player = new Player(
                 user,
                 message.field,
@@ -62,6 +65,14 @@ public class JoinGameHandler extends MessageHandler<JoinGame> {
                 message.count
         );
 
-        gameMechanics.addWaiter(player);
+        if (!gameMechanics.checkWaiter(player)) {
+            gameMechanics.addWaiter(player);
+        } else {
+            try {
+                remotePointService.sendMessageToUser(forUser, new ErrorMessage("Error, player already in waiters"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

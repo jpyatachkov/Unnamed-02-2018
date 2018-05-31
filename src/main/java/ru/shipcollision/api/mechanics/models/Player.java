@@ -7,6 +7,7 @@ import ru.shipcollision.api.models.User;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
 @SuppressWarnings("PublicField")
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -43,5 +44,19 @@ public class Player {
 
     public Long getUserId() {
         return user.id;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) { return true; }
+        if (obj == null || getClass() != obj.getClass()) { return false; }
+        Player player = (Player) obj;
+        return Objects.equals(user.id, player.user.id);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(user);
     }
 }

@@ -73,7 +73,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
 
-    public User wsGetUser(WebSocketSession webSocketSession) {
+    public User wsGetUserFromSession(WebSocketSession webSocketSession) {
         final Map<String, Object> attributes = webSocketSession.getAttributes();
         if (attributes.containsKey(COOKIE_NAME)) {
             return userDAO.findById((Long) attributes.get(COOKIE_NAME));

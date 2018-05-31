@@ -2,7 +2,7 @@ package ru.shipcollision.api.mechanics;
 
 public class GameRulesHelper {
 
-    public static final int MAX_SECONDS_TO_MOVE = 20;
+    public static final int MAX_SECONDS_TO_MOVE = 20000;
 
     public static int getShipsCountForPlayers(int playersCount) {
         switch (playersCount) {

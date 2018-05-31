@@ -4,10 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.shipcollision.api.mechanics.base.CellStatus;
 import ru.shipcollision.api.mechanics.base.Coordinates;
-import ru.shipcollision.api.mechanics.messages.EnableScene;
-import ru.shipcollision.api.mechanics.messages.GameMessage;
-import ru.shipcollision.api.mechanics.messages.GameOver;
-import ru.shipcollision.api.mechanics.messages.MoveDone;
+import ru.shipcollision.api.mechanics.messages.*;
 import ru.shipcollision.api.mechanics.models.Player;
 import ru.shipcollision.api.mechanics.services.GameSessionService;
 import ru.shipcollision.api.websockets.Message;
@@ -51,6 +48,12 @@ public class GameSession {
         this.gameSessionService = gameSessionService;
     }
 
+    public void notifyUsersOnStarted() throws IOException {
+        for (Player player : players) {
+            remotePointService.sendMessageToUser(player.getUserId(), new GameStarted());
+        }
+    }
+
     public void startTime() {
         this.endMoveTime = new Timestamp(System.currentTimeMillis() + GameRulesHelper.MAX_SECONDS_TO_MOVE);
         try {
@@ -86,11 +89,13 @@ public class GameSession {
     }
 
     void makeMove(Long playerId, Coordinates coords) {
+
         if (isCurrentPlayer(playerId)) {
             final MoveResult result = new MoveResult();
             final Player currentPlayer = getCurrentPlayer();
             final CellStatus cell = currentPlayer.getCellStatus(coords);
 
+            boolean shallGoNext = false;
             if (cell == CellStatus.EMPTY || cell == CellStatus.BUSY) {
                 for (Player player : players) {
                     if (player.shipsCount == 0) {
@@ -128,9 +133,26 @@ public class GameSession {
                     result.addMessageFor(currentPlayer, moveDone);
                 }
 
-                nextPlayer();
+                shallGoNext = true;
             } else {
                 result.addMessageFor(currentPlayer, GameMessage.createErrorMessage("Сюда нельзя ходить"));
+            }
+
+            for (Map.Entry<Long, List<Message>> messageEntry : result.messages.entrySet()) {
+                final Long userId = messageEntry.getKey();
+                final List<Message> messagesForUser = messageEntry.getValue();
+
+                for (Message message : messagesForUser) {
+                    try {
+                        remotePointService.sendMessageToUser(userId, message);
+                    } catch (IOException e) {
+                        continue;
+                    }
+                }
+            }
+
+            if (shallGoNext) {
+                nextPlayer();
             }
         }
     }
@@ -139,21 +161,16 @@ public class GameSession {
         return (coord.getI() <= fieldDim && coord.getJ() <= fieldDim);
     }
 
-    private void nextPlayer() {
-        currentPlayerIdx = (currentPlayerIdx + 1) % playersCount;
-        startTime();
-        try {
-            remotePointService.sendMessageToUser(getCurrentPlayer(), new EnableScene());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Player getCurrentPlayer() {
+    Player getCurrentPlayer() {
         return players.get(currentPlayerIdx);
     }
 
-    private boolean isCurrentPlayer(@NotNull Player player) {
+    private void nextPlayer() {
+        currentPlayerIdx = (currentPlayerIdx + 1) % playersCount;
+        startTime();
+    }
+
+    boolean isCurrentPlayer(@NotNull Player player) {
         final Player currentPlayer = getCurrentPlayer();
         return player.getUserId().equals(currentPlayer.getUserId());
     }
