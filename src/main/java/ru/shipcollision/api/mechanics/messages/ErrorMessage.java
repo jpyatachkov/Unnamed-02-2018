@@ -7,7 +7,7 @@ public class ErrorMessage extends Message {
 
     public String description;
 
-    ErrorMessage(String description) {
+    public ErrorMessage(String description) {
         this.description = description;
     }
 }

@@ -42,7 +42,7 @@ public class GameMechanics {
         }
     }
 
-    private void tryStartGame() {
+    private void tryStartGames() {
         while (waiters.size() >= 2 || waiters.size() >= 1 && matchedUsers.size() >= 1) {
             final Player candidate = waiters.poll();
 
@@ -52,7 +52,6 @@ public class GameMechanics {
 
             matchedUsers.computeIfAbsent(candidate.wantedRoomPlayers, user -> new ConcurrentLinkedQueue<>());
             matchedUsers.get(candidate.wantedRoomPlayers).add(candidate);
-
 
             for (Map.Entry<Long, ConcurrentLinkedQueue<Player>> entry : matchedUsers.entrySet()) {
                 while (entry.getValue().size() >= entry.getKey()) {
@@ -71,6 +70,6 @@ public class GameMechanics {
 
     void gmStep() {
         gameSessionService.syncSessions();
-        tryStartGame();
+        tryStartGames();
     }
 }

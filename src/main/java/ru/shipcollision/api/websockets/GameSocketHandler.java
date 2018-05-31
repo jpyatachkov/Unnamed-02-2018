@@ -114,10 +114,4 @@ public class GameSocketHandler extends TextWebSocketHandler {
             LOGGER.warn("Session terminated");
         }
     }
-
-    @Override
-    public boolean supportsPartialMessages() {
-        return false;
-    }
-
 }

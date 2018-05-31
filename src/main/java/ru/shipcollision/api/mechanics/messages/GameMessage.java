@@ -11,9 +11,10 @@ import javax.validation.constraints.NotNull;
 public final class GameMessage extends Message {
 
     public final @NotNull String type;
+
     public @NotNull String message;
 
-    private GameMessage(String type, String message) {
+    public GameMessage(String type, String message) {
         this.type = type;
         this.message = message;
     }

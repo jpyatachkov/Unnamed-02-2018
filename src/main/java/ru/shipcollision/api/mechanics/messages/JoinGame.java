@@ -5,6 +5,7 @@ import ru.shipcollision.api.websockets.Message;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Запрос на присоединение к какой-нибудь комнате.
@@ -12,13 +13,35 @@ import java.util.List;
 @SuppressWarnings("PublicField")
 public class JoinGame extends Message {
 
+    public @NotNull Long count;
+
     public @NotNull List<List<CellStatus>> field;
 
-    public @NotNull Long count;
+    public JoinGame() {
+    }
+
+    public JoinGame(Long count, List<List<CellStatus>> field) {
+        this.count = count;
+        this.field = field;
+    }
 
     public int computeShipsCount() {
         return (int) field.stream()
                 .mapToLong(fieldRow -> fieldRow.stream().filter(cellStatus -> cellStatus == CellStatus.BUSY).count())
                 .sum();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        final JoinGame other = (JoinGame) o;
+        return Objects.equals(count, other.count) &&
+                Objects.equals(field, other.field);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(count, field);
     }
 }
