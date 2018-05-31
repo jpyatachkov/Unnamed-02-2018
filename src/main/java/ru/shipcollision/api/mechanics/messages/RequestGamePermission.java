@@ -22,10 +22,14 @@ public class RequestGamePermission extends Message {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final RequestGamePermission other = (RequestGamePermission) o;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final RequestGamePermission other = (RequestGamePermission) obj;
         return Objects.equals(coords, other.coords);
     }
 

@@ -13,7 +13,7 @@
     <suppress checks="VisibilityModifier" files="UsersController.java"/>
     <suppress checks="VisibilityModifier" files="ApiMessage.java"/>
     <suppress checks="VisibilityModifier" files="User.java"/>
-    <suppress checks="VisibilityModifier" files="MakeMove.java"/>
+    <suppress checks="VisibilityModifier" files="RequestGamePermission.java"/>
     <suppress checks="VisibilityModifier" files="MoveDone.java"/>
     <suppress checks="VisibilityModifier" files="JoinGame.java"/>
     <suppress checks="VisibilityModifier" files="GameMessage.java"/>

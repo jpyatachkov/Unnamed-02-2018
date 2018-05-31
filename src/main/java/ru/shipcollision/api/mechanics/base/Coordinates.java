@@ -23,17 +23,20 @@ public class Coordinates {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Coordinates other = (Coordinates) o;
-        return i == other.i &&
-                j == other.j;
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final Coordinates other = (Coordinates) obj;
+        return i == other.i
+                && j == other.j;
     }
 
     @Override
     public int hashCode() {
-
         return Objects.hash(i, j);
     }
 

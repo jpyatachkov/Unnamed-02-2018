@@ -21,29 +21,6 @@ public class MessageSerializationTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @DisplayName("тест сериализации сообщений сервера")
-    @ParameterizedTest
-    @MethodSource("provideServerMessages")
-    void testSeriveMessages(Message message, String expectedJson) {
-        try {
-            Assertions.assertEquals(expectedJson, objectMapper.writeValueAsString(message));
-        } catch (JsonProcessingException e) {
-            Assertions.fail(e);
-        }
-    }
-
-    @SuppressWarnings("OverlyBroadCatchBlock")
-    @DisplayName("тест сериализации сообщений пользователя")
-    @ParameterizedTest
-    @MethodSource("provideClientMessages")
-    void testClientMessages(String payload, Class<? extends Message> clazz, Message expectedMessage) {
-        try {
-            Assertions.assertEquals(expectedMessage, objectMapper.readValue(payload, clazz));
-        } catch (IOException e) {
-            Assertions.fail(e);
-        }
-    }
-
     private static Stream<Arguments> provideServerMessages() {
         return Stream.of(
                 Arguments.of(new EnableScene(), "{}"),
@@ -139,5 +116,28 @@ public class MessageSerializationTest {
                         new RequestGamePermission(new Coordinates(0, 0))
                 )
         );
+    }
+
+    @DisplayName("тест сериализации сообщений сервера")
+    @ParameterizedTest
+    @MethodSource("provideServerMessages")
+    void testSeriveMessages(Message message, String expectedJson) {
+        try {
+            Assertions.assertEquals(expectedJson, objectMapper.writeValueAsString(message));
+        } catch (JsonProcessingException e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @SuppressWarnings("OverlyBroadCatchBlock")
+    @DisplayName("тест сериализации сообщений пользователя")
+    @ParameterizedTest
+    @MethodSource("provideClientMessages")
+    void testClientMessages(String payload, Class<? extends Message> clazz, Message expectedMessage) {
+        try {
+            Assertions.assertEquals(expectedMessage, objectMapper.readValue(payload, clazz));
+        } catch (IOException e) {
+            Assertions.fail(e);
+        }
     }
 }

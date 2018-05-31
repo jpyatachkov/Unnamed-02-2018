@@ -32,12 +32,16 @@ public class JoinGame extends Message {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final JoinGame other = (JoinGame) o;
-        return Objects.equals(count, other.count) &&
-                Objects.equals(field, other.field);
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final JoinGame other = (JoinGame) obj;
+        return Objects.equals(count, other.count)
+                && Objects.equals(field, other.field);
     }
 
     @Override

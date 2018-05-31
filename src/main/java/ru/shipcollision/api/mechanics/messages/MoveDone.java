@@ -1,7 +1,5 @@
 package ru.shipcollision.api.mechanics.messages;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import ru.shipcollision.api.mechanics.base.CellStatus;
 import ru.shipcollision.api.mechanics.base.Coordinates;
 import ru.shipcollision.api.websockets.Message;

@@ -89,11 +89,13 @@ public class GameSession {
     }
 
     void makeMove(Long playerId, Coordinates coords) {
+
         if (isCurrentPlayer(playerId)) {
             final MoveResult result = new MoveResult();
             final Player currentPlayer = getCurrentPlayer();
             final CellStatus cell = currentPlayer.getCellStatus(coords);
 
+            boolean shallGoNext = false;
             if (cell == CellStatus.EMPTY || cell == CellStatus.BUSY) {
                 for (Player player : players) {
                     if (player.shipsCount == 0) {
@@ -131,15 +133,36 @@ public class GameSession {
                     result.addMessageFor(currentPlayer, moveDone);
                 }
 
-                nextPlayer();
+                shallGoNext = true;
             } else {
                 result.addMessageFor(currentPlayer, GameMessage.createErrorMessage("Сюда нельзя ходить"));
+            }
+
+            for (Map.Entry<Long, List<Message>> messageEntry : result.messages.entrySet()) {
+                final Long userId = messageEntry.getKey();
+                final List<Message> messagesForUser = messageEntry.getValue();
+
+                for (Message message : messagesForUser) {
+                    try {
+                        remotePointService.sendMessageToUser(userId, message);
+                    } catch (IOException e) {
+                        continue;
+                    }
+                }
+            }
+
+            if (shallGoNext) {
+                nextPlayer();
             }
         }
     }
 
     boolean checkCoords(Coordinates coord) {
         return (coord.getI() <= fieldDim && coord.getJ() <= fieldDim);
+    }
+
+    Player getCurrentPlayer() {
+        return players.get(currentPlayerIdx);
     }
 
     private void nextPlayer() {
@@ -152,11 +175,7 @@ public class GameSession {
         }
     }
 
-    private Player getCurrentPlayer() {
-        return players.get(currentPlayerIdx);
-    }
-
-    private boolean isCurrentPlayer(@NotNull Player player) {
+    boolean isCurrentPlayer(@NotNull Player player) {
         final Player currentPlayer = getCurrentPlayer();
         return player.getUserId().equals(currentPlayer.getUserId());
     }
