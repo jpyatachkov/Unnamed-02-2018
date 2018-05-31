@@ -6,10 +6,10 @@ package ru.shipcollision.api.exceptions;
 public class InvalidCredentialsException extends ApiException {
 
     public InvalidCredentialsException() {
-        super("Invalid login or password");
+        super("Неверный логин или пароль");
     }
 
-    public InvalidCredentialsException(ApiException error) {
+    public InvalidCredentialsException(String error) {
         super(error);
     }
 

@@ -6,7 +6,7 @@ package ru.shipcollision.api.exceptions;
 public class PaginationException extends ApiException {
 
     public PaginationException() {
-        super("Invalid page number or elements limit");
+        super("Неверный номер страницы или параметры пагинации");
     }
 
     public PaginationException(String errorMessage) {

@@ -42,7 +42,7 @@ public class SessionService {
         try {
             return userDAO.findById((Long) userId);
         } catch (NotFoundException e) {
-            session.removeAttribute(COOKIE_NAME);
+            session.invalidate();
             throw new ForbiddenException(e);
         }
     }

@@ -55,7 +55,7 @@ public class UserDAO {
             final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users WHERE id = ?";
             return jdbcTemplate.queryForObject(sqlQuery, new Object[]{id}, USER_ROW_MAPPER);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(String.format("User with id %d not found", id));
+            throw new NotFoundException(String.format("Пользователь с id %d не найден", id));
         }
     }
 
@@ -64,7 +64,7 @@ public class UserDAO {
             final String sqlQuery = "SELECT id, username, email, rank, avatar_link, password FROM users WHERE email = ?";
             return jdbcTemplate.queryForObject(sqlQuery, new Object[]{email}, USER_ROW_MAPPER);
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException(String.format("User with email %s not found", email));
+            throw new NotFoundException(String.format("Пользователь с электронной почтой %s не найден", email));
         }
     }
 
@@ -81,6 +81,9 @@ public class UserDAO {
     public User save(User user) {
         final String sqlQuery;
         final Object[] queryParams;
+
+        System.out.println(user.username);
+        System.out.println(user.email);
 
         if (user.id != null) {
             sqlQuery = "INSERT INTO users(id, username, email, rank, avatar_link, password) "
@@ -108,7 +111,8 @@ public class UserDAO {
         try {
             return jdbcTemplate.queryForObject(sqlQuery, queryParams, USER_ROW_MAPPER);
         } catch (DataAccessException e) {
-            throw new InvalidCredentialsException(e);
+            e.printStackTrace();
+            throw new InvalidCredentialsException("Пользователь с такой электронной почтой или именем уже существует");
         }
     }
 
@@ -132,7 +136,8 @@ public class UserDAO {
                     },
                     USER_ROW_MAPPER);
         } catch (DataAccessException e) {
-            throw new InvalidCredentialsException(e);
+            e.printStackTrace();
+            throw new InvalidCredentialsException("Пользователь с такой электронной почтой или именем уже существует");
         }
     }
 
@@ -151,7 +156,8 @@ public class UserDAO {
                     USER_ROW_MAPPER
             );
         } catch (DataAccessException e) {
-            throw new InvalidCredentialsException(e);
+            e.printStackTrace();
+            throw new InvalidCredentialsException("Невозможно обновить пароль - введены неверные данные");
         }
     }
 
@@ -169,7 +175,8 @@ public class UserDAO {
                     new Object[]{user.id},
                     USER_ROW_MAPPER);
         } catch (DataAccessException e) {
-            throw new InvalidCredentialsException(e);
+            e.printStackTrace();
+            throw new InvalidCredentialsException("Невозможно обновить аватар - введены неверные данные");
         }
     }
 }
