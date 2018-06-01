@@ -8,6 +8,7 @@
 
 - [Команда](#команда)
 - [Описание проекта](#описание-проекта)
+- [Технологии](#технологии)
 - [API](#api)
 
 ## Команда
@@ -15,8 +16,6 @@
 [Олег Венгер](https://github.com/farir1408)
 
 [Георгий Габолаев](https://github.com/gabolaev)
-
-[Артем Икчурин](https://github.com/a-ikchurin)
 
 [Кирилл Кучеров](https://github.com/jpyatachkov)
 
@@ -28,3 +27,7 @@
 ## API
 
 Спецификация API доступна на [SwaggerHub](https://app.swaggerhub.com/apis/jpyatachkov/ship-collision/).
+
+## Технологии
+
+Spring Boot + Tomcat, PostgreSQL + Flyway для миграций, JUnit 5 + Testcontainers для тестирования.
