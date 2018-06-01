@@ -177,7 +177,7 @@ public class GameSession {
     }
 
     private void nextPlayer() {
-        if (playersCount == 1) {
+        if (playersCount == 1 || playersCount == 0) {
             this.isFinished = true;
             for (Player player : players) {
                 try {
@@ -206,7 +206,7 @@ public class GameSession {
     private void makeShot(Player player, Coordinates coords, MoveResult result) {
         final CellStatus currentCell = player.getCellStatus(coords);
         if (currentCell == CellStatus.BUSY) {
-            player.shipsCount--;
+            player.shipsCount -= 10;
             player.setCellStatus(coords, CellStatus.DESTROYED);
 
             if (isCurrentPlayer(player)) {
@@ -215,6 +215,10 @@ public class GameSession {
                 result.addMessageFor(player, GameMessage.createInfoMessage("По вам попали"));
                 result.destroyedShipCount++;
             }
+        }
+
+        if (player.shipsCount == 0) {
+            finishGameForPlayer(player, result);
         }
     }
 
