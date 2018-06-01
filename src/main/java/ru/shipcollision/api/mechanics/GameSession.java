@@ -57,7 +57,7 @@ public class GameSession {
     public void startTime() {
         this.endMoveTime = new Timestamp(System.currentTimeMillis() + GameRulesHelper.MAX_SECONDS_TO_MOVE);
         try {
-            remotePointService.sendMessageToUser((long) currentPlayerIdx, new EnableScene());
+            remotePointService.sendMessageToUser(getCurrentPlayer(), new EnableScene());
         } catch (IOException e) {
             LOGGER.error(e.getMessage());
         }
@@ -86,6 +86,17 @@ public class GameSession {
 
         final GameOver gameOver = new GameOver(false, result.destroyedShipCount);
         result.addMessageFor(player, gameOver);
+    }
+
+    public void endUserGame(Long userId) {
+        Player delete = null;
+        for (Player player : players) {
+            if (player.getUserId().equals(userId)) {
+                delete = player;
+            }
+        }
+        players.remove(delete);
+        this.playersCount--;
     }
 
     void makeMove(Long playerId, Coordinates coords) {
@@ -166,8 +177,20 @@ public class GameSession {
     }
 
     private void nextPlayer() {
-        currentPlayerIdx = (currentPlayerIdx + 1) % playersCount;
-        startTime();
+        if (playersCount == 1) {
+            this.isFinished = true;
+            for (Player player : players) {
+                try {
+                    LOGGER.info("end game");
+                    remotePointService.sendMessageToUser(player, new GameOver(true, player.score));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            currentPlayerIdx = (currentPlayerIdx + 1) % playersCount;
+            startTime();
+        }
     }
 
     boolean isCurrentPlayer(@NotNull Player player) {

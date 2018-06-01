@@ -11,6 +11,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import ru.shipcollision.api.exceptions.ApiException;
 import ru.shipcollision.api.exceptions.NotFoundException;
+import ru.shipcollision.api.mechanics.services.GameSessionService;
 import ru.shipcollision.api.models.User;
 import ru.shipcollision.api.services.SessionService;
 
@@ -34,14 +35,18 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     private final ObjectMapper objectMapper;
 
+    private final @NotNull GameSessionService gameSessionService;
+
     public GameSocketHandler(@NotNull MessageHandlerContainer messageHandlerContainer,
                              @NotNull RemotePointService remotePointService,
                              ObjectMapper objectMapper,
-                             @NotNull SessionService sessionService) {
+                             @NotNull SessionService sessionService,
+                             @NotNull GameSessionService gameSessionService) {
         this.messageHandlerContainer = messageHandlerContainer;
         this.remotePointService = remotePointService;
         this.objectMapper = objectMapper;
         this.sessionService = sessionService;
+        this.gameSessionService = gameSessionService;
     }
 
     @Override
@@ -95,12 +100,12 @@ public class GameSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession webSocketSession, CloseStatus closeStatus) {
-        final Long userId = (Long) webSocketSession.getAttributes().get("userId");
-        if (userId == null) {
+        final User user = sessionService.wsGetUserFromSession(webSocketSession);
+        gameSessionService.deleteUserSession(user.id);
+        remotePointService.removeUser(user.id);
+        if (user.id == null) {
             LOGGER.warn("User disconnected but his session was not found (closeStatus=" + closeStatus + ')');
-            return;
         }
-        remotePointService.removeUser(userId);
     }
 
     @SuppressWarnings("SameParameterValue")

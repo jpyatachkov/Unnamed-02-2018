@@ -28,6 +28,8 @@ public class GameSessionService {
     }
 
     public void deleteUserSession(Long playerId) {
+        GameSession session = usersMap.get(playerId);
+        session.endUserGame(playerId);
         usersMap.remove(playerId);
     }
 
@@ -64,7 +66,6 @@ public class GameSessionService {
                 LOGGER.info("Сессия удалена ", session.getSessionId());
                 gameSessions.remove(session);
             } else {
-//                LOGGER.info("Состояние сессии обновлено ", session.getSessionId());
                 session.sync();
             }
         }
