@@ -81,7 +81,10 @@ class SessionServiceImplTest {
                 ForbiddenException.class,
                 () -> sessionService.getCurrentUser(session)
         );
-        Assertions.assertFalse(Arrays.asList(session.getValueNames()).contains(SessionService.COOKIE_NAME));
+        Assertions.assertThrows(
+                IllegalStateException.class,
+                () -> session.getValueNames()
+        );
     }
 
     @Test

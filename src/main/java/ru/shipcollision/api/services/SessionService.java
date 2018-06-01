@@ -33,17 +33,22 @@ public class SessionService {
      * @return Проверяет, установлена ли кука.
      */
     private User getUserFromSession(HttpSession session) {
-        final Object userId = session.getAttribute(COOKIE_NAME);
-
-        if (userId == null) {
-            throw new ForbiddenException();
-        }
-
         try {
-            return userDAO.findById((Long) userId);
-        } catch (NotFoundException e) {
-            session.invalidate();
-            throw new ForbiddenException(e);
+            final Object userId = session.getAttribute(COOKIE_NAME);
+
+            if (userId == null) {
+                throw new ForbiddenException();
+            }
+
+            try {
+                return userDAO.findById((Long) userId);
+            } catch (NotFoundException e) {
+                session.invalidate();
+                throw new ForbiddenException(e);
+            }
+        } catch (IllegalStateException e) {
+            //noinspection ThrowInsideCatchBlockWhichIgnoresCaughtException
+            throw new ForbiddenException();
         }
     }
 
